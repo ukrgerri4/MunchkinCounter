@@ -1,0 +1,93 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             x:Class="TcpMobile.SingleGamePage">
+    <Grid RowSpacing="0" ColumnSpacing="0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="2*" />
+            <RowDefinition Height="2*" />
+            <RowDefinition Height="2*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="3*" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <StackLayout Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
+            <Label
+                x:Name="publicPowerLabel"
+                FontSize="200"
+                FontAttributes="Bold"
+                HorizontalOptions="FillAndExpand"
+                VerticalOptions="FillAndExpand"
+                HorizontalTextAlignment="Center"
+                VerticalTextAlignment="Center"
+                Rotation="180"></Label>
+            <Label x:Name="publicNameLabel" HorizontalTextAlignment="Center" Rotation="180"></Label>
+        </StackLayout>
+
+        <StackLayout Grid.Row="0" Grid.Column="1" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" Spacing="0">
+            <Label
+                x:Name="publicModifiersLabel"
+                FontSize="50"
+                FontAttributes="Bold"
+                HorizontalOptions="FillAndExpand"
+                VerticalOptions="FillAndExpand"
+                HorizontalTextAlignment="Center"
+                VerticalTextAlignment="Center"
+                Rotation="180"></Label>
+            <Label HorizontalTextAlignment="Center" Rotation="180">MOD</Label>
+        </StackLayout>
+
+        <StackLayout Grid.Row="1" Grid.Column="1" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" Spacing="0">
+            <Label 
+                    x:Name="publicLevelLabel"
+                    FontSize="80"
+                    FontAttributes="Bold"
+                    TextColor="Red"
+                    HorizontalOptions="FillAndExpand"
+                    VerticalOptions="FillAndExpand"
+                    HorizontalTextAlignment="Center"
+                    VerticalTextAlignment="Center"
+                    Rotation="180"></Label>
+                <Label HorizontalTextAlignment="Center" Rotation="180">LVL</Label>
+        </StackLayout>
+
+        <StackLayout Grid.Row="2" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
+            <StackLayout HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
+                <Button Text="Up" Clicked="IncreaseLevel"></Button>
+                <Label
+                    x:Name="userLevelLabel"
+                    FontSize="30"
+                    HorizontalTextAlignment="Center"
+                    VerticalTextAlignment="Center"
+                    HorizontalOptions="FillAndExpand"
+                    VerticalOptions="FillAndExpand">9</Label>
+                <Button Text="Down" Clicked="DecreaseLevel"></Button>
+            </StackLayout>
+            <StackLayout HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
+                <Button Text="Up" Clicked="IncreaseModifiers"></Button>
+                <Label 
+                    x:Name="userModifyersLabel"
+                    FontSize="30"
+                    HorizontalTextAlignment="Center"
+                    VerticalTextAlignment="Center"
+                    HorizontalOptions="FillAndExpand"
+                    VerticalOptions="FillAndExpand"></Label>
+                <Button Text="Down" Clicked="DecreaseModifiers"></Button>
+            </StackLayout>
+            <StackLayout HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
+                <Label 
+                    x:Name="userPowerLabel"
+                    FontSize="30"
+                    HorizontalTextAlignment="Center"
+                    VerticalTextAlignment="Center"
+                    HorizontalOptions="FillAndExpand"
+                    VerticalOptions="FillAndExpand"></Label>
+            </StackLayout>
+        </StackLayout>
+
+    </Grid>
+</ContentPage>

@@ -105,6 +105,14 @@
     <Folder Include="Resources\drawable\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\GameMunchkin\GameMunchkin.csproj">
+      <Project>{71ddcc79-1b71-470e-8a36-5890f609cbf4}</Project>
+      <Name>GameMunchkin</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Infrastracture\Infrastracture.csproj">
+      <Project>{0c747991-86ac-4f47-a4a7-7df901c4e70b}</Project>
+      <Name>Infrastracture</Name>
+    </ProjectReference>
     <ProjectReference Include="..\TcpMobile\TcpMobile.csproj">
       <Project>{CA6CB552-9402-4128-8792-9956D6C7D2C3}</Project>
       <Name>TcpMobile</Name>

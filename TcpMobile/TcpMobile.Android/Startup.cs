@@ -1,9 +1,14 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using GameMunchkin.Models;
+using Infrastracture.Interfaces;
+using Infrastracture.Interfaces.GameMunchkin;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using TcpMobile.Tcp;
 using Xamarin.Essentials;
 
 namespace TcpMobile.Droid
@@ -21,6 +26,9 @@ namespace TcpMobile.Droid
 
                     //read in the configuration file!
                     c.AddJsonStream(configStream);
+
+                    var deviceId = Android.Provider.Settings.Secure.GetString(Android.App.Application.Context.ContentResolver, Android.Provider.Settings.Secure.AndroidId);
+                    c.AddInMemoryCollection(new KeyValuePair<string, string>[] { new KeyValuePair<string, string> ( "DeviceId", deviceId ) });
                 })
                 .ConfigureServices((c, x) =>
                 {
@@ -44,7 +52,16 @@ namespace TcpMobile.Droid
         static void ConfigureServices(HostBuilderContext ctx, IServiceCollection services)
         {
             services.AddSingleton<App>();
+            services.AddSingleton<MainPage>();
+            services.AddTransient<MenuPage>();
+            services.AddTransient<ServerPage>();
+            services.AddTransient<ClientPage>();
+            services.AddTransient<SingleGamePage>();
 
+            services.AddSingleton<IGameService, SocketService>();
+            services.AddSingleton<IGameServer, Server>();
+            services.AddSingleton<IGameClient, Client>();
+            services.AddSingleton<IPlayer, Player>();
         }
     }
 }

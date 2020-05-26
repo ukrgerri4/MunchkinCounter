@@ -7,7 +7,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TcpMobile.Android", "TcpMob
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TcpMobile", "TcpMobile\TcpMobile\TcpMobile.csproj", "{83EDE232-FAD0-4AA5-B6B3-F7158168366F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameMunchkin", "GameMunchkin\GameMunchkin.csproj", "{71DDCC79-1B71-470E-8A36-5890F609CBF4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GameMunchkin", "GameMunchkin\GameMunchkin.csproj", "{71DDCC79-1B71-470E-8A36-5890F609CBF4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastracture", "Infrastracture\Infrastracture.csproj", "{0C747991-86AC-4F47-A4A7-7DF901C4E70B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,6 +33,10 @@ Global
 		{71DDCC79-1B71-470E-8A36-5890F609CBF4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{71DDCC79-1B71-470E-8A36-5890F609CBF4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{71DDCC79-1B71-470E-8A36-5890F609CBF4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0C747991-86AC-4F47-A4A7-7DF901C4E70B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0C747991-86AC-4F47-A4A7-7DF901C4E70B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0C747991-86AC-4F47-A4A7-7DF901C4E70B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0C747991-86AC-4F47-A4A7-7DF901C4E70B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

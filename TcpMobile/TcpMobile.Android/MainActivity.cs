@@ -1,15 +1,9 @@
-﻿using System;
-
-using Android.App;
+﻿using Android.App;
 using Android.Content.PM;
-using Android.Runtime;
-using Android.Views;
-using Android.Widget;
 using Android.OS;
-using Microsoft.Extensions.Hosting;
+using Android.Runtime;
 using Microsoft.Extensions.DependencyInjection;
-using System.IO;
-using System.Text;
+using Microsoft.Extensions.Hosting;
 
 namespace TcpMobile.Droid
 {
