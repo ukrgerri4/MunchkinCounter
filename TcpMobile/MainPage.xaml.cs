@@ -1,8 +1,6 @@
-﻿using Infrastracture.Interfaces;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Threading.Tasks;
 using TcpMobile.Models;
 using Xamarin.Forms;
 
@@ -13,15 +11,13 @@ namespace TcpMobile
     [DesignTimeVisible(false)]
     public partial class MainPage : MasterDetailPage
     {
-        private readonly IGameService _gameService;
         private readonly System.IServiceProvider _serviceProvider;
 
         Dictionary<MenuItemType, Page> MenuPages;
 
-        public MainPage(System.IServiceProvider serviceProvider, IGameService gameService)
+        public MainPage(System.IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
-            _gameService = gameService;
 
             InitializeComponent();
             

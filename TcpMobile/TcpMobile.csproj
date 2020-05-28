@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -20,8 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\GameMunchkin\GameMunchkin.csproj" />
-    <ProjectReference Include="..\..\Infrastracture\Infrastracture.csproj" />
+    <ProjectReference Include="..\Infrastracture\Infrastracture.csproj" />
   </ItemGroup>
 
   <ItemGroup>

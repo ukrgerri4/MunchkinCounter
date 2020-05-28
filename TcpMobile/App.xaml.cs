@@ -11,15 +11,13 @@ namespace TcpMobile
     {
         private readonly System.IServiceProvider _serviceProvider;
         private readonly IConfiguration _configuration;
-        private readonly IGameService _gameService;
         private Subject<Unit> _destroy = new Subject<Unit>();
 
-        public App(System.IServiceProvider serviceProvider, IConfiguration configuration, IGameService gameService)
+        public App(System.IServiceProvider serviceProvider, IConfiguration configuration)
         {
             _serviceProvider = serviceProvider;
             _configuration = configuration;
-            _gameService = gameService;
-
+            
             InitializeComponent();
 
             MainPage = _serviceProvider.GetService<MainPage>();

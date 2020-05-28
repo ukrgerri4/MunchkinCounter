@@ -1,11 +1,8 @@
 ﻿using GameMunchkin.Models;
-using Infrastracture.Interfaces;
 using Infrastracture.Interfaces.GameMunchkin;
+using Microsoft.Extensions.Configuration;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Collections.ObjectModel;
 
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
@@ -15,16 +12,22 @@ namespace TcpMobile
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class MultiPlayerGamePage : ContentPage
     {
-        private readonly IServiceProvider _serviceProvider;
-        private readonly IGameService _gameService;
-
+        private readonly IConfiguration _configuration;
+        private readonly IMultiPlayerService<Player> _multiPlayerService;
+        
         public Player player;
+        public ObservableCollection<Player> lanPlayers;
 
-        public MultiPlayerGamePage(System.IServiceProvider serviceProvider, IGameService gameService)
+        public MultiPlayerGamePage(IConfiguration configuration, IMultiPlayerService<Player> multiPlayerService)
         {
-            _serviceProvider = serviceProvider;
-            _gameService = gameService;
-            player = (Player)_gameService.Player;
+            _configuration = configuration;
+            _multiPlayerService = multiPlayerService;
+
+            player = new Player();
+            player.Id = _configuration["DeviceId"];
+            player.Name = "гн.Костин";
+
+            lanPlayers = _multiPlayerService.GetPlayers();
 
             InitializeComponent();
 
@@ -40,31 +43,36 @@ namespace TcpMobile
 
             for(int i = 0; i < 6; i++)
             {
-                
+                lanPlayers.Add(new Player { Id = $"ID[{i}]", Name = $"N_a_m_e - [{i}]"});
             }
 
-            var p = _serviceProvider.GetService<IPlayer>() as Player;
-            p.Id = "123";
-            p.Name = "LOOOL";
-            _gameService.LanPlayers.Add(_serviceProvider.GetService<IPlayer>());
-
-            lanPlayersView.ItemsSource = _gameService.LanPlayers;
+            lanPlayersView.ItemsSource = lanPlayers;
             lanPlayersView.ItemTemplate = new DataTemplate(() => {
                 var idLabel = new Label();
                 idLabel.SetBinding(Label.TextProperty, "Id");
+
                 var nameLabel = new Label();
                 nameLabel.SetBinding(Label.TextProperty, "Name");
+
+                var levelLabel = new Label();
+                levelLabel.SetBinding(Label.TextProperty, "Level");
+
+                var modifyersLabel = new Label();
+                modifyersLabel.SetBinding(Label.TextProperty, "Modifiers");
+
+                var powerLabel = new Label();
+                powerLabel.SetBinding(Label.TextProperty, "Power");
+
                 return new ViewCell
                 {
                     View = new StackLayout
                     {
                         Padding = new Thickness(0, 5),
                         Orientation = StackOrientation.Horizontal,
-                        Children = { idLabel, nameLabel }
+                        Children = { idLabel, nameLabel, levelLabel, modifyersLabel, powerLabel }
                     }
                 };
             });
-
         }
 
         private void IncreaseLevel(object sender, EventArgs e)

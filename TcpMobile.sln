@@ -3,13 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30104.148
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TcpMobile.Android", "TcpMobile\TcpMobile.Android\TcpMobile.Android.csproj", "{B9E105FC-1AC3-4303-95DD-086674965B22}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastracture", "Infrastracture\Infrastracture.csproj", "{0C747991-86AC-4F47-A4A7-7DF901C4E70B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TcpMobile", "TcpMobile\TcpMobile\TcpMobile.csproj", "{83EDE232-FAD0-4AA5-B6B3-F7158168366F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TcpMobile.Android", "TcpMobile.Android\TcpMobile.Android.csproj", "{B9E105FC-1AC3-4303-95DD-086674965B22}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GameMunchkin", "GameMunchkin\GameMunchkin.csproj", "{71DDCC79-1B71-470E-8A36-5890F609CBF4}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastracture", "Infrastracture\Infrastracture.csproj", "{0C747991-86AC-4F47-A4A7-7DF901C4E70B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TcpMobile", "TcpMobile\TcpMobile.csproj", "{798D5865-AE5D-4944-B274-D8302E1224DC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,26 +15,20 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0C747991-86AC-4F47-A4A7-7DF901C4E70B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0C747991-86AC-4F47-A4A7-7DF901C4E70B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0C747991-86AC-4F47-A4A7-7DF901C4E70B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0C747991-86AC-4F47-A4A7-7DF901C4E70B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B9E105FC-1AC3-4303-95DD-086674965B22}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B9E105FC-1AC3-4303-95DD-086674965B22}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B9E105FC-1AC3-4303-95DD-086674965B22}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
 		{B9E105FC-1AC3-4303-95DD-086674965B22}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B9E105FC-1AC3-4303-95DD-086674965B22}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B9E105FC-1AC3-4303-95DD-086674965B22}.Release|Any CPU.Deploy.0 = Release|Any CPU
-		{83EDE232-FAD0-4AA5-B6B3-F7158168366F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{83EDE232-FAD0-4AA5-B6B3-F7158168366F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{83EDE232-FAD0-4AA5-B6B3-F7158168366F}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
-		{83EDE232-FAD0-4AA5-B6B3-F7158168366F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{83EDE232-FAD0-4AA5-B6B3-F7158168366F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{83EDE232-FAD0-4AA5-B6B3-F7158168366F}.Release|Any CPU.Deploy.0 = Release|Any CPU
-		{71DDCC79-1B71-470E-8A36-5890F609CBF4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{71DDCC79-1B71-470E-8A36-5890F609CBF4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{71DDCC79-1B71-470E-8A36-5890F609CBF4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{71DDCC79-1B71-470E-8A36-5890F609CBF4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0C747991-86AC-4F47-A4A7-7DF901C4E70B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0C747991-86AC-4F47-A4A7-7DF901C4E70B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0C747991-86AC-4F47-A4A7-7DF901C4E70B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0C747991-86AC-4F47-A4A7-7DF901C4E70B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{798D5865-AE5D-4944-B274-D8302E1224DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{798D5865-AE5D-4944-B274-D8302E1224DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{798D5865-AE5D-4944-B274-D8302E1224DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{798D5865-AE5D-4944-B274-D8302E1224DC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

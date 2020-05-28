@@ -1,11 +1,6 @@
 ﻿using GameMunchkin.Models;
-using Infrastracture.Interfaces;
 using Infrastracture.Interfaces.GameMunchkin;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
@@ -15,16 +10,16 @@ namespace TcpMobile
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class SingleGamePage : ContentPage
     {
-        private readonly IGameService _gameService;
-
         public Player player;
+        private readonly ISinglePlayerService<Player> _singlePlayerService;
 
-        public SingleGamePage(IGameService gameService)
+        public SingleGamePage(ISinglePlayerService<Player> singlePlayerService)
         {
-            _gameService = gameService;
-            player = (Player)_gameService.Player;
+            _singlePlayerService = singlePlayerService;
 
             InitializeComponent();
+
+            player = _singlePlayerService.GetPlayer();
 
             var userLevelBinding = new Binding { Source = player, Path = "Level" };
             userLevelLabel.SetBinding(Label.TextProperty, userLevelBinding);
