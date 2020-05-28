@@ -80,8 +80,6 @@ namespace TcpMobile.Tcp
                 var handler = listener.EndAccept(asyncResult);
                 var stateObj = new StateObject(handler);
 
-                handler.Send(Encoding.Unicode.GetBytes("Grac"));
-
                 onClientConnect?.Invoke(stateObj.workSocket.RemoteEndPoint.ToString());
 
                 handler.BeginReceive(stateObj.buffer, 0, StateObject.BufferSize, 0, new AsyncCallback(OnDataReceived), stateObj);
@@ -111,24 +109,8 @@ namespace TcpMobile.Tcp
                 if (bytesRead > 0)
                 {
                     var packet = new Packet(stateObj.buffer.Take(bytesRead).ToArray());
-                    onReceiveData?.Invoke(packet);
+                    //onReceiveData?.Invoke(packet);
                     PacketSubject.OnNext(packet);
-
-                    //using (MemoryStream ms = new MemoryStream(stateObj.buffer))
-                    //{
-                    //    var lengthBuffer = new byte[2];
-                    //    ms.Read(lengthBuffer, 0, 2);
-                    //    var length = BitConverter.ToUInt16(lengthBuffer, 0);
-
-                    //var type = (TcpMessageType)ms.ReadByte();
-                    //    var playersLength = (byte)ms.ReadByte();
-                    //    for (byte i = 0; i < playersLength; i++)
-                    //    {
-                    //        var playerInfo = PlayerInfo.Deserialize(ms);
-                    //        onReceiveData?.Invoke($"{playerInfo}");
-                    //    }
-                    //}
-                    //onReceiveData?.Invoke($"[{bytesRead}]bytes");
                 }
 
                 handler.BeginReceive(stateObj.buffer, 0, StateObject.BufferSize, 0, new AsyncCallback(OnDataReceived), stateObj);

@@ -27,8 +27,13 @@ namespace TcpMobile.Droid
                     //read in the configuration file!
                     c.AddJsonStream(configStream);
 
-                    var deviceId = Android.Provider.Settings.Secure.GetString(Android.App.Application.Context.ContentResolver, Android.Provider.Settings.Secure.AndroidId);
-                    c.AddInMemoryCollection(new KeyValuePair<string, string>[] { new KeyValuePair<string, string> ( "DeviceId", deviceId ) });
+                    var deviceId = Android.Provider.Settings.Secure
+                        .GetString(Android.App.Application.Context.ContentResolver, Android.Provider.Settings.Secure.AndroidId);
+                    c.AddInMemoryCollection(
+                        new KeyValuePair<string, string>[] { 
+                            new KeyValuePair<string, string> ( "DeviceId", !string.IsNullOrWhiteSpace(deviceId) ? deviceId : Guid.NewGuid().ToString())
+                        }
+                    );
                 })
                 .ConfigureServices((c, x) =>
                 {

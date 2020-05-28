@@ -5,6 +5,7 @@ namespace TcpMobile.Tcp.Models
 {
     public class StateObject
     {
+        public string Id;
         public Socket workSocket = null;
         public const int BufferSize = 1024;
         public byte[] buffer = new byte[BufferSize];
