@@ -1,13 +1,10 @@
-﻿using Infrastracture.Interfaces.GameMunchkin;
-using Microsoft.Extensions.Configuration;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace GameMunchkin.Models
 {
-    public class Player : IPlayer, INotifyPropertyChanged
+    public class Player : INotifyPropertyChanged
     {
-        private readonly IConfiguration _configuration;
         private readonly Dictionary<byte, string> _colors;
 
         private string id;
@@ -78,11 +75,8 @@ namespace GameMunchkin.Models
             get => _colors[Level];
         }
 
-        public Player(IConfiguration configuration)
+        public Player()
         {
-            _configuration = configuration;
-            Id = _configuration["DeviceId"];
-            Name = "Igor";
             Level = 1;
             Modifiers = 0;
 

@@ -64,7 +64,7 @@
                     HorizontalTextAlignment="Center"
                     VerticalTextAlignment="Center"
                     HorizontalOptions="FillAndExpand"
-                    VerticalOptions="FillAndExpand">9</Label>
+                    VerticalOptions="FillAndExpand"></Label>
                 <Button Text="Down" Clicked="DecreaseLevel"></Button>
             </StackLayout>
             <StackLayout HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">

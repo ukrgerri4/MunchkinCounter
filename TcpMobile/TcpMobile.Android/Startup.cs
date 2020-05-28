@@ -57,11 +57,11 @@ namespace TcpMobile.Droid
             services.AddTransient<ServerPage>();
             services.AddTransient<ClientPage>();
             services.AddTransient<SingleGamePage>();
+            services.AddTransient<MultiPlayerGamePage>();
 
             services.AddSingleton<IGameService, SocketService>();
             services.AddSingleton<IGameServer, Server>();
             services.AddSingleton<IGameClient, Client>();
-            services.AddSingleton<IPlayer, Player>();
         }
     }
 }

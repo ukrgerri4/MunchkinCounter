@@ -18,7 +18,8 @@ namespace TcpMobile
             {
                 new SideBarMenuItem { Type = MenuItemType.ServerPage, Name = "Server" },
                 new SideBarMenuItem { Type = MenuItemType.ClientPage, Name = "Client" },
-                new SideBarMenuItem { Type = MenuItemType.SingleGamePage, Name = "SingleGame" }
+                new SideBarMenuItem { Type = MenuItemType.SingleGamePage, Name = "SingleGame" },
+                new SideBarMenuItem { Type = MenuItemType.MultiPlayerGamePage, Name = "MultiPlayerGame" }
             };
 
             listView.ItemTemplate = new DataTemplate(() =>

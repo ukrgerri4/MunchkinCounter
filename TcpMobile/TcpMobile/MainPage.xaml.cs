@@ -31,7 +31,8 @@ namespace TcpMobile
             {
                 { MenuItemType.ServerPage, _serviceProvider.GetService<ServerPage>() },
                 { MenuItemType.ClientPage, _serviceProvider.GetService<ClientPage>() },
-                { MenuItemType.SingleGamePage, _serviceProvider.GetService<SingleGamePage>() }
+                { MenuItemType.SingleGamePage, _serviceProvider.GetService<SingleGamePage>() },
+                { MenuItemType.MultiPlayerGamePage, _serviceProvider.GetService<MultiPlayerGamePage>() }
             };
 
             Master = _serviceProvider.GetService<MenuPage>();

@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             x:Class="TcpMobile.MultiPlayerGamePage">
+    <Grid RowSpacing="0" ColumnSpacing="0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="2*" />
+            <RowDefinition Height="1*" />
+        </Grid.RowDefinitions>
+        <StackLayout Grid.Row="0" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
+            <ListView x:Name="lanPlayersView">
+                
+            </ListView>
+        </StackLayout>
+
+        <StackLayout Grid.Row="1" Orientation="Horizontal" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
+            <StackLayout HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
+                <Button Text="Up" Clicked="IncreaseLevel"></Button>
+                <Label
+                    x:Name="userLevelLabel"
+                    FontSize="30"
+                    HorizontalTextAlignment="Center"
+                    VerticalTextAlignment="Center"
+                    HorizontalOptions="FillAndExpand"
+                    VerticalOptions="FillAndExpand"></Label>
+                <Button Text="Down" Clicked="DecreaseLevel"></Button>
+            </StackLayout>
+            <StackLayout HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
+                <Button Text="Up" Clicked="IncreaseModifiers"></Button>
+                <Label 
+                    x:Name="userModifyersLabel"
+                    FontSize="30"
+                    HorizontalTextAlignment="Center"
+                    VerticalTextAlignment="Center"
+                    HorizontalOptions="FillAndExpand"
+                    VerticalOptions="FillAndExpand"></Label>
+                <Button Text="Down" Clicked="DecreaseModifiers"></Button>
+            </StackLayout>
+            <StackLayout HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
+                <Label 
+                    x:Name="userPowerLabel"
+                    FontSize="30"
+                    HorizontalTextAlignment="Center"
+                    VerticalTextAlignment="Center"
+                    HorizontalOptions="FillAndExpand"
+                    VerticalOptions="FillAndExpand"></Label>
+            </StackLayout>
+        </StackLayout>
+
+    </Grid>
+</ContentPage>
