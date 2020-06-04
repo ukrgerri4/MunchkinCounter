@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TcpMobile.Android", "TcpMob
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TcpMobile", "TcpMobile\TcpMobile.csproj", "{798D5865-AE5D-4944-B274-D8302E1224DC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "Core\Core.csproj", "{634F71F2-052E-469B-A40F-7C59A9B65904}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,6 +31,10 @@ Global
 		{798D5865-AE5D-4944-B274-D8302E1224DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{798D5865-AE5D-4944-B274-D8302E1224DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{798D5865-AE5D-4944-B274-D8302E1224DC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{634F71F2-052E-469B-A40F-7C59A9B65904}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{634F71F2-052E-469B-A40F-7C59A9B65904}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{634F71F2-052E-469B-A40F-7C59A9B65904}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{634F71F2-052E-469B-A40F-7C59A9B65904}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

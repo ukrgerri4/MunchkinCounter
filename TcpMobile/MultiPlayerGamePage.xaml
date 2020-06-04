@@ -10,10 +10,36 @@
             <RowDefinition Height="2*" />
             <RowDefinition Height="1*" />
         </Grid.RowDefinitions>
-        <StackLayout Grid.Row="0" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
+        <StackLayout
+            x:Name="menuLayout"
+            Grid.Row="0"
+            HorizontalOptions="Center"
+            VerticalOptions="Center">
+            <Button Text="Create game" HorizontalOptions="Center" VerticalOptions="Center" Clicked="OpenRoom"></Button>
+            <Button Text="Join game" HorizontalOptions="Center" VerticalOptions="Center" Clicked="JoinRoom"></Button>
+            <Button Text="Join game manual" HorizontalOptions="Center" VerticalOptions="Center" Clicked="JoinRoomManual"></Button>
+        </StackLayout>
+
+        <StackLayout
+            x:Name="serverLayout"
+            Grid.Row="0"
+            HorizontalOptions="FillAndExpand"
+            VerticalOptions="FillAndExpand">
             <ListView x:Name="lanPlayersView">
                 
             </ListView>
+            <Button Text="Back" HorizontalOptions="Center" VerticalOptions="End" Clicked="BackToMenu"></Button>
+        </StackLayout>
+
+        <StackLayout
+            x:Name="clientManualrLayout"
+            Grid.Row="0"
+            HorizontalOptions="FillAndExpand"
+            VerticalOptions="FillAndExpand">
+            <Entry x:Name="ipEntry" Placeholder="enter IP"></Entry>
+            <Entry x:Name="portEntry" Placeholder="enter port"></Entry>
+            <Button Text="Connect" HorizontalOptions="Center" Clicked="TryConnect"></Button>
+            <Button Text="Back" HorizontalOptions="Center" VerticalOptions="End" Clicked="BackToMenu"></Button>
         </StackLayout>
 
         <StackLayout Grid.Row="1" Orientation="Horizontal" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">

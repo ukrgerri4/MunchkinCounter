@@ -5,6 +5,7 @@ namespace TcpMobile.Tcp.Models
 {
     public class Packet
     {
+        public string SenderId { get; set; }
         public byte[] Buffer { get; set; }
         public DateTime RecieveTime;
 

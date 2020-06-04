@@ -1,6 +1,8 @@
+using Core.Models;
 using Infrastracture.Interfaces.GameMunchkin;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -19,6 +21,7 @@ namespace TcpMobile.Tcp
 
         private Subject<Socket> _udpSubject;
 
+        public Dictionary<string, StateObject> —onfirmedConnections = new Dictionary<string, StateObject>();
 
         public delegate void ServerStartCallback();
         public delegate void ClientConnectCallback(string remoteIp);
@@ -35,7 +38,6 @@ namespace TcpMobile.Tcp
         private Socket _mainUdpSocket;
         private IPEndPoint udpClientEP = new IPEndPoint(IPAddress.Broadcast, 42424);
 
-        private readonly BinaryFormatter _binaryFormatter = new BinaryFormatter();
         public bool IsListening
         {
             get
@@ -110,6 +112,22 @@ namespace TcpMobile.Tcp
                 {
                     var packet = new Packet(stateObj.buffer.Take(bytesRead).ToArray());
                     //onReceiveData?.Invoke(packet);
+                    if (!stateObj.IdRecived)
+                    {
+                        if (packet.MessageType != Enums.MunchkinMessageType.GetId)
+                        {
+                            handler.BeginReceive(stateObj.buffer, 0, StateObject.BufferSize, 0, new AsyncCallback(OnDataReceived), stateObj);
+                            return;
+                        }
+
+                        var id = Encoding.UTF8.GetString(packet.Buffer, 4, packet.Buffer[3]); // Ò 4-„Ó ·‡ÈÚ‡ Ë‰ÂÚ ID, ‚ 3-Ï ·‡ÈÚÂ ‰ÎËÌ‡ ID
+                        stateObj.Id = id;
+                        —onfirmedConnections.Add(id, stateObj);
+                        handler.BeginReceive(stateObj.buffer, 0, StateObject.BufferSize, 0, new AsyncCallback(OnDataReceived), stateObj);
+                        return;
+                    }
+
+                    packet.SenderId = stateObj.Id;
                     PacketSubject.OnNext(packet);
                 }
 
@@ -140,15 +158,46 @@ namespace TcpMobile.Tcp
             }
         }
 
+        public Result<int> SendMessage(string id, byte[] message)
+        {
+            try
+            {
+                if (_mainTcpSocket == null)
+                {
+                    return Result.Fail<int>("Server soket is null.");
+                }
+
+                if (!_mainTcpSocket.Connected)
+                {
+                    return Result.Fail<int>("Server soket is not connected.");
+                }
+
+                if (!—onfirmedConnections.ContainsKey(id))
+                {
+                    return Result.Fail<int>($"Soket with id - [{id}] not found.");
+                }
+
+                var remoteStateObj = —onfirmedConnections[id];
+
+                if (remoteStateObj.workSocket == null || remoteStateObj.workSocket.Connected)
+                {
+                    return Result.Fail<int>("Remote soket is not connected.");
+                }
+
+                var bytesSent = remoteStateObj.workSocket.Send(message);
+                return Result.Ok(bytesSent);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"SendMessage unexpected: {e.Message}");
+                return Result.Fail<int>($"Unexpected: {e.Message}");
+            }
+        }
+
         public void StartBroadcast()
         {
             try
             {
-                if (_mainTcpSocket == null || !_mainTcpSocket.IsBound)
-                {
-                    Start();
-                }
-
                 StopBroadcast();
 
                 _udpSubject = new Subject<Socket>();

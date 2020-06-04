@@ -14,5 +14,7 @@ namespace TcpMobile.Tcp.Models
         {
             workSocket = soket ?? null;
         }
+
+        public bool IdRecived => !string.IsNullOrWhiteSpace(Id);
     }
 }

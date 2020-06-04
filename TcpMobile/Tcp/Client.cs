@@ -1,7 +1,11 @@
-﻿using Infrastracture.Interfaces.GameMunchkin;
+﻿using Core.Models;
+using Infrastracture.Interfaces.GameMunchkin;
+using Microsoft.Extensions.Configuration;
 using System;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Reactive.Subjects;
 using System.Text;
 using TcpMobile.Tcp.Models;
 
@@ -9,15 +13,19 @@ namespace TcpMobile.Tcp
 {
     public class Client: IGameClient
     {
+        public Subject<Packet> PacketSubject { get; set; } = new Subject<Packet>();
+
         private Socket _mainTcpSocket;
         private Socket _mainUdpSocket;
     
-        private EndPoint _serverEp = new IPEndPoint(IPAddress.Any, 0);
+        private readonly IConfiguration _configuration;
 
-        public delegate void ReceiveDataCallback(string data);
-        public ReceiveDataCallback onReceiveData { get; set; }
+        public Client(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
 
-        public void Connect(IPAddress address, int port = 42420)
+        public Result Connect(IPAddress address, int port = 42420)
         {
             try
             {
@@ -26,16 +34,19 @@ namespace TcpMobile.Tcp
                 _mainTcpSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                 _mainTcpSocket.Connect(new IPEndPoint(address, port));
 
-                if (_mainTcpSocket.Connected)
-                {
-                    var stateObj = new StateObject(_mainTcpSocket);
-                    _mainTcpSocket.BeginReceive(stateObj.buffer, 0, StateObject.BufferSize, 0, new AsyncCallback(OnDataReceived), stateObj);
-                }
+                if (!_mainTcpSocket.Connected) { return Result.Fail("Soket is not connected."); }
+                
+                var stateObj = new StateObject(_mainTcpSocket);
+                stateObj.Id = _configuration["DeviceId"];
+                _mainTcpSocket.BeginReceive(stateObj.buffer, 0, StateObject.BufferSize, 0, new AsyncCallback(OnDataReceived), stateObj);
+
+                return Result.Ok();
             }
 
             catch (SocketException se)
             {
                 Console.WriteLine(se.Message);
+                return Result.Fail(se.Message);
             }
         }
 
@@ -44,11 +55,20 @@ namespace TcpMobile.Tcp
             _mainTcpSocket?.Close();
         }
 
-        public void SendMessage(byte[] message)
+        public Result<int> SendMessage(byte[] message)
         {
-            if (_mainTcpSocket != null)
-                if (_mainTcpSocket.Connected)
-                    _mainTcpSocket.Send(message);
+            if (_mainTcpSocket == null)
+            {
+                return Result.Fail<int>("Soket is null.");
+            }
+
+            if (!_mainTcpSocket.Connected)
+            {
+                return Result.Fail<int>("Soket is not connected.");
+            }
+
+            var bytesSent = _mainTcpSocket.Send(message);
+            return Result.Ok(bytesSent);
         }
 
         private void OnDataReceived(IAsyncResult asyncResult)
@@ -62,7 +82,8 @@ namespace TcpMobile.Tcp
 
                 if (bytesRead > 0)
                 {
-                    onReceiveData?.Invoke(Encoding.Unicode.GetString(stateObj.buffer, 0, bytesRead));
+                    var packet = new Packet(stateObj.buffer.Take(bytesRead).ToArray());
+                    PacketSubject.OnNext(packet);
                 }
 
                 handler.BeginReceive(stateObj.buffer, 0, StateObject.BufferSize, 0, new AsyncCallback(OnDataReceived), stateObj);
