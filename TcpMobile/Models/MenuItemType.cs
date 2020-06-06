@@ -8,7 +8,8 @@ namespace TcpMobile.Models
         ServerPage,
         ClientPage,
         SingleGamePage,
-        MultiPlayerGamePage
+        MultiPlayerGamePage,
+        Settings
     }
 
     public class SideBarMenuItem

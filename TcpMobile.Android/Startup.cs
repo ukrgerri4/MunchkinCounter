@@ -58,16 +58,18 @@ namespace TcpMobile.Droid
         {
             services.AddSingleton<App>();
             services.AddSingleton<MainPage>();
-            services.AddTransient<MenuPage>();
+            services.AddSingleton<MenuPage>();
+            services.AddSingleton<SingleGamePage>();
+            services.AddSingleton<SettingsPage>();
+
             services.AddTransient<ServerPage>();
             services.AddTransient<ClientPage>();
-            services.AddTransient<SingleGamePage>();
             services.AddTransient<MultiPlayerGamePage>();
 
             services.AddSingleton<IGameServer, Server>();
             services.AddSingleton<IGameClient, Client>();
             services.AddSingleton(typeof(IMultiPlayerService<Player>), typeof(MultiPlayerService));
-            services.AddSingleton(typeof(ISinglePlayerService<Player>), typeof(SinglePlayerService));
+            services.AddSingleton<ServerPlayersData>();
         }
     }
 }

@@ -5,9 +5,13 @@ using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Net;
+using System.Net.Sockets;
 using System.Reactive.Linq;
 using System.Text;
+using System.Threading;
+using TcpMobile.Services;
 using TcpMobile.Tcp.Enums;
 using Xamarin.Forms;
 using Xamarin.Forms.Internals;
@@ -71,27 +75,27 @@ namespace TcpMobile
         private readonly IMultiPlayerService<Player> _multiPlayerService;
         private readonly IGameClient _gameClient;
         private readonly IGameServer _gameServer;
+        private readonly ServerPlayersData _serverPlayersData;
         public Player player;
-        public ObservableCollection<Player> lanPlayers;
 
         public MultiPlayerViewModel multiPlayerViewModel;
 
         public MultiPlayerGamePage(IConfiguration configuration,
             IMultiPlayerService<Player> multiPlayerService,
             IGameClient gameClient,
-            IGameServer gameServer)
+            IGameServer gameServer,
+            ServerPlayersData serverPlayersData)
         {
             _configuration = configuration;
             _multiPlayerService = multiPlayerService;
             _gameClient = gameClient;
             _gameServer = gameServer;
+            _serverPlayersData = serverPlayersData;
             InitializeComponent();
 
             player = new Player();
             player.Id = _configuration["DeviceId"];
             player.Name = "гн.Костин";
-
-            lanPlayers = _multiPlayerService.GetPlayers();
 
             multiPlayerViewModel = new MultiPlayerViewModel
             {
@@ -118,12 +122,12 @@ namespace TcpMobile
             userPowerLabel.SetBinding(Label.TextProperty, userPowerBinding);
 
 
-            for(int i = 0; i < 6; i++)
-            {
-                lanPlayers.Add(new Player { Id = $"ID[{i}]", Name = $"N_a_m_e - [{i}]"});
-            }
+            //for(int i = 0; i < 6; i++)
+            //{
+            //    _multiPlayerService.Players.Add(new Player { Id = $"ID[{i}]", Name = $"N_a_m_e - [{i}]"});
+            //}
 
-            lanPlayersView.ItemsSource = lanPlayers;
+            lanPlayersView.ItemsSource = _multiPlayerService.Players;
             lanPlayersView.ItemTemplate = new DataTemplate(() => {
                 var idLabel = new Label();
                 idLabel.SetBinding(Label.TextProperty, "Id");
@@ -181,6 +185,9 @@ namespace TcpMobile
                 memoryStream.WriteByte(player.Level);
                 memoryStream.WriteByte(player.Modifiers);
 
+                memoryStream.WriteByte(10);
+                memoryStream.WriteByte(4);
+
                 memoryStream.Seek(0, SeekOrigin.Begin);
                 memoryStream.Write(BitConverter.GetBytes((ushort)memoryStream.Length), 0, 2);
                 memoryStream.Seek(0, SeekOrigin.End);
@@ -212,6 +219,7 @@ namespace TcpMobile
             multiPlayerViewModel.IsClientManualMode = false;
         }
 
+        bool started = false;
         private void OpenRoom(object sender, EventArgs e)
         {
             multiPlayerViewModel.IsMenuMode = false;
@@ -219,7 +227,17 @@ namespace TcpMobile
             multiPlayerViewModel.IsClientMode = false;
             multiPlayerViewModel.IsClientManualMode = false;
 
-            _gameServer.Start();
+            if (!started)
+            {
+                _gameServer.Start();
+                started = true;
+            }
+            //_multiPlayerService.Players.Add(player);
+
+            var hostAddresses = Dns.GetHostAddresses(Dns.GetHostName());
+
+            Console.WriteLine(string.Join(",", hostAddresses.Select(ip => ip.ToString())));
+
             //_gameServer.StartBroadcast();
         }
 
@@ -259,6 +277,9 @@ namespace TcpMobile
                 memoryStream.WriteByte((byte)byteId.Length);
                 memoryStream.Write(byteId, 0, byteId.Length);
 
+                memoryStream.WriteByte(10);
+                memoryStream.WriteByte(4);
+
                 memoryStream.Seek(0, SeekOrigin.Begin);
                 memoryStream.Write(BitConverter.GetBytes((ushort)memoryStream.Length), 0, 2);
                 memoryStream.Seek(0, SeekOrigin.End);
@@ -282,6 +303,9 @@ namespace TcpMobile
                 memoryStream.WriteByte(player.Level);
                 memoryStream.WriteByte(player.Modifiers);
 
+                memoryStream.WriteByte(10);
+                memoryStream.WriteByte(4);
+
                 memoryStream.Seek(0, SeekOrigin.Begin);
                 memoryStream.Write(BitConverter.GetBytes((ushort)memoryStream.Length), 0, 2);
                 memoryStream.Seek(0, SeekOrigin.End);
@@ -290,6 +314,10 @@ namespace TcpMobile
             }
 
             _multiPlayerService.StartUpdatePlayers();
+        }
+        private void TryDisconnect(object sender, EventArgs e)
+        {
+            _gameClient.Disconnect();
         }
     }
 }

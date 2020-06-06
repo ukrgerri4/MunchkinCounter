@@ -10,16 +10,11 @@ namespace TcpMobile
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class SingleGamePage : ContentPage
     {
-        public Player player;
-        private readonly ISinglePlayerService<Player> _singlePlayerService;
+        public Player player = new Player();
 
-        public SingleGamePage(ISinglePlayerService<Player> singlePlayerService)
+        public SingleGamePage()
         {
-            _singlePlayerService = singlePlayerService;
-
             InitializeComponent();
-
-            player = _singlePlayerService.GetPlayer();
 
             var userLevelBinding = new Binding { Source = player, Path = "Level" };
             userLevelLabel.SetBinding(Label.TextProperty, userLevelBinding);

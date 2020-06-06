@@ -39,6 +39,7 @@
             <Entry x:Name="ipEntry" Placeholder="enter IP"></Entry>
             <Entry x:Name="portEntry" Placeholder="enter port"></Entry>
             <Button Text="Connect" HorizontalOptions="Center" Clicked="TryConnect"></Button>
+            <Button Text="Disconnect" HorizontalOptions="Center" Clicked="TryDisconnect"></Button>
             <Button Text="Back" HorizontalOptions="Center" VerticalOptions="End" Clicked="BackToMenu"></Button>
         </StackLayout>
 

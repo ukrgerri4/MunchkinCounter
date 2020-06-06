@@ -9,8 +9,7 @@ namespace Infrastracture.Interfaces.GameMunchkin
 {
     public interface IMultiPlayerService<TPlayer>
     {
-        //Subject<List<TPlayer>> PlayersSubject { get; }
-        ObservableCollection<TPlayer> GetPlayers();
+        ObservableCollection<TPlayer> Players { get; }
         void StartUpdatePlayers();
         void UpdatePlayers(List<PlayerInfo> updatedPlayers);
     }

@@ -5,6 +5,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Text;
@@ -21,17 +22,18 @@ namespace TcpMobile.Services
         public ConcurrentDictionary<string, PlayerInfo> KnownPlayers { get; set; } = new ConcurrentDictionary<string, PlayerInfo>();
         public ConcurrentDictionary<string, PlayerInfo> PlayersInGame { get; set; } = new ConcurrentDictionary<string, PlayerInfo>();
 
-        private Subject<List<PlayerInfo>> _updatePlayersSubject = new Subject<List<PlayerInfo>>();
+        private Subject<Unit> _updatePlayersSubject = new Subject<Unit>();
 
         public ServerPlayersData(IGameServer gameServer, IMultiPlayerService<Player> multiPlayerService)
         {
             _gameServer = gameServer;
             _multiPlayerService = multiPlayerService;
             _updatePlayersSubject.AsObservable()
-                .Where(players => players.Count > 0)
                 .Throttle(TimeSpan.FromMilliseconds(500))
-                .Subscribe(players =>
+                .Subscribe(_ =>
                 {
+                    var players = PlayersInGame.Values.ToList();
+
                     using (MemoryStream memoryStream = new MemoryStream())
                     {
                         memoryStream.Write(BitConverter.GetBytes((ushort)0), 0, 2);
@@ -141,7 +143,7 @@ namespace TcpMobile.Services
                             break;
                     }
 
-                    _updatePlayersSubject.OnNext(PlayersInGame.Values.ToList());
+                    _updatePlayersSubject.OnNext(Unit.Default);
                 });
         }
     }

@@ -11,6 +11,7 @@ using System.Reactive.Subjects;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using TcpMobile.Tcp.Models;
+using Xamarin.Forms.Internals;
 
 namespace TcpMobile.Tcp
 {
@@ -82,8 +83,9 @@ namespace TcpMobile.Tcp
                 var handler = listener.EndAccept(asyncResult);
                 var stateObj = new StateObject(handler);
 
-                onClientConnect?.Invoke(stateObj.workSocket.RemoteEndPoint.ToString());
+                //onClientConnect?.Invoke(stateObj.workSocket.RemoteEndPoint.ToString());
 
+                ÑonfirmedConnections.Add(stateObj.Id, stateObj);
                 handler.BeginReceive(stateObj.buffer, 0, StateObject.BufferSize, 0, new AsyncCallback(OnDataReceived), stateObj);
 
                 listener.BeginAccept(new AsyncCallback(OnReceiveConnection), listener);
@@ -106,36 +108,97 @@ namespace TcpMobile.Tcp
                 var stateObj = (StateObject)asyncResult.AsyncState;
                 var handler = stateObj.workSocket;
 
+                if (handler == null || !handler.Connected)
+                {
+                    return;
+                }
+
                 int bytesRead = handler.EndReceive(asyncResult);
 
                 if (bytesRead > 0)
                 {
-                    var packet = new Packet(stateObj.buffer.Take(bytesRead).ToArray());
-                    //onReceiveData?.Invoke(packet);
-                    if (!stateObj.IdRecived)
+                    Console.WriteLine($"Message len - {bytesRead}");
+                    //var packet = new Packet(stateObj.buffer.Take(bytesRead).ToArray());
+
+                    //if (!stateObj.IdRecived)
+                    //{
+                    //    if (packet.MessageType != Enums.MunchkinMessageType.GetId)
+                    //    {
+                    //        handler.BeginReceive(stateObj.buffer, 0, StateObject.BufferSize, 0, new AsyncCallback(OnDataReceived), stateObj);
+                    //        return;
+                    //    }
+
+                    //    var id = Encoding.UTF8.GetString(packet.Buffer, 4, packet.Buffer[3]); // ñ 4-ãî áàéòà èäåò ID, â 3-ì áàéòå äëèíà ID
+                    //    stateObj.Id = id;
+                    //    if (!ÑonfirmedConnections.ContainsKey(stateObj.Id))
+                    //    {
+                    //        ÑonfirmedConnections.Add(id, stateObj);
+                    //    }
+                    //    handler.BeginReceive(stateObj.buffer, 0, StateObject.BufferSize, 0, new AsyncCallback(OnDataReceived), stateObj);
+                    //    return;
+                    //}
+
+                    //packet.SenderId = stateObj.Id;
+                    //PacketSubject.OnNext(packet);
+
+                    var pos = 0;
+                    var dataLength = bytesRead + stateObj.offset;
+                    if (dataLength > StateObject.BufferSize)
                     {
-                        if (packet.MessageType != Enums.MunchkinMessageType.GetId)
+                        Console.WriteLine($"dataLength[{dataLength}] more than bufferSize[{StateObject.BufferSize}]");
+                        dataLength = StateObject.BufferSize;
+                    }
+
+                    while (pos < dataLength)
+                    {
+                        var remaningBytes = dataLength - pos;
+                        if (remaningBytes < 2)
                         {
-                            handler.BeginReceive(stateObj.buffer, 0, StateObject.BufferSize, 0, new AsyncCallback(OnDataReceived), stateObj);
+                            stateObj.offset = 1;
+                            handler.BeginReceive(stateObj.buffer, stateObj.offset, StateObject.BufferSize - stateObj.offset, 0, new AsyncCallback(OnDataReceived), stateObj);
                             return;
                         }
 
-                        var id = Encoding.UTF8.GetString(packet.Buffer, 4, packet.Buffer[3]); // ñ 4-ãî áàéòà èäåò ID, â 3-ì áàéòå äëèíà ID
-                        stateObj.Id = id;
-                        ÑonfirmedConnections.Add(id, stateObj);
-                        handler.BeginReceive(stateObj.buffer, 0, StateObject.BufferSize, 0, new AsyncCallback(OnDataReceived), stateObj);
-                        return;
+                        var len = BitConverter.ToInt16(stateObj.buffer, pos);
+                        if (len < 5)
+                        {
+                            throw new Exception("Wrong message format.");
+                        }
+
+                        if (len > remaningBytes)
+                        {
+                            stateObj.offset = remaningBytes;
+                            handler.BeginReceive(stateObj.buffer, stateObj.offset, StateObject.BufferSize - stateObj.offset, 0, new AsyncCallback(OnDataReceived), stateObj);
+                            return;
+                        }
+
+                        var messageBytes = stateObj.buffer.Skip(pos).Take(len).ToArray();
+                        if (messageBytes[messageBytes.Length - 1] == 4 && messageBytes[messageBytes.Length - 2] == 10)
+                        {
+                            var packet = new Packet(messageBytes);
+                            packet.SenderId = stateObj.Id;
+                            PacketSubject.OnNext(packet);
+                        }
+                        pos = pos + len;
                     }
 
-                    packet.SenderId = stateObj.Id;
-                    PacketSubject.OnNext(packet);
+                    stateObj.offset = 0;
+                    handler.BeginReceive(stateObj.buffer, 0, StateObject.BufferSize, 0, new AsyncCallback(OnDataReceived), stateObj);
                 }
-
-                handler.BeginReceive(stateObj.buffer, 0, StateObject.BufferSize, 0, new AsyncCallback(OnDataReceived), stateObj);
+                else
+                {
+                    handler.Close();
+                    if (stateObj.IdRecived && ÑonfirmedConnections.ContainsKey(stateObj.Id))
+                    {
+                        ÑonfirmedConnections.Remove(stateObj.Id);
+                    }
+                }
             }
             catch (ObjectDisposedException)
             {
                 Console.WriteLine("OnDataReceived: Socket has been closed");
+                var stateObj = (StateObject)asyncResult.AsyncState;
+                var handler = stateObj.workSocket;
             }
             catch (SocketException se)
             {
@@ -150,9 +213,10 @@ namespace TcpMobile.Tcp
             {
                 var stateObj = (StateObject)asyncResult.AsyncState;
                 var handler = stateObj.workSocket;
-                if (handler.Connected)
+                if (handler != null && handler.Connected)
                 {
-                    handler.BeginReceive(stateObj.buffer, 0, StateObject.BufferSize, 0, new AsyncCallback(OnDataReceived), stateObj);
+                    stateObj.offset = 0;
+                    handler.BeginReceive(stateObj.buffer, stateObj.offset, StateObject.BufferSize, 0, new AsyncCallback(OnDataReceived), stateObj);
                 }
                 Console.WriteLine($"OnDataReceived unexpected: {e.Message}");
             }

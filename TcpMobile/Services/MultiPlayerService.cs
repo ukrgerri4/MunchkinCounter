@@ -18,17 +18,13 @@ namespace TcpMobile.Services
         private readonly IGameClient _gameClient;
         
         private ObservableCollection<Player> _players = new ObservableCollection<Player>();
-        
+        ObservableCollection<Player> IMultiPlayerService<Player>.Players => _players;
+
         private Subject<Unit> _destroy = new Subject<Unit>();
 
         public MultiPlayerService(IGameClient gameClient)
         {
             _gameClient = gameClient;
-        }
-
-        public ObservableCollection<Player> GetPlayers()
-        {
-            return _players;
         }
 
         public void StartUpdatePlayers()
@@ -59,7 +55,9 @@ namespace TcpMobile.Services
                     }
                     return players;
                 })
-                .Subscribe(updatedPlayers => UpdatePlayers(updatedPlayers));
+                .Subscribe(updatedPlayers => {
+                    UpdatePlayers(updatedPlayers);
+                });
         }
 
         public void UpdatePlayers(List<PlayerInfo> updatedPlayers)

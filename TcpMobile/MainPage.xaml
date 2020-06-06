@@ -6,14 +6,4 @@
             mc:Ignorable="d"
             x:Class="TcpMobile.MainPage">
 
-    <!--<MasterDetailPage.Master>
-        <NavigationPage>
-        </NavigationPage>
-    </MasterDetailPage.Master>
-
-    <MasterDetailPage.Detail>
-        <NavigationPage>
-        </NavigationPage>
-    </MasterDetailPage.Detail>-->
-    
 </MasterDetailPage>

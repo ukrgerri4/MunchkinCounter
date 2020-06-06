@@ -78,15 +78,19 @@ namespace TcpMobile.Tcp
                 var stateObj = (StateObject)asyncResult.AsyncState;
                 var handler = stateObj.workSocket;
 
+                if (handler == null || !handler.Connected || handler.Available == 0)
+                {
+                    return;
+                }
+
                 int bytesRead = handler.EndReceive(asyncResult);
 
                 if (bytesRead > 0)
                 {
                     var packet = new Packet(stateObj.buffer.Take(bytesRead).ToArray());
                     PacketSubject.OnNext(packet);
+                    handler.BeginReceive(stateObj.buffer, 0, StateObject.BufferSize, 0, new AsyncCallback(OnDataReceived), stateObj);
                 }
-
-                handler.BeginReceive(stateObj.buffer, 0, StateObject.BufferSize, 0, new AsyncCallback(OnDataReceived), stateObj);
             }
             catch (ObjectDisposedException)
             {
