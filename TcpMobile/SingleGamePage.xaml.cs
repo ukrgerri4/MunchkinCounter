@@ -1,5 +1,6 @@
 ﻿using GameMunchkin.Models;
 using Infrastracture.Interfaces.GameMunchkin;
+using Microsoft.Extensions.Configuration;
 using System;
 
 using Xamarin.Forms;
@@ -11,9 +12,15 @@ namespace TcpMobile
     public partial class SingleGamePage : ContentPage
     {
         public Player player = new Player();
+        private readonly IServiceProvider _serviceProvider;
+        private readonly IConfiguration _configuration;
 
-        public SingleGamePage()
+        public SingleGamePage(IServiceProvider serviceProvider,
+            IConfiguration configuration)
         {
+            _serviceProvider = serviceProvider;
+            _configuration = configuration;
+
             InitializeComponent();
 
             var userLevelBinding = new Binding { Source = player, Path = "Level" };

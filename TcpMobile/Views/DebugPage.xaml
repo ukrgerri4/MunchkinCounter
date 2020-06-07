@@ -4,12 +4,14 @@
              xmlns:d="http://xamarin.com/schemas/2014/forms/design"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
-             x:Class="TcpMobile.SettingsPage">
+             x:Class="TcpMobile.Views.DebugPage">
     <ContentPage.Content>
         <StackLayout VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand">
-            <StackLayout x:Name= "dataLayout" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand">
-
-            </StackLayout>
+            <!--<ScrollView>-->
+                <!--<StackLayout VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand">-->
+                    <ListView x:Name="debugConsoleView"></ListView>
+                <!--</StackLayout>-->
+            <!--</ScrollView>-->
             <Button Text="Close" Clicked="Close"></Button>
         </StackLayout>
     </ContentPage.Content>

@@ -12,7 +12,6 @@ namespace TcpMobile
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly IConfiguration _configuration;
-        private object LastSelectedItem;
 
         private ListView ListView;
         private SideBarMenuItem[] MenuItems;
@@ -23,25 +22,21 @@ namespace TcpMobile
             _configuration = configuration;
             InitializeComponent();
 
-            ListView = new ListView();
             MenuItems = new SideBarMenuItem[]
             {
-                new SideBarMenuItem { Type = MenuItemType.ServerPage, Name = "Server" },
-                new SideBarMenuItem { Type = MenuItemType.ClientPage, Name = "Client" },
-                new SideBarMenuItem { Type = MenuItemType.SingleGamePage, Name = "SingleGame" },
-                new SideBarMenuItem { Type = MenuItemType.MultiPlayerGamePage, Name = "MultiPlayerGame" },
-                new SideBarMenuItem { Type = MenuItemType.Settings, Name = "Settings" }
+                new SideBarMenuItem { Type = MenuItemType.ServerPage, Name = "CREATE" },
+                new SideBarMenuItem { Type = MenuItemType.JoinGamePage, Name = "JOIN" },
+                new SideBarMenuItem { Type = MenuItemType.SingleGamePage, Name = "SINGLE" },
+                new SideBarMenuItem { Type = MenuItemType.MultiPlayerGamePage, Name = "MULTIPLAYER" }
             };
 
+            ListView = new ListView();
             ListView.ItemsSource = MenuItems;
-
             var defaultPage = (MenuItemType)Convert.ToInt32(_configuration["DefaultPage"]);
             ListView.SelectedItem = MenuItems.FirstOrDefault(i => i.Type == defaultPage);
-            LastSelectedItem = ListView.SelectedItem;
-
             ListView.ItemTemplate = new DataTemplate(() =>
             {
-                Label titleLabel = new Label { FontSize = 20 };
+                Label titleLabel = new Label { FontSize = 20, VerticalTextAlignment = TextAlignment.Center };
                 titleLabel.SetBinding(Label.TextProperty, "Name");
 
                 return new ViewCell
@@ -50,32 +45,13 @@ namespace TcpMobile
                 };
             });
 
-            ListView.ItemSelected += async (sender, e) =>
+            ListView.ItemSelected += (sender, e) =>
             {
                 if (((SideBarMenuItem)(e?.SelectedItem))?.Type == null)
                     return;
 
                 var selectedType = ((SideBarMenuItem)e.SelectedItem).Type;
-
                 var mainPage = _serviceProvider.GetService<MainPage>();
-
-                if (selectedType == MenuItemType.Settings)
-                {
-                    var settingsPage = _serviceProvider.GetService<SettingsPage>();
-                    await Navigation.PushModalAsync(settingsPage, false);
-                    if (sender is ListView lv1)
-                    {
-                        lv1.SelectedItem = LastSelectedItem;
-                    }
-                    mainPage.IsPresented = false;
-                    return;
-                }
-
-                if (sender is ListView lv2)
-                {
-                    LastSelectedItem = lv2.SelectedItem;
-                }
-
                 mainPage.NavigateFromMenu(selectedType);
             };
 

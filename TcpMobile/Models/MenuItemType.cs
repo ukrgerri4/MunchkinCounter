@@ -6,7 +6,7 @@ namespace TcpMobile.Models
     {
         Default,
         ServerPage,
-        ClientPage,
+        JoinGamePage,
         SingleGamePage,
         MultiPlayerGamePage,
         Settings

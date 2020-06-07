@@ -1,4 +1,5 @@
-﻿using Infrastracture.Interfaces.GameMunchkin;
+﻿using Infrastracture.Interfaces;
+using Infrastracture.Interfaces.GameMunchkin;
 using System;
 using System.Reactive.Linq;
 
@@ -10,37 +11,32 @@ namespace TcpMobile
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class ServerPage : ContentPage
     {
+        private readonly IGameLogger _gameLogger;
         private readonly IGameServer _gameServer;
-        private readonly IGameClient _gameClient;
 
-        public ServerPage(IGameServer gameServer, IGameClient gameClient)
+        public ServerPage(IGameLogger gameLogger,
+            IGameServer gameServer)
         {
+            _gameLogger = gameLogger;
             _gameServer = gameServer;
-            _gameClient = gameClient;
+
             InitializeComponent();
 
-            ScrollView scrollView = new ScrollView();
-            scrollView.Content = stackLayout;
-            Content = scrollView;
-
-            var observable = _gameServer.PacketSubject
-                .AsObservable()
-                .Subscribe(packet => {
-                    Device.BeginInvokeOnMainThread(() =>
-                    {
-                        stackLayout.Children.Add(new Label { Text = $"Recived - {packet.MessageType}" });
-                    });
-                });
+            //var observable = _gameServer.PacketSubject
+            //    .AsObservable()
+            //    .Subscribe(packet => { });
         }
 
         private void StartBroadcast(object sender, EventArgs e)
         {
             _gameServer.StartBroadcast();
+            _gameLogger.Debug("Started broadcast");
         }
 
         private void StopBroadcast(object sender, EventArgs e)
         {
             _gameServer.StopBroadcast();
+            _gameLogger.Debug("Stoped broadcast");
         }
     }
 }

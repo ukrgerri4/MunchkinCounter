@@ -1,4 +1,5 @@
 ﻿using Core.Models;
+using Infrastracture.Interfaces;
 using Infrastracture.Interfaces.GameMunchkin;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -17,11 +18,12 @@ namespace TcpMobile.Tcp
 
         private Socket _mainTcpSocket;
         private Socket _mainUdpSocket;
-    
+        private readonly IGameLogger _gameLogger;
         private readonly IConfiguration _configuration;
 
-        public Client(IConfiguration configuration)
+        public Client(IGameLogger gameLogger, IConfiguration configuration)
         {
+            _gameLogger = gameLogger;
             _configuration = configuration;
         }
 
@@ -119,6 +121,7 @@ namespace TcpMobile.Tcp
             }
             catch (Exception e)
             {
+                _gameLogger.Error($"StartListeningBroadcast unexpected: {e.Message}");
                 Console.WriteLine($"StartListeningBroadcast unexpected: {e.Message}");
             }
         }
@@ -132,10 +135,11 @@ namespace TcpMobile.Tcp
             EndPoint clientEp = new IPEndPoint(IPAddress.Any, 0);
             int bytesRead = stateObj.workSocket.EndReceiveFrom(asyncResult, ref clientEp);
             
-            Console.WriteLine($"{clientEp} - [{bytesRead}]b");
+            _gameLogger.Debug($"{clientEp} - [{bytesRead}]b");
             if (bytesRead == 1 && stateObj.buffer[0] == 42) {
+                _gameLogger.Debug("Recieved [42] message");
                 StopListeningBroadcast();
-                Console.WriteLine($"Starting connect to - {((IPEndPoint)clientEp).Address}");
+                _gameLogger.Debug($"Starting connect to - {((IPEndPoint)clientEp).Address}");
                 Connect(((IPEndPoint)clientEp).Address);
                 return;
             }

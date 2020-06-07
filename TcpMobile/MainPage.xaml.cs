@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using TcpMobile.ExtendedComponents;
 using TcpMobile.Models;
 using Xamarin.Forms;
 
@@ -28,10 +29,10 @@ namespace TcpMobile
             MasterBehavior = MasterBehavior.Popover;
             MenuPages = new Dictionary<MenuItemType, Page>
             {
-                { MenuItemType.ServerPage, _serviceProvider.GetService<ServerPage>() },
-                { MenuItemType.ClientPage, _serviceProvider.GetService<ClientPage>() },
-                { MenuItemType.SingleGamePage, _serviceProvider.GetService<SingleGamePage>() },
-                { MenuItemType.MultiPlayerGamePage, _serviceProvider.GetService<MultiPlayerGamePage>() }
+                { MenuItemType.ServerPage, new MunchkinNavigationPage(_serviceProvider.GetService<ServerPage>(), _serviceProvider) },
+                { MenuItemType.JoinGamePage, new MunchkinNavigationPage(_serviceProvider.GetService<JoinGamePage>(), _serviceProvider) },
+                { MenuItemType.SingleGamePage, new MunchkinNavigationPage(_serviceProvider.GetService<SingleGamePage>(), _serviceProvider) },
+                { MenuItemType.MultiPlayerGamePage, new MunchkinNavigationPage(_serviceProvider.GetService<MultiPlayerGamePage>(), _serviceProvider) }
             };
 
             var defaultPage = (MenuItemType)Convert.ToInt32(_configuration["DefaultPage"]);

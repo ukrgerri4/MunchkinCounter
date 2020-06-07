@@ -11,13 +11,16 @@ namespace TcpMobile
     {
         private readonly System.IServiceProvider _serviceProvider;
         private readonly IConfiguration _configuration;
-        private Subject<Unit> _destroy = new Subject<Unit>();
+        private readonly IGameLogger _gameLogger;
 
-        public App(System.IServiceProvider serviceProvider, IConfiguration configuration)
+        public App(System.IServiceProvider serviceProvider,
+            IConfiguration configuration,
+            IGameLogger gameLogger)
         {
             _serviceProvider = serviceProvider;
             _configuration = configuration;
-            
+            _gameLogger = gameLogger;
+
             InitializeComponent();
 
             MainPage = _serviceProvider.GetService<MainPage>();
@@ -25,97 +28,17 @@ namespace TcpMobile
 
         protected override void OnStart()
         {
-            //_gameService.GameServer.onServerStart += () =>
-            //{
-            //    Device.BeginInvokeOnMainThread(() =>
-            //    {
-            //        stackLayout.Children.Add(new Label { Text = _configuration["Environment"] });
-            //        var dnsName = Dns.GetHostName();
-            //        stackLayout.Children.Add(new Label { Text = dnsName });
-            //        var ips = Dns.GetHostAddresses(dnsName);
-            //        ips.ForEach(ip => stackLayout.Children.Add(new Label { Text = ip.ToString() }));
-            //        stackLayout.Children.Add(new Label { Text = _configuration["DeviceId"] }) ;
-            //    });
-            //};
-
-            //_gameService.GameServer.onClientConnect += (string remoteIp) =>
-            //{
-            //    Device.BeginInvokeOnMainThread(() =>
-            //    {
-            //        stackLayout.Children.Add(new Label { Text = remoteIp ?? "Empty remoteIp" });
-            //    });
-            //};
-
-            //_gameService.GameServer.onReceiveData += (Packet packet) =>
-            //{
-            //    var position = 3;
-            //    var playerInfo = new PlayerInfo();
-
-            //    switch (packet.MessageType) {
-            //        case MunchkinMessageType.InitInfo:
-            //            playerInfo.Level = packet.Buffer[position++];
-            //            playerInfo.Modifiers = packet.Buffer[position++];
-
-            //            playerInfo.Id = Encoding.UTF8.GetString(packet.Buffer, position + 1, packet.Buffer[position]);
-            //            position += packet.Buffer[position];
-            //            position++;
-
-            //            playerInfo.Name = Encoding.UTF8.GetString(packet.Buffer, position + 1, packet.Buffer[position]);
-            //            break;
-            //        case MunchkinMessageType.UpdatePlayerState:
-            //            playerInfo.Level = packet.Buffer[position++];
-            //            playerInfo.Modifiers = packet.Buffer[position++];
-            //            break;
-            //        case MunchkinMessageType.UpdatePlayerName:
-            //            playerInfo.Name = Encoding.UTF8.GetString(packet.Buffer, position + 1, packet.Buffer[position]);
-            //            break;
-            //        case MunchkinMessageType.UpdatePlayers:
-            //            var players = new List<PlayerInfo>();
-            //            var playersCount = packet.Buffer[position++];
-            //            for(byte i = 0; i < playersCount; i++)
-            //            {
-            //                var p = new PlayerInfo();
-            //                p.Level = packet.Buffer[position++];
-            //                p.Modifiers = packet.Buffer[position++];
-
-            //                p.Id = Encoding.UTF8.GetString(packet.Buffer, position + 1, packet.Buffer[position]);
-            //                position += packet.Buffer[position];
-            //                position++;
-
-            //                p.Name = Encoding.UTF8.GetString(packet.Buffer, position + 1, packet.Buffer[position]);
-            //                position += packet.Buffer[position];
-            //                position++;
-            //                players.Add(p);
-            //            }
-            //            Device.BeginInvokeOnMainThread(() =>
-            //            {
-            //                foreach(var p in players)
-            //                {
-            //                    stackLayout.Children.Add(new Label { Text = p.ToString() ?? "Empty data" });
-            //                }
-            //            });
-
-            //            break;
-            //        default:
-            //            // error
-            //            break;
-            //    }
-
-            //    Device.BeginInvokeOnMainThread(() =>
-            //    {
-            //        stackLayout.Children.Add(new Label { Text = playerInfo.ToString() ?? "Empty data" });
-            //    });
-            //};
-
-            //_gameService.GameServer.Start(9999);
+            _gameLogger.Debug("Game started");
         }
 
         protected override void OnSleep()
         {
+            _gameLogger.Debug("Game go sleep");
         }
 
         protected override void OnResume()
         {
+            _gameLogger.Debug("Game resumed");
         }
     }
 }

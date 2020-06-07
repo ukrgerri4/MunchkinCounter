@@ -1,4 +1,5 @@
 ﻿using GameMunchkin.Models;
+using Infrastracture.Interfaces;
 using Infrastracture.Interfaces.GameMunchkin;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,6 +10,7 @@ using System.Collections.Generic;
 using System.IO;
 using TcpMobile.Services;
 using TcpMobile.Tcp;
+using TcpMobile.Views;
 using Xamarin.Essentials;
 
 namespace TcpMobile.Droid
@@ -61,15 +63,19 @@ namespace TcpMobile.Droid
             services.AddSingleton<MenuPage>();
             services.AddSingleton<SingleGamePage>();
             services.AddSingleton<SettingsPage>();
+            services.AddSingleton<DebugPage>();
 
-            services.AddTransient<ServerPage>();
-            services.AddTransient<ClientPage>();
-            services.AddTransient<MultiPlayerGamePage>();
+
+            services.AddSingleton<ServerPage>();
+            services.AddSingleton<JoinGamePage>();
+            services.AddSingleton<MultiPlayerGamePage>();
 
             services.AddSingleton<IGameServer, Server>();
             services.AddSingleton<IGameClient, Client>();
             services.AddSingleton(typeof(IMultiPlayerService<Player>), typeof(MultiPlayerService));
             services.AddSingleton<ServerPlayersData>();
+
+            services.AddSingleton<IGameLogger, GameLogger>();
         }
     }
 }
