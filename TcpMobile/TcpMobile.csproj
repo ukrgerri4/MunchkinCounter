@@ -24,10 +24,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Update="JoinGamePage.xaml">
+    <EmbeddedResource Update="Views\JoinGamePage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="MenuPage.xaml">
+    <EmbeddedResource Update="Views\MenuPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="MultiPlayerGamePage.xaml">
@@ -36,10 +36,10 @@
     <EmbeddedResource Update="ServerPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="SettingsPage.xaml">
+    <EmbeddedResource Update="Views\SettingsPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="SingleGamePage.xaml">
+    <EmbeddedResource Update="Views\SingleGamePage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="Views\DebugPage.xaml">

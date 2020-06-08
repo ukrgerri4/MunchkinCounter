@@ -76,6 +76,8 @@ namespace TcpMobile.Droid
             services.AddSingleton<ServerPlayersData>();
 
             services.AddSingleton<IGameLogger, GameLogger>();
+            services.AddSingleton<IBrightnessService, AndroidBrightnessService>();
+            
         }
     }
 }

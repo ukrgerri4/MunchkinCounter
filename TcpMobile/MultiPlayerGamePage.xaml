@@ -36,8 +36,8 @@
             Grid.Row="0"
             HorizontalOptions="FillAndExpand"
             VerticalOptions="FillAndExpand">
-            <Entry x:Name="ipEntry" Placeholder="enter IP"></Entry>
-            <Entry x:Name="portEntry" Placeholder="enter port"></Entry>
+            <Entry x:Name="ipEntry" Placeholder="enter IP" Text="192.168.0.10"></Entry>
+            <Entry x:Name="portEntry" Placeholder="enter port" Text="42420"></Entry>
             <Button Text="Connect" HorizontalOptions="Center" Clicked="TryConnect"></Button>
             <Button Text="Disconnect" HorizontalOptions="Center" Clicked="TryDisconnect"></Button>
             <Button Text="Back" HorizontalOptions="Center" VerticalOptions="End" Clicked="BackToMenu"></Button>

@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             x:Class="TcpMobile.SettingsPage">
+    <ContentPage.Content>
+        <StackLayout VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand" Padding="20" >
+            <StackLayout x:Name="infoBlock" VerticalOptions="Start" HorizontalOptions="Start">
+                
+            </StackLayout>
+            
+            <StackLayout x:Name="commonSettings" VerticalOptions="Start" HorizontalOptions="Start">
+                <StackLayout x:Name="sleepModeSettings" Orientation="Horizontal" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand">
+                    <Switch x:Name="sleepModeSwitch" IsToggled="{Binding SleepModeSwitchValue, Mode=TwoWay}" Toggled="ToggleSleepMode"></Switch>
+                    <Label Text="Screen sleep mode off">
+                        <Label.Triggers>
+                            <DataTrigger TargetType="Label" Binding="{Binding Source={x:Reference sleepModeSwitch}, Path=IsToggled}" Value="false">
+                                <Setter Property="TextColor" Value="LightGray" />
+                            </DataTrigger>
+                        </Label.Triggers>
+                    </Label>
+                </StackLayout>
+            </StackLayout>
+            <Button Text="Close" Clicked="CloseModal" VerticalOptions="EndAndExpand" HorizontalOptions="Center"></Button>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

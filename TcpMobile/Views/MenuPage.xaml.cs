@@ -36,7 +36,12 @@ namespace TcpMobile
             ListView.SelectedItem = MenuItems.FirstOrDefault(i => i.Type == defaultPage);
             ListView.ItemTemplate = new DataTemplate(() =>
             {
-                Label titleLabel = new Label { FontSize = 20, VerticalTextAlignment = TextAlignment.Center };
+                Label titleLabel = new Label {
+                    FontSize = 20,
+                    VerticalTextAlignment = TextAlignment.Center,
+                    Padding = new Thickness(10, 0, 0, 0),
+                    FontAttributes = FontAttributes.Bold
+                };
                 titleLabel.SetBinding(Label.TextProperty, "Name");
 
                 return new ViewCell

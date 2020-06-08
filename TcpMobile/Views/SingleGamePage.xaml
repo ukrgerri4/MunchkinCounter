@@ -7,12 +7,12 @@
              x:Class="TcpMobile.SingleGamePage">
     <Grid RowSpacing="0" ColumnSpacing="0">
         <Grid.RowDefinitions>
-            <RowDefinition Height="2*" />
-            <RowDefinition Height="2*" />
-            <RowDefinition Height="2*" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="3*" />
+            <ColumnDefinition Width="2*" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
         <StackLayout Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
@@ -55,8 +55,8 @@
                 <Label HorizontalTextAlignment="Center" Rotation="180">LVL</Label>
         </StackLayout>
 
-        <StackLayout Grid.Row="2" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
-            <StackLayout HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
+        <FlexLayout Grid.Row="2" Grid.ColumnSpan="2" Direction="Row" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
+            <StackLayout FlexLayout.Basis="33.33%" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
                 <Button Text="Up" Clicked="IncreaseLevel"></Button>
                 <Label
                     x:Name="userLevelLabel"
@@ -67,7 +67,7 @@
                     VerticalOptions="FillAndExpand"></Label>
                 <Button Text="Down" Clicked="DecreaseLevel"></Button>
             </StackLayout>
-            <StackLayout HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
+            <StackLayout FlexLayout.Basis="33.33%" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
                 <Button Text="Up" Clicked="IncreaseModifiers"></Button>
                 <Label 
                     x:Name="userModifyersLabel"
@@ -78,7 +78,7 @@
                     VerticalOptions="FillAndExpand"></Label>
                 <Button Text="Down" Clicked="DecreaseModifiers"></Button>
             </StackLayout>
-            <StackLayout HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
+            <StackLayout FlexLayout.Basis="33.33%" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
                 <Label 
                     x:Name="userPowerLabel"
                     FontSize="30"
@@ -87,7 +87,7 @@
                     HorizontalOptions="FillAndExpand"
                     VerticalOptions="FillAndExpand"></Label>
             </StackLayout>
-        </StackLayout>
+        </FlexLayout>
 
     </Grid>
 </ContentPage>
