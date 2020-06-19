@@ -5,30 +5,35 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
              x:Class="TcpMobile.JoinGamePage">
-    <Grid RowSpacing="0" ColumnSpacing="0">
+    <Grid RowSpacing="5" ColumnSpacing="0" BackgroundColor="Gray" Padding="5">
         <Grid.RowDefinitions>
             <RowDefinition Height="2*" />
             <RowDefinition Height="1*" />
         </Grid.RowDefinitions>
         
-        <ScrollView>
-            <StackLayout
-                Grid.Row="0"
-                HorizontalOptions="FillAndExpand"
-                VerticalOptions="FillAndExpand">
-                <ListView x:Name="hostsView">
+        <StackLayout Grid.Row="0" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" BackgroundColor="White">
+            <ListView x:Name="hostsView" HasUnevenRows="True" ItemsSource="{Binding Hosts}">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <ViewCell.View>
+                                <StackLayout Orientation="Horizontal" VerticalOptions="Center">
+                                    <Label Text="{Binding Id}"/>
+                                    <Label Text="{Binding Name}" />
+                                    <Label Text="{Binding Сapacity}" />
+                                    <Label Text="{Binding Fullness}" />
+                                </StackLayout>
+                            </ViewCell.View>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </StackLayout>
 
-                </ListView>
-            </StackLayout>
-        </ScrollView>
-
-        <StackLayout
-            x:Name="buttonsLayout"
-            Grid.Row="1"
-            HorizontalOptions="Center"
-            VerticalOptions="Center">
-            <Button Text="Refresh hosts" HorizontalOptions="Center" VerticalOptions="Center" Clicked="RefreshHosts"></Button>
-            <Button Text="Connect" HorizontalOptions="Center" VerticalOptions="Center" Clicked="Connect"></Button>
+        <StackLayout x:Name="buttonsLayout" Grid.Row="1" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" BackgroundColor="White">
+            <Button Text="Refresh hosts" HorizontalOptions="Center" VerticalOptions="CenterAndExpand" Clicked="RefreshHosts"></Button>
+            <Button Text="Connect" HorizontalOptions="Center" VerticalOptions="CenterAndExpand" Clicked="Connect"></Button>
         </StackLayout>
     </Grid>
+
 </ContentPage>

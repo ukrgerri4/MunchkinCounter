@@ -12,10 +12,10 @@ namespace TcpMobile
     public partial class ServerPage : ContentPage
     {
         private readonly IGameLogger _gameLogger;
-        private readonly IGameServer _gameServer;
+        private readonly ILanServer _gameServer;
 
         public ServerPage(IGameLogger gameLogger,
-            IGameServer gameServer)
+            ILanServer gameServer)
         {
             _gameLogger = gameLogger;
             _gameServer = gameServer;
@@ -29,13 +29,13 @@ namespace TcpMobile
 
         private void StartBroadcast(object sender, EventArgs e)
         {
-            _gameServer.StartBroadcast();
+            _gameServer.StartUdpServer();
             _gameLogger.Debug("Started broadcast");
         }
 
         private void StopBroadcast(object sender, EventArgs e)
         {
-            _gameServer.StopBroadcast();
+            _gameServer.StopUdpServer();
             _gameLogger.Debug("Stoped broadcast");
         }
     }

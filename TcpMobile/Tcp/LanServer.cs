@@ -1,5 +1,7 @@
 using Core.Models;
+using Infrastracture.Interfaces;
 using Infrastracture.Interfaces.GameMunchkin;
+using Infrastracture.Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -8,17 +10,17 @@ using System.Net;
 using System.Net.Sockets;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
 using TcpMobile.Tcp.Models;
-using Xamarin.Forms.Internals;
 
 namespace TcpMobile.Tcp
 {
-    public class Server: IGameServer
+    public class LanServer: ILanServer
     {
+        private readonly IGameLogger _gameLogger;
+
         private readonly byte[] UDP_BROADCAST_MESSAGE = { 42 };
-        public Subject<Packet> PacketSubject { get; set; } = new Subject<Packet>();
+
+        public Subject<TcpEvent> PacketSubject { get; set; } = new Subject<TcpEvent>();
 
         private Subject<Socket> _udpSubject;
 
@@ -29,15 +31,17 @@ namespace TcpMobile.Tcp
         public delegate void ClientDisconnectCallback();
         public delegate void ReceiveDataCallback(Packet packet);
 
-        public ServerStartCallback onServerStart { get; set; }
-        public ClientConnectCallback onClientConnect { get; set; }
-        public ClientDisconnectCallback onClientDisconnect { get; set; }
-        public ReceiveDataCallback onReceiveData { get; set; }
-
         private Socket _mainTcpSocket;
         
         private Socket _mainUdpSocket;
         private IPEndPoint udpClientEP = new IPEndPoint(IPAddress.Broadcast, 42424);
+
+        //private byte[] _broadcastMessage = new byte[] { 3, 0, 1 };
+
+        public LanServer(IGameLogger gameLogger)
+        {
+            _gameLogger = gameLogger;
+        }
 
         public bool IsListening
         {
@@ -49,27 +53,30 @@ namespace TcpMobile.Tcp
                     return _mainTcpSocket.IsBound;
             }
         }
-        public void Start(int port = 42420)
+        public void StartTcpServer(int port = 42420)
         {
             try
             {
-                Stop();
+                StopTcpServer();
 
                 _mainTcpSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                 _mainTcpSocket.Bind(new IPEndPoint(IPAddress.Any, port));
                 _mainTcpSocket.Listen(100);
+
+                _gameLogger.Debug($"Start server: [{_mainTcpSocket.LocalEndPoint}]");
+
                 _mainTcpSocket.BeginAccept(new AsyncCallback(OnReceiveConnection), _mainTcpSocket);
 
-                onServerStart?.Invoke();
+                PacketSubject?.OnNext(new TcpEvent { Type = TcpEventType.ServerStart });
             }
 
             catch (SocketException se)
             {
-                Console.WriteLine(se.Message);
+                _gameLogger.Debug(se.Message);
             }
         }
 
-        public void Stop()
+        public void StopTcpServer()
         {
             if (IsListening)
                 _mainTcpSocket.Close();
@@ -92,12 +99,12 @@ namespace TcpMobile.Tcp
             }
             catch (ObjectDisposedException)
             {
-                Console.WriteLine("OnClientConnection: Socket has been closed");
+                _gameLogger.Debug("OnClientConnection: Socket has been closed");
             }
             catch (SocketException se)
             {
-                Console.WriteLine($"OnClientConnection: {se.Message}");
-                onClientDisconnect?.Invoke();
+                _gameLogger.Debug($"OnClientConnection: {se.Message}");
+                PacketSubject?.OnNext(new TcpEvent { Type = TcpEventType.ClientDisconnect });
             }
         }
 
@@ -117,7 +124,7 @@ namespace TcpMobile.Tcp
 
                 if (bytesRead > 0)
                 {
-                    Console.WriteLine($"Message len - {bytesRead}");
+                    _gameLogger.Debug($"Message len - {bytesRead}");
                     //var packet = new Packet(stateObj.buffer.Take(bytesRead).ToArray());
 
                     //if (!stateObj.IdRecived)
@@ -145,7 +152,7 @@ namespace TcpMobile.Tcp
                     var dataLength = bytesRead + stateObj.offset;
                     if (dataLength > StateObject.BufferSize)
                     {
-                        Console.WriteLine($"dataLength[{dataLength}] more than bufferSize[{StateObject.BufferSize}]");
+                        _gameLogger.Debug($"dataLength[{dataLength}] more than bufferSize[{StateObject.BufferSize}]");
                         dataLength = StateObject.BufferSize;
                     }
 
@@ -177,7 +184,7 @@ namespace TcpMobile.Tcp
                         {
                             var packet = new Packet(messageBytes);
                             packet.SenderId = stateObj.Id;
-                            PacketSubject.OnNext(packet);
+                            PacketSubject?.OnNext(new TcpEvent { Type = TcpEventType.ReceiveData, Data = packet } );
                         }
                         pos = pos + len;
                     }
@@ -196,18 +203,18 @@ namespace TcpMobile.Tcp
             }
             catch (ObjectDisposedException)
             {
-                Console.WriteLine("OnDataReceived: Socket has been closed");
+                _gameLogger.Error("OnDataReceived: Socket has been closed");
                 var stateObj = (StateObject)asyncResult.AsyncState;
                 var handler = stateObj.workSocket;
             }
             catch (SocketException se)
             {
-                Console.WriteLine($"OnDataReceived: {se.Message}");
-                onClientDisconnect?.Invoke();
+                _gameLogger.Error($"OnDataReceived: {se.Message}");
+                PacketSubject?.OnNext(new TcpEvent { Type = TcpEventType.ClientDisconnect });
             }
             catch (JsonReaderException jre)
             {
-                Console.WriteLine($"OnDataReceived: {jre.Message}");
+                _gameLogger.Error($"OnDataReceived: {jre.Message}");
             }
             catch (Exception e)
             {
@@ -218,7 +225,7 @@ namespace TcpMobile.Tcp
                     stateObj.offset = 0;
                     handler.BeginReceive(stateObj.buffer, stateObj.offset, StateObject.BufferSize, 0, new AsyncCallback(OnDataReceived), stateObj);
                 }
-                Console.WriteLine($"OnDataReceived unexpected: {e.Message}");
+                _gameLogger.Error($"OnDataReceived unexpected: {e.Message}");
             }
         }
 
@@ -231,10 +238,10 @@ namespace TcpMobile.Tcp
                     return Result.Fail<int>("Server soket is null.");
                 }
 
-                if (!_mainTcpSocket.Connected)
-                {
-                    return Result.Fail<int>("Server soket is not connected.");
-                }
+                //if (!_mainTcpSocket.Connected)
+                //{
+                //    return Result.Fail<int>("Server soket is not connected.");
+                //}
 
                 if (!ÑonfirmedConnections.ContainsKey(id))
                 {
@@ -243,7 +250,7 @@ namespace TcpMobile.Tcp
 
                 var remoteStateObj = ÑonfirmedConnections[id];
 
-                if (remoteStateObj.workSocket == null || remoteStateObj.workSocket.Connected)
+                if (remoteStateObj.workSocket == null || !remoteStateObj.workSocket.Connected)
                 {
                     return Result.Fail<int>("Remote soket is not connected.");
                 }
@@ -253,16 +260,16 @@ namespace TcpMobile.Tcp
             }
             catch (Exception e)
             {
-                Console.WriteLine($"SendMessage unexpected: {e.Message}");
+                _gameLogger.Error($"SendMessage unexpected: {e.Message}");
                 return Result.Fail<int>($"Unexpected: {e.Message}");
             }
         }
 
-        public void StartBroadcast()
+        public void StartUdpServer()
         {
             try
             {
-                StopBroadcast();
+                StopUdpServer();
 
                 _udpSubject = new Subject<Socket>();
 
@@ -270,38 +277,43 @@ namespace TcpMobile.Tcp
                 _mainUdpSocket.EnableBroadcast = true;
                 _mainUdpSocket.Bind(new IPEndPoint(IPAddress.Any, 0));
 
-                _udpSubject
-                    .AsObservable()
-                    .Throttle(TimeSpan.FromSeconds(1))
-                    .Finally(() =>
-                    {
-                        Console.WriteLine("_udpSubject closed.");
-                    })
-                    .Subscribe(socket =>
-                    {
-                        socket.BeginSendTo(UDP_BROADCAST_MESSAGE, 0, 1, SocketFlags.None, udpClientEP, new AsyncCallback(SendCallback), socket);
-                    });
+                //_udpSubject
+                //    .AsObservable()
+                //    .Throttle(TimeSpan.FromSeconds(1))
+                //    .Finally(() =>
+                //    {
+                //        _gameLogger.Debug("_udpSubject closed.");
+                //    })
+                //    .Subscribe(socket =>
+                //    {
+                //        socket.BeginSendTo(_broadcastMessage, 0, _broadcastMessage.Length, SocketFlags.None, udpClientEP, new AsyncCallback(SendCallback), socket);
+                //    });
 
-                if (_udpSubject != null && !_udpSubject.IsDisposed)
-                {
-                    _udpSubject.OnNext(_mainUdpSocket);
-                }
+                //if (_udpSubject != null && !_udpSubject.IsDisposed)
+                //{
+                //    _udpSubject.OnNext(_mainUdpSocket);
+                //}
             }
             catch (Exception e)
             {
-                Console.WriteLine($"StartBroadcast unexpected: {e.Message}");
+                _gameLogger.Error($"StartBroadcast unexpected: {e.Message}");
             }
+        }
+
+        public void BroadcastMessage(byte[] message)
+        {
+            _mainUdpSocket.BeginSendTo(message, 0, message.Length, SocketFlags.None, udpClientEP, new AsyncCallback(SendCallback), _mainUdpSocket);
         }
 
         private void SendCallback(IAsyncResult asyncResult)
         {
-            if (_udpSubject != null && !_udpSubject.IsDisposed)
-            {
-                _udpSubject.OnNext((Socket)asyncResult.AsyncState);
-            }
+            //if (_udpSubject != null && !_udpSubject.IsDisposed)
+            //{
+            //    _udpSubject.OnNext((Socket)asyncResult.AsyncState);
+            //}
         }
 
-        public void StopBroadcast()
+        public void StopUdpServer()
         {
             try
             {
@@ -315,7 +327,7 @@ namespace TcpMobile.Tcp
             }
             catch (Exception e)
             {
-                Console.WriteLine($"OnDataReceived unexpected: {e.Message}");
+                _gameLogger.Error($"OnDataReceived unexpected: {e.Message}");
                 _mainUdpSocket?.Close();
             }
         }

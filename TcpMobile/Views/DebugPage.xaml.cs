@@ -16,12 +16,18 @@ namespace TcpMobile.Views
 
             InitializeComponent();
 
-            debugConsoleView.HasUnevenRows = false;
-            debugConsoleView.RowHeight = 30;
+            debugConsoleView.HasUnevenRows = true;
             debugConsoleView.ItemsSource = _gameLogger.GetHistory();
             debugConsoleView.ItemTemplate = new DataTemplate(() => {
                 var dateLabel = new Label();
-                dateLabel.SetBinding(Label.TextProperty, "Date");
+                dateLabel.SetBinding(
+                    Label.TextProperty, 
+                    new Binding { 
+                        Path = "Date",
+                        Mode = BindingMode.OneWay,
+                        StringFormat = "{0:dd.MM HH:mm:ss}"
+                    }
+                );
                 dateLabel.Padding = new Thickness(0, 0, 10, 0);
 
                 var messageLabel = new Label();

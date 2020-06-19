@@ -1,4 +1,5 @@
 ﻿using GameMunchkin.Models;
+using Infrastracture.Interfaces;
 using Infrastracture.Interfaces.GameMunchkin;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -71,21 +72,27 @@ namespace TcpMobile
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class MultiPlayerGamePage : ContentPage
     {
+        private readonly IGameLogger _gameLogger;
         private readonly IConfiguration _configuration;
         private readonly IMultiPlayerService<Player> _multiPlayerService;
-        private readonly IGameClient _gameClient;
-        private readonly IGameServer _gameServer;
+        private readonly ILanClient _gameClient;
+        private readonly ILanServer _gameServer;
         private readonly ServerPlayersData _serverPlayersData;
+        
         public Player player;
-
         public MultiPlayerViewModel multiPlayerViewModel;
 
-        public MultiPlayerGamePage(IConfiguration configuration,
+        private IDisposable subscriber;
+
+        public MultiPlayerGamePage(
+            IGameLogger gameLogger,
+            IConfiguration configuration,
             IMultiPlayerService<Player> multiPlayerService,
-            IGameClient gameClient,
-            IGameServer gameServer,
+            ILanClient gameClient,
+            ILanServer gameServer,
             ServerPlayersData serverPlayersData)
         {
+            _gameLogger = gameLogger;
             _configuration = configuration;
             _multiPlayerService = multiPlayerService;
             _gameClient = gameClient;
@@ -229,16 +236,47 @@ namespace TcpMobile
 
             if (!started)
             {
-                _gameServer.Start();
+                _gameServer.StartTcpServer();
+                _gameServer.StartUdpServer();
+                
+                subscriber?.Dispose();
+                subscriber = Observable.Interval(TimeSpan.FromSeconds(1))
+                    .Throttle(TimeSpan.FromSeconds(1))
+                    .Finally(() => { _gameLogger.Debug("Test obs end."); })
+                    .Select(data => {
+                        using (MemoryStream memoryStream = new MemoryStream())
+                        {
+                            memoryStream.Write(BitConverter.GetBytes((ushort)0), 0, 2);
+                            memoryStream.WriteByte((byte)MunchkinMessageType.HostFound);
+
+                            var byteId = Encoding.UTF8.GetBytes(player.Id ?? string.Empty);
+                            memoryStream.WriteByte((byte)byteId.Length);
+                            memoryStream.Write(byteId, 0, byteId.Length);
+
+                            var byteName = Encoding.UTF8.GetBytes(player.Name ?? string.Empty);
+                            memoryStream.WriteByte((byte)byteName.Length);
+                            memoryStream.Write(byteName, 0, byteName.Length);
+
+                            memoryStream.WriteByte(player.Level);
+                            memoryStream.WriteByte(player.Modifiers);
+
+                            memoryStream.Seek(0, SeekOrigin.Begin);
+                            memoryStream.Write(BitConverter.GetBytes((ushort)memoryStream.Length), 0, 2);
+                            memoryStream.Seek(0, SeekOrigin.End);
+
+                            var message = memoryStream.ToArray();
+                        }
+
+                        return new byte[5];
+                    })
+                    .Subscribe(message =>
+                    {
+                        _gameServer.BroadcastMessage(message);
+                    });
                 started = true;
             }
-            //_multiPlayerService.Players.Add(player);
-
             var hostAddresses = Dns.GetHostAddresses(Dns.GetHostName());
-
             Console.WriteLine(string.Join(",", hostAddresses.Select(ip => ip.ToString())));
-
-            //_gameServer.StartBroadcast();
         }
 
         private void JoinRoom(object sender, EventArgs e)

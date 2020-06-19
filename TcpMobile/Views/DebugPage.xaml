@@ -7,11 +7,7 @@
              x:Class="TcpMobile.Views.DebugPage">
     <ContentPage.Content>
         <StackLayout VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand">
-            <!--<ScrollView>-->
-                <!--<StackLayout VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand">-->
-                    <ListView x:Name="debugConsoleView"></ListView>
-                <!--</StackLayout>-->
-            <!--</ScrollView>-->
+            <ListView x:Name="debugConsoleView"></ListView>
             <Button Text="Close" Clicked="Close"></Button>
         </StackLayout>
     </ContentPage.Content>

@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             x:Class="TcpMobile.Views.CreateGamePage">
+    <ContentPage.Content>
+        <StackLayout>
+            <StackLayout
+                x:Name="creatingGameLayout"
+                IsVisible="{Binding CreatingGame}"
+                HorizontalOptions="FillAndExpand"
+                VerticalOptions="FillAndExpand">
+                <Entry x:Name="hostName" Placeholder="enter host name" Text="{Binding HostName}"></Entry>
+                <Entry x:Name="hostСapacity" Placeholder="enter max players" Text="{Binding HostСapacity}"></Entry>
+                <Entry x:Name="playerName" Placeholder="enter your name" Text="{Binding Player.Name}"></Entry>
+                <Button Text="Create" HorizontalOptions="Center" VerticalOptions="EndAndExpand" Clicked="TryCreate"></Button>
+            </StackLayout>
+            <StackLayout
+                x:Name="waitingPlayersLayout"
+                IsVisible="{Binding WaitingPlayers}"
+                HorizontalOptions="FillAndExpand"
+                VerticalOptions="FillAndExpand">
+                <ListView x:Name="connectedPlayersView" HasUnevenRows="True" ItemsSource="{Binding Players}">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <ViewCell>
+                                <ViewCell.View>
+                                    <StackLayout Orientation="Horizontal" VerticalOptions="Center">
+                                        <Label Text="{Binding Id}"/>
+                                        <Label Text="{Binding Name}" />
+                                        <Label Text="{Binding Level}" />
+                                        <Label Text="{Binding Modifiers}" />
+                                    </StackLayout>
+                                </ViewCell.View>
+                            </ViewCell>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+                <Button Text="Start" HorizontalOptions="Center" VerticalOptions="EndAndExpand" Clicked="TryStart"></Button>
+            </StackLayout>
+            <StackLayout
+                x:Name="processLayout"
+                IsVisible="{Binding Process}"
+                HorizontalOptions="FillAndExpand"
+                VerticalOptions="FillAndExpand">
+                
+            </StackLayout>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

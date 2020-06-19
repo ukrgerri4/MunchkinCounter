@@ -2,6 +2,6 @@
 {
     public static class PreferencesKey
     {
-        public const string KeepScreenOn = "ks_off";
+        public const string KeepScreenOn = "ks_on";
     }
 }

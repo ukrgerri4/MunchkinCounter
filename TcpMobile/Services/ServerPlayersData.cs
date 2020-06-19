@@ -1,5 +1,6 @@
 ﻿using GameMunchkin.Models;
 using Infrastracture.Interfaces.GameMunchkin;
+using Infrastracture.Models;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -16,7 +17,7 @@ namespace TcpMobile.Services
 {
     public class ServerPlayersData
     {
-        private readonly IGameServer _gameServer;
+        private readonly ILanServer _gameServer;
         private readonly IMultiPlayerService<Player> _multiPlayerService;
 
         public ConcurrentDictionary<string, PlayerInfo> KnownPlayers { get; set; } = new ConcurrentDictionary<string, PlayerInfo>();
@@ -24,127 +25,131 @@ namespace TcpMobile.Services
 
         private Subject<Unit> _updatePlayersSubject = new Subject<Unit>();
 
-        public ServerPlayersData(IGameServer gameServer, IMultiPlayerService<Player> multiPlayerService)
+        public ServerPlayersData(ILanServer gameServer, IMultiPlayerService<Player> multiPlayerService)
         {
             _gameServer = gameServer;
             _multiPlayerService = multiPlayerService;
-            _updatePlayersSubject.AsObservable()
-                .Throttle(TimeSpan.FromMilliseconds(500))
-                .Subscribe(_ =>
-                {
-                    var players = PlayersInGame.Values.ToList();
 
-                    using (MemoryStream memoryStream = new MemoryStream())
-                    {
-                        memoryStream.Write(BitConverter.GetBytes((ushort)0), 0, 2);
-                        memoryStream.WriteByte((byte)MunchkinMessageType.UpdatePlayers);
-                        memoryStream.WriteByte((byte)players.Count);
+            //_updatePlayersSubject.AsObservable()
+            //    .Throttle(TimeSpan.FromMilliseconds(500))
+            //    .Subscribe(_ =>
+            //    {
+            //        var players = PlayersInGame.Values.ToList();
 
-                        foreach (var player in players)
-                        {
-                            var byteId = Encoding.UTF8.GetBytes(player.Id ?? string.Empty);
-                            memoryStream.WriteByte((byte)byteId.Length);
-                            memoryStream.Write(byteId, 0, byteId.Length);
+            //        using (MemoryStream memoryStream = new MemoryStream())
+            //        {
+            //            memoryStream.Write(BitConverter.GetBytes((ushort)0), 0, 2);
+            //            memoryStream.WriteByte((byte)MunchkinMessageType.UpdatePlayers);
+            //            memoryStream.WriteByte((byte)players.Count);
 
-                            var byteName = Encoding.UTF8.GetBytes(player.Name ?? string.Empty);
-                            memoryStream.WriteByte((byte)byteName.Length);
-                            memoryStream.Write(byteName, 0, byteName.Length);
+            //            foreach (var player in players)
+            //            {
+            //                var byteId = Encoding.UTF8.GetBytes(player.Id ?? string.Empty);
+            //                memoryStream.WriteByte((byte)byteId.Length);
+            //                memoryStream.Write(byteId, 0, byteId.Length);
 
-                            memoryStream.WriteByte(player.Level);
-                            memoryStream.WriteByte(player.Modifiers);
-                        }
+            //                var byteName = Encoding.UTF8.GetBytes(player.Name ?? string.Empty);
+            //                memoryStream.WriteByte((byte)byteName.Length);
+            //                memoryStream.Write(byteName, 0, byteName.Length);
 
-                        memoryStream.Seek(0, SeekOrigin.Begin);
-                        memoryStream.Write(BitConverter.GetBytes((ushort)memoryStream.Length), 0, 2);
-                        memoryStream.Seek(0, SeekOrigin.End);
+            //                memoryStream.WriteByte(player.Level);
+            //                memoryStream.WriteByte(player.Modifiers);
+            //            }
 
-                        var message = memoryStream.ToArray();
+            //            memoryStream.Seek(0, SeekOrigin.Begin);
+            //            memoryStream.Write(BitConverter.GetBytes((ushort)memoryStream.Length), 0, 2);
+            //            memoryStream.Seek(0, SeekOrigin.End);
 
-                        foreach (var player in players)
-                        {
-                            _gameServer.SendMessage(player.Id, message);
-                        }
-                        _multiPlayerService.UpdatePlayers(players);
-                    }
-                });
+            //            var message = memoryStream.ToArray();
 
-            _gameServer.PacketSubject.AsObservable()
-                .Where(packet => packet.MessageType == MunchkinMessageType.InitInfo ||
-                    packet.MessageType == MunchkinMessageType.UpdatePlayerState ||
-                    packet.MessageType == MunchkinMessageType.UpdatePlayerName)
-                .Subscribe(packet =>
-                {
-                    var position = 3;
+            //            foreach (var player in players)
+            //            {
+            //                _gameServer.SendMessage(player.Id, message);
+            //            }
+            //            _multiPlayerService.UpdatePlayers(players);
+            //        }
+            //    });
 
-                    switch (packet.MessageType)
-                    {
-                        case MunchkinMessageType.InitInfo:
-                            var playerInfo = new PlayerInfo();
+            //_gameServer.PacketSubject.AsObservable()
+            //    .Where(tcpEvent => tcpEvent.Type == TcpEventType.ReceiveData)
+            //    .Where(tcpEvent => tcpEvent.Data != null)
+            //    .Where(tcpEvent => tcpEvent.Data.MessageType == MunchkinMessageType.InitInfo ||
+            //        tcpEvent.Data.MessageType == MunchkinMessageType.UpdatePlayerState ||
+            //        tcpEvent.Data.MessageType == MunchkinMessageType.UpdatePlayerName)
+            //    .Subscribe(tcpEvent =>
+            //    {
+            //        var packet = tcpEvent.Data;
+            //        var position = 3;
 
-                            playerInfo.Id = Encoding.UTF8.GetString(packet.Buffer, position + 1, packet.Buffer[position]);
-                            position += packet.Buffer[position];
-                            position++;
+            //        switch (packet.MessageType)
+            //        {
+            //            case MunchkinMessageType.InitInfo:
+            //                var playerInfo = new PlayerInfo();
 
-                            playerInfo.Name = Encoding.UTF8.GetString(packet.Buffer, position + 1, packet.Buffer[position]);
-                            position += packet.Buffer[position];
-                            position++;
+            //                playerInfo.Id = Encoding.UTF8.GetString(packet.Buffer, position + 1, packet.Buffer[position]);
+            //                position += packet.Buffer[position];
+            //                position++;
 
-                            playerInfo.Level = packet.Buffer[position++];
-                            playerInfo.Modifiers = packet.Buffer[position++];
+            //                playerInfo.Name = Encoding.UTF8.GetString(packet.Buffer, position + 1, packet.Buffer[position]);
+            //                position += packet.Buffer[position];
+            //                position++;
 
-                            if (packet.SenderId != playerInfo.Id)
-                            {
-                                // log some warning
-                            }
+            //                playerInfo.Level = packet.Buffer[position++];
+            //                playerInfo.Modifiers = packet.Buffer[position++];
 
-                            if (!KnownPlayers.TryAdd(packet.SenderId, playerInfo))
-                            {
-                                KnownPlayers[packet.SenderId].Name = playerInfo.Name;
-                                KnownPlayers[packet.SenderId].Level = playerInfo.Level;
-                                KnownPlayers[packet.SenderId].Modifiers = playerInfo.Modifiers;
-                            }
+            //                if (packet.SenderId != playerInfo.Id)
+            //                {
+            //                    // log some warning
+            //                }
 
-                            if (!PlayersInGame.TryAdd(packet.SenderId, playerInfo))
-                            {
-                                PlayersInGame[packet.SenderId].Name = playerInfo.Name;
-                                PlayersInGame[packet.SenderId].Level = playerInfo.Level;
-                                PlayersInGame[packet.SenderId].Modifiers = playerInfo.Modifiers;
-                            }
+            //                if (!KnownPlayers.TryAdd(packet.SenderId, playerInfo))
+            //                {
+            //                    KnownPlayers[packet.SenderId].Name = playerInfo.Name;
+            //                    KnownPlayers[packet.SenderId].Level = playerInfo.Level;
+            //                    KnownPlayers[packet.SenderId].Modifiers = playerInfo.Modifiers;
+            //                }
 
-                            break;
-                        case MunchkinMessageType.UpdatePlayerState:
-                            var level = packet.Buffer[position++];
-                            var modifiers = packet.Buffer[position++];
+            //                if (!PlayersInGame.TryAdd(packet.SenderId, playerInfo))
+            //                {
+            //                    PlayersInGame[packet.SenderId].Name = playerInfo.Name;
+            //                    PlayersInGame[packet.SenderId].Level = playerInfo.Level;
+            //                    PlayersInGame[packet.SenderId].Modifiers = playerInfo.Modifiers;
+            //                }
 
-                            if (KnownPlayers.ContainsKey(packet.SenderId))
-                            {
-                                KnownPlayers[packet.SenderId].Level = level;
-                                KnownPlayers[packet.SenderId].Modifiers = modifiers;
-                            }
+            //                break;
+            //            case MunchkinMessageType.UpdatePlayerState:
+            //                var level = packet.Buffer[position++];
+            //                var modifiers = packet.Buffer[position++];
 
-                            if (PlayersInGame.ContainsKey(packet.SenderId))
-                            {
-                                PlayersInGame[packet.SenderId].Level = level;
-                                PlayersInGame[packet.SenderId].Modifiers = modifiers;
-                            }
+            //                if (KnownPlayers.ContainsKey(packet.SenderId))
+            //                {
+            //                    KnownPlayers[packet.SenderId].Level = level;
+            //                    KnownPlayers[packet.SenderId].Modifiers = modifiers;
+            //                }
 
-                            break;
-                        case MunchkinMessageType.UpdatePlayerName:
-                            var name = Encoding.UTF8.GetString(packet.Buffer, position + 1, packet.Buffer[position]);
-                            if (KnownPlayers.ContainsKey(packet.SenderId))
-                            {
-                                KnownPlayers[packet.SenderId].Name = name;
-                            }
+            //                if (PlayersInGame.ContainsKey(packet.SenderId))
+            //                {
+            //                    PlayersInGame[packet.SenderId].Level = level;
+            //                    PlayersInGame[packet.SenderId].Modifiers = modifiers;
+            //                }
 
-                            if (PlayersInGame.ContainsKey(packet.SenderId))
-                            {
-                                PlayersInGame[packet.SenderId].Name = name;
-                            }
-                            break;
-                    }
+            //                break;
+            //            case MunchkinMessageType.UpdatePlayerName:
+            //                var name = Encoding.UTF8.GetString(packet.Buffer, position + 1, packet.Buffer[position]);
+            //                if (KnownPlayers.ContainsKey(packet.SenderId))
+            //                {
+            //                    KnownPlayers[packet.SenderId].Name = name;
+            //                }
 
-                    _updatePlayersSubject.OnNext(Unit.Default);
-                });
+            //                if (PlayersInGame.ContainsKey(packet.SenderId))
+            //                {
+            //                    PlayersInGame[packet.SenderId].Name = name;
+            //                }
+            //                break;
+            //        }
+
+            //        _updatePlayersSubject.OnNext(Unit.Default);
+            //    });
         }
     }
 }

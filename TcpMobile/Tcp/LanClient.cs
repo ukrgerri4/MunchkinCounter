@@ -1,6 +1,7 @@
 ﻿using Core.Models;
 using Infrastracture.Interfaces;
 using Infrastracture.Interfaces.GameMunchkin;
+using Infrastracture.Models;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Linq;
@@ -12,16 +13,16 @@ using TcpMobile.Tcp.Models;
 
 namespace TcpMobile.Tcp
 {
-    public class Client: IGameClient
+    public class LanClient: ILanClient
     {
-        public Subject<Packet> PacketSubject { get; set; } = new Subject<Packet>();
+        public Subject<TcpEvent> PacketSubject { get; set; } = new Subject<TcpEvent>();
 
         private Socket _mainTcpSocket;
         private Socket _mainUdpSocket;
         private readonly IGameLogger _gameLogger;
         private readonly IConfiguration _configuration;
 
-        public Client(IGameLogger gameLogger, IConfiguration configuration)
+        public LanClient(IGameLogger gameLogger, IConfiguration configuration)
         {
             _gameLogger = gameLogger;
             _configuration = configuration;
@@ -80,7 +81,7 @@ namespace TcpMobile.Tcp
                 var stateObj = (StateObject)asyncResult.AsyncState;
                 var handler = stateObj.workSocket;
 
-                if (handler == null || !handler.Connected || handler.Available == 0)
+                if (handler == null || !handler.Connected)
                 {
                     return;
                 }
@@ -90,7 +91,7 @@ namespace TcpMobile.Tcp
                 if (bytesRead > 0)
                 {
                     var packet = new Packet(stateObj.buffer.Take(bytesRead).ToArray());
-                    PacketSubject.OnNext(packet);
+                    PacketSubject?.OnNext(new TcpEvent { Type = TcpEventType.ReceiveData, Data = packet } );
                     handler.BeginReceive(stateObj.buffer, 0, StateObject.BufferSize, 0, new AsyncCallback(OnDataReceived), stateObj);
                 }
             }
@@ -128,23 +129,43 @@ namespace TcpMobile.Tcp
 
         private void ReceiveBroadcastCallback(IAsyncResult asyncResult)
         {
-            var stateObj = (StateObject)asyncResult.AsyncState;
+            try
+            {
+                var stateObj = (StateObject)asyncResult.AsyncState;
 
-            if (stateObj == null || stateObj.workSocket == null) { return; }
-            
-            EndPoint clientEp = new IPEndPoint(IPAddress.Any, 0);
-            int bytesRead = stateObj.workSocket.EndReceiveFrom(asyncResult, ref clientEp);
-            
-            _gameLogger.Debug($"{clientEp} - [{bytesRead}]b");
-            if (bytesRead == 1 && stateObj.buffer[0] == 42) {
-                _gameLogger.Debug("Recieved [42] message");
-                StopListeningBroadcast();
-                _gameLogger.Debug($"Starting connect to - {((IPEndPoint)clientEp).Address}");
-                Connect(((IPEndPoint)clientEp).Address);
-                return;
+                if (stateObj == null || stateObj.workSocket == null) { return; }
+
+                EndPoint clientEp = new IPEndPoint(IPAddress.Any, 0);
+                int bytesRead = stateObj.workSocket.EndReceiveFrom(asyncResult, ref clientEp);
+
+                _gameLogger.Debug($"{clientEp} - [{bytesRead}]b");
+                var packet = new Packet(stateObj.buffer.Take(bytesRead).ToArray());
+                packet.SenderId = stateObj.Id;
+                packet.SenderIpAdress = ((IPEndPoint)clientEp).Address;
+                PacketSubject?.OnNext(new TcpEvent { Type = TcpEventType.ReceiveData, Data = packet });
+
+                //if (bytesRead == 1 && stateObj.buffer[0] == 42) {
+                //_gameLogger.Debug("Recieved [42] message");
+                //StopListeningBroadcast();
+                //_gameLogger.Debug($"Starting connect to - {((IPEndPoint)clientEp).Address}");
+                //Connect(((IPEndPoint)clientEp).Address);
+                //return;
+                //}
+                _gameLogger.Debug($"Begin recieve broadcast messages");
+                stateObj.workSocket.BeginReceiveFrom(stateObj.buffer, 0, stateObj.buffer.Length, SocketFlags.None, ref clientEp, new AsyncCallback(ReceiveBroadcastCallback), stateObj);
             }
-
-            stateObj.workSocket.BeginReceiveFrom(stateObj.buffer, 0, stateObj.buffer.Length, SocketFlags.None, ref clientEp, new AsyncCallback(ReceiveBroadcastCallback), stateObj);
+            catch (ObjectDisposedException)
+            {
+                _gameLogger.Error($"Socket disposed");
+            }
+            catch (SocketException se)
+            {
+                _gameLogger.Error($"Client socket: {se.SocketErrorCode}");
+            }
+            catch (Exception e)
+            {
+                _gameLogger.Error($"ReceiveBroadcastCallback unexpected: {e.Message}");
+            }
         }
 
         public void StopListeningBroadcast()

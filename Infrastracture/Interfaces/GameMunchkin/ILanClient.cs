@@ -1,4 +1,5 @@
 ﻿using Core.Models;
+using Infrastracture.Models;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -8,9 +9,9 @@ using TcpMobile.Tcp.Models;
 
 namespace Infrastracture.Interfaces.GameMunchkin
 {
-    public interface IGameClient
+    public interface ILanClient
     {
-        Subject<Packet> PacketSubject { get; }
+        Subject<TcpEvent> PacketSubject { get; }
         Result Connect(IPAddress address, int port = 42420);
         void Disconnect();
         Result<int> SendMessage(byte[] message);
