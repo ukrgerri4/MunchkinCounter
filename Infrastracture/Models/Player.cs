@@ -7,44 +7,45 @@ namespace GameMunchkin.Models
     {
         private readonly Dictionary<byte, string> _colors;
 
-        private string id;
-        private string name;
-        private byte level;
-        private byte modifiers;
+        private string _id;
+        private string _name;
+        private byte _level;
+        private byte _modifiers;
 
         public event PropertyChangedEventHandler PropertyChanged;
+        public void OnPropertyChanged(string prop = "") => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
         public string Id
         {
-            get => id;
+            get => _id;
             set
             {
-                if (id != value)
+                if (_id != value)
                 {
-                    id = value;
+                    _id = value;
                     OnPropertyChanged("Id");
                 }
             }
         }
         public string Name
         {
-            get => name;
+            get => _name;
             set
             {
-                if (name != value)
+                if (_name != value)
                 {
-                    name = value;
+                    _name = value;
                     OnPropertyChanged("Name");
                 }
             }
         }
         public byte Level
         {
-            get => level;
+            get => _level;
             set
             {
-                if (level != value)
+                if (_level != value)
                 {
-                    level = value;
+                    _level = value;
                     OnPropertyChanged("Level");
                     OnPropertyChanged("Power");
                     OnPropertyChanged("Color");
@@ -53,12 +54,12 @@ namespace GameMunchkin.Models
         }
         public byte Modifiers
         { 
-            get => modifiers;
+            get => _modifiers;
             set
             {
-                if (modifiers != value)
+                if (_modifiers != value)
                 {
-                    modifiers = value;
+                    _modifiers = value;
                     OnPropertyChanged("Modifiers");
                     OnPropertyChanged("Power");
                 }
@@ -95,6 +96,5 @@ namespace GameMunchkin.Models
             };
         }
 
-        public void OnPropertyChanged(string prop = "") => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
     }
 }

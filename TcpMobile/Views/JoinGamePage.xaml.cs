@@ -1,111 +1,160 @@
-﻿using Infrastracture.Interfaces;
+﻿using GameMunchkin.Models;
+using Infrastracture.Interfaces;
 using Infrastracture.Interfaces.GameMunchkin;
 using Infrastracture.Models;
 using System;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Reactive;
-using System.Reactive.Linq;
-using System.Reactive.Subjects;
-using System.Text;
-using TcpMobile.Tcp.Enums;
+using System.ComponentModel;
+using System.Net;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
 namespace TcpMobile
 {
+    public class JoinGameViewModel: INotifyPropertyChanged
+    {
+        public event PropertyChangedEventHandler PropertyChanged;
+        public void OnPropertyChanged(string prop = "") => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
+
+        public ObservableCollection<MunchkinHost> Hosts { get; set; }
+        public Player MyPlayer { get; set; }
+
+        public ObservableCollection<Player> Players { get; set; }
+
+
+        private bool _hostSearch = true;
+        private bool _waitingPlayers = false;
+        private bool _process = false;
+
+        public bool HostSearch
+        {
+            get => _hostSearch;
+            set
+            {
+                if (_hostSearch != value)
+                {
+                    _hostSearch = value;
+                    if (_hostSearch)
+                    {
+                        WaitingPlayers = false;
+                        Process = false;
+                    }
+
+                    OnPropertyChanged(nameof(HostSearch));
+                }
+            }
+        }
+
+        public bool WaitingPlayers
+        {
+            get => _waitingPlayers;
+            set
+            {
+                if (_waitingPlayers != value)
+                {
+                    _waitingPlayers = value;
+                    if (_waitingPlayers)
+                    {
+                        HostSearch = false;
+                        Process = false;
+                    }
+
+                    OnPropertyChanged(nameof(WaitingPlayers));
+                }
+            }
+        }
+
+        public bool Process
+        {
+            get => _process;
+            set
+            {
+                if (_process != value)
+                {
+                    _process = value;
+                    if (_process)
+                    {
+                        HostSearch = false;
+                        WaitingPlayers = false;
+                    }
+
+                    OnPropertyChanged(nameof(Process));
+                }
+            }
+        }
+    }
+
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class JoinGamePage : ContentPage
     {
         private readonly IGameLogger _gameLogger;
-        private readonly ILanClient _gameClient;
+        private readonly IGameClient _gameClient;
 
-        public ObservableCollection<MunchkinHost> Hosts { get; set; } = new ObservableCollection<MunchkinHost>();
+        private JoinGameViewModel _viewModel;
 
-        private IDisposable hostsObservable;
+        //private Subject<Unit> _destroy = new Subject<Unit>();
 
-        private Subject<Unit> _destroy = new Subject<Unit>();
-
-        public JoinGamePage(IGameLogger gameLogger, ILanClient gameClient)
+        public JoinGamePage(IGameLogger gameLogger, IGameClient gameClient)
         {
             _gameLogger = gameLogger;
             _gameClient = gameClient;
 
             InitializeComponent();
 
-            BindingContext = this;
+            _viewModel = new JoinGameViewModel
+            {
+                Hosts = _gameClient.Hosts,
+                Players = _gameClient.Players,
+                MyPlayer = _gameClient.MyPlayer,
+                HostSearch = true
+            };
+
+            BindingContext = _viewModel;
         }
 
-        private void RefreshHosts(object sender, EventArgs e)
+        private void SearchForHosts(object sender, EventArgs e)
         {
-            _gameLogger.Debug("Start listening broadcast");
-            _gameClient.StartListeningBroadcast();
+            _gameClient.StartSearchHosts();
+            
+            _gameLogger.Debug("Listening broadcast started");
         }
 
-        private void Connect(object sender, EventArgs e)
+        private void StopSearching(object sender, EventArgs e)
         {
+            _gameClient.StopSearchHosts();
 
+            _gameClient.Hosts.Clear();
+
+            _gameLogger.Debug("Listening broadcast stoped");
+        }
+
+
+        private async void Connect(object sender, EventArgs e)
+        {
+            if (hostsView.SelectedItem != null && hostsView.SelectedItem is MunchkinHost munchkinHost && munchkinHost?.IpAddress != null)
+            {
+                _gameClient.Connect(munchkinHost.IpAddress);
+                var sendingInfoResult = _gameClient.SendPlayerInfo();
+
+                hostsView.SelectedItem = null;
+
+                if (sendingInfoResult.IsFail)
+                {
+                    await DisplayAlert("Wooops!", "Somethings went wrong:(", "Ok");
+                    return;
+                }
+
+                _viewModel.WaitingPlayers = true;
+            }
         }
 
         protected override void OnAppearing()
         {
-            _gameClient.StartListeningBroadcast();
-
-            _gameClient.PacketSubject.AsObservable()
-                .TakeUntil(_destroy)
-                .Where(tcpEvent => tcpEvent.Type == TcpEventType.ReceiveData)
-                .Where(tcpEvent => tcpEvent.Data != null)
-                .Where(tcpEvent => tcpEvent.Data.MessageType == MunchkinMessageType.HostFound)
-                .Finally(() => _gameLogger.Debug("Game host observable end."))
-                .Select(tcpEvent =>
-                {
-                    var packet = tcpEvent.Data;
-                    var position = 3;
-                    var host = new MunchkinHost();
-
-                    host.Id = Encoding.UTF8.GetString(packet.Buffer, position + 1, packet.Buffer[position]);
-                    position += packet.Buffer[position];
-                    position++;
-
-                    host.Name = Encoding.UTF8.GetString(packet.Buffer, position + 1, packet.Buffer[position]);
-                    position += packet.Buffer[position];
-                    position++;
-
-                    host.Capacity = packet.Buffer[position++];
-                    host.Fullness = packet.Buffer[position++];
-
-                    _gameLogger.Debug($"Got new packet with ip [{packet.SenderIpAdress}]");
-                    return host;
-                    //return new MunchkinHost
-                    //{
-                    //    Id = "qwer-tyui",
-                    //    IpAddress = packet.SenderIpAdress,
-                    //    Name = "Host №1",
-                    //    Fullness = 5,
-                    //    Capacity = 3
-                    //};
-                })
-                .Subscribe(host =>
-                {
-                    if (!Hosts.Any(h => h.Id == host.Id))
-                    {
-                        _gameLogger.Debug($"Added new host name[{host.Name}]");
-                        Hosts.Add(host);
-                    }
-                    else
-                    {
-                        var hostToUpdate = Hosts.First(h => h.Id == host.Id);
-                        hostToUpdate.Name = host.Name;
-                        hostToUpdate.Capacity = host.Capacity;
-                        hostToUpdate.Fullness = host.Fullness;
-                    }
-                });
         }
 
         protected override void OnDisappearing()
         {
-            _destroy.OnNext(Unit.Default);
-            _gameClient.StopListeningBroadcast();
+            
         }
     }
 }

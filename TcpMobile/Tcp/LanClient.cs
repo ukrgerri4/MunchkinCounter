@@ -48,8 +48,7 @@ namespace TcpMobile.Tcp
 
             catch (SocketException se)
             {
-                Console.WriteLine(se.Message);
-                return Result.Fail(se.Message);
+                return Result.Fail($"Client connect error: {se.Message}");
             }
         }
 
@@ -97,11 +96,11 @@ namespace TcpMobile.Tcp
             }
             catch (ObjectDisposedException)
             {
-                Console.WriteLine("OnDataReceived: Socket has been closed");
+                _gameLogger.Error("Client OnDataReceived: Socket has been closed");
             }
             catch (SocketException se)
             {
-                Console.WriteLine($"OnDataReceived: {se.Message}");
+                _gameLogger.Error($"Client OnDataReceived: {se.Message}");
             }
         }
 
@@ -123,7 +122,6 @@ namespace TcpMobile.Tcp
             catch (Exception e)
             {
                 _gameLogger.Error($"StartListeningBroadcast unexpected: {e.Message}");
-                Console.WriteLine($"StartListeningBroadcast unexpected: {e.Message}");
             }
         }
 
@@ -144,27 +142,20 @@ namespace TcpMobile.Tcp
                 packet.SenderIpAdress = ((IPEndPoint)clientEp).Address;
                 PacketSubject?.OnNext(new TcpEvent { Type = TcpEventType.ReceiveData, Data = packet });
 
-                //if (bytesRead == 1 && stateObj.buffer[0] == 42) {
-                //_gameLogger.Debug("Recieved [42] message");
-                //StopListeningBroadcast();
-                //_gameLogger.Debug($"Starting connect to - {((IPEndPoint)clientEp).Address}");
-                //Connect(((IPEndPoint)clientEp).Address);
-                //return;
-                //}
-                _gameLogger.Debug($"Begin recieve broadcast messages");
+                _gameLogger.Debug($"Client begin recieve broadcast messages");
                 stateObj.workSocket.BeginReceiveFrom(stateObj.buffer, 0, stateObj.buffer.Length, SocketFlags.None, ref clientEp, new AsyncCallback(ReceiveBroadcastCallback), stateObj);
             }
             catch (ObjectDisposedException)
             {
-                _gameLogger.Error($"Socket disposed");
+                _gameLogger.Error($"Client ReceiveBroadcastCallback socket disposed");
             }
             catch (SocketException se)
             {
-                _gameLogger.Error($"Client socket: {se.SocketErrorCode}");
+                _gameLogger.Error($"Client ReceiveBroadcastCallback socket: {se.SocketErrorCode}");
             }
             catch (Exception e)
             {
-                _gameLogger.Error($"ReceiveBroadcastCallback unexpected: {e.Message}");
+                _gameLogger.Error($"Client ReceiveBroadcastCallback unexpected: {e.Message}");
             }
         }
 
@@ -176,7 +167,7 @@ namespace TcpMobile.Tcp
             }
             catch (Exception e)
             {
-                Console.WriteLine($"StopListeningBroadcast unexpected: {e.Message}");
+                _gameLogger.Error($"StopListeningBroadcast unexpected: {e.Message}");
             }
         }
     }

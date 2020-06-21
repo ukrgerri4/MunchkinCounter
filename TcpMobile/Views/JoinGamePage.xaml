@@ -11,17 +11,63 @@
             <RowDefinition Height="1*" />
         </Grid.RowDefinitions>
         
-        <StackLayout Grid.Row="0" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" BackgroundColor="White">
-            <ListView x:Name="hostsView" HasUnevenRows="True" ItemsSource="{Binding Hosts}">
+        <StackLayout
+            Grid.Row="0"
+            HorizontalOptions="FillAndExpand"
+            VerticalOptions="FillAndExpand"
+            BackgroundColor="White">
+            
+            <ListView x:Name="hostsView" HasUnevenRows="True" ItemsSource="{Binding Hosts}" IsVisible="{Binding HostSearch}">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <ViewCell>
                             <ViewCell.View>
                                 <StackLayout Orientation="Horizontal" VerticalOptions="Center">
                                     <Label Text="{Binding Id}"/>
-                                    <Label Text="{Binding Name}" />
-                                    <Label Text="{Binding Сapacity}" />
-                                    <Label Text="{Binding Fullness}" />
+                                    <Label Text="{Binding Name}" FontAttributes="Bold" />
+                                    <StackLayout Orientation="Horizontal" VerticalOptions="End">
+                                        <Label Text="{Binding Fullness}" />
+                                        <Label Text=" / " />
+                                        <Label Text="{Binding Capacity}" />
+                                    </StackLayout>
+                                </StackLayout>
+                            </ViewCell.View>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+
+            <ListView x:Name="playersView" HasUnevenRows="True" ItemsSource="{Binding Players}" IsVisible="{Binding WaitingPlayers}">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <ViewCell.View>
+                                <StackLayout Orientation="Horizontal" VerticalOptions="Center">
+                                    <Label Text="{Binding Id}"/>
+                                    <Label Text="{Binding Name}" FontAttributes="Bold" />
+                                </StackLayout>
+                            </ViewCell.View>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+
+            <ListView x:Name="gameView" HasUnevenRows="True" ItemsSource="{Binding Players}" IsVisible="{Binding Process}">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <ViewCell.View>
+                                <StackLayout Orientation="Horizontal" VerticalOptions="Center">
+                                    <Label Text="{Binding Id}"/>
+                                    <Label Text="{Binding Name}" FontAttributes="Bold" />
+                                    <StackLayout Orientation="Horizontal" VerticalOptions="End">
+                                        <Label Text="LVL:" />
+                                        <Label Text="{Binding Level}" TextColor="{Binding Color}"/>
+                                        <Label Text="MOD:" />
+                                        <Label Text="{Binding Modifiers}" />
+                                        <Label Text="PWR:" />
+                                        <Label Text="{Binding Power}" />
+                                    </StackLayout>
                                 </StackLayout>
                             </ViewCell.View>
                         </ViewCell>
@@ -29,9 +75,11 @@
                 </ListView.ItemTemplate>
             </ListView>
         </StackLayout>
+        
 
         <StackLayout x:Name="buttonsLayout" Grid.Row="1" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" BackgroundColor="White">
-            <Button Text="Refresh hosts" HorizontalOptions="Center" VerticalOptions="CenterAndExpand" Clicked="RefreshHosts"></Button>
+            <Button Text="Search games" HorizontalOptions="Center" VerticalOptions="CenterAndExpand" Clicked="SearchForHosts"></Button>
+            <Button Text="Stop searching" HorizontalOptions="Center" VerticalOptions="CenterAndExpand" Clicked="StopSearching"></Button>
             <Button Text="Connect" HorizontalOptions="Center" VerticalOptions="CenterAndExpand" Clicked="Connect"></Button>
         </StackLayout>
     </Grid>

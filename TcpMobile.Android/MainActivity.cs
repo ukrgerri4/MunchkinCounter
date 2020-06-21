@@ -2,6 +2,8 @@
 using Android.Content.PM;
 using Android.OS;
 using Android.Runtime;
+using Android.Widget;
+using Java.Lang;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -28,6 +30,23 @@ namespace TcpMobile.Droid
             Xamarin.Essentials.Platform.OnRequestPermissionsResult(requestCode, permissions, grantResults);
 
             base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+
+        private bool _isBackPressed;
+        public override void OnBackPressed()
+        {
+            if (_isBackPressed)
+            {
+                FinishAffinity(); // inform Android that we are done with the activity
+                return;
+            }
+
+            _isBackPressed = true;
+            Toast.MakeText(this, "Press back again to exit", ToastLength.Short).Show();
+
+            // Disable back to exit after 2 seconds.
+            new Handler().PostDelayed(() => { _isBackPressed = false; }, 2000);
+            return;
         }
 
         void ConfigureServices(HostBuilderContext ctx, IServiceCollection services)

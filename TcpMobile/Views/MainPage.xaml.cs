@@ -30,11 +30,9 @@ namespace TcpMobile
             MasterBehavior = MasterBehavior.Popover;
             MenuPages = new Dictionary<MenuItemType, Page>
             {
-                { MenuItemType.ServerPage, new MunchkinNavigationPage(_serviceProvider.GetService<ServerPage>(), _serviceProvider) },
+                { MenuItemType.CreateGamePage, new MunchkinNavigationPage(_serviceProvider.GetService<CreateGamePage>(), _serviceProvider) },
                 { MenuItemType.JoinGamePage, new MunchkinNavigationPage(_serviceProvider.GetService<JoinGamePage>(), _serviceProvider) },
-                { MenuItemType.SingleGamePage, new MunchkinNavigationPage(_serviceProvider.GetService<SingleGamePage>(), _serviceProvider) },
-                { MenuItemType.MultiPlayerGamePage, new MunchkinNavigationPage(_serviceProvider.GetService<MultiPlayerGamePage>(), _serviceProvider) },
-                { MenuItemType.CreateGamePage, new MunchkinNavigationPage(_serviceProvider.GetService<CreateGamePage>(), _serviceProvider) }
+                { MenuItemType.SingleGamePage, new MunchkinNavigationPage(_serviceProvider.GetService<SingleGamePage>(), _serviceProvider) }
             };
 
             var defaultPage = (MenuItemType)Convert.ToInt32(_configuration["DefaultPage"]);

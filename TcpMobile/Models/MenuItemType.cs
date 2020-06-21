@@ -5,12 +5,9 @@ namespace TcpMobile.Models
     public enum MenuItemType
     {
         Default,
-        ServerPage,
         CreateGamePage,
         JoinGamePage,
-        SingleGamePage,
-        MultiPlayerGamePage,
-        Settings
+        SingleGamePage
     }
 
     public class SideBarMenuItem

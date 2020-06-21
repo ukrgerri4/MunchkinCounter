@@ -12,9 +12,26 @@
                 IsVisible="{Binding CreatingGame}"
                 HorizontalOptions="FillAndExpand"
                 VerticalOptions="FillAndExpand">
-                <Entry x:Name="hostName" Placeholder="enter host name" Text="{Binding HostName}"></Entry>
-                <Entry x:Name="hostСapacity" Placeholder="enter max players" Text="{Binding HostСapacity}"></Entry>
-                <Entry x:Name="playerName" Placeholder="enter your name" Text="{Binding Player.Name}"></Entry>
+                <Frame BorderColor="Black">
+                    <StackLayout>
+                        <Label Text="GAME NAME"></Label>
+                        <Entry x:Name="hostName" Text="{Binding Host.Name}"></Entry>
+                    </StackLayout>
+                </Frame>
+
+                <Frame BorderColor="Black">
+                    <StackLayout>
+                        <Label Text="YOUR MUNCHKIN NAME"></Label>
+                        <Entry x:Name="playerName" Text="{Binding MyPlayer.Name}"></Entry>
+                    </StackLayout>
+                </Frame>
+
+                <Frame BorderColor="Black">
+                    <StackLayout>
+                        <Label Text="MAX PLAYERS"></Label>
+                        <Entry x:Name="hostСapacity" Text="{Binding Host.Capacity}"></Entry>
+                    </StackLayout>
+                </Frame>
                 <Button Text="Create" HorizontalOptions="Center" VerticalOptions="EndAndExpand" Clicked="TryCreate"></Button>
             </StackLayout>
             <StackLayout
@@ -30,6 +47,30 @@
                                     <StackLayout Orientation="Horizontal" VerticalOptions="Center">
                                         <Label Text="{Binding Id}"/>
                                         <Label Text="{Binding Name}" />
+                                        <!--<Label Text="{Binding Level}" />
+                                        <Label Text="{Binding Modifiers}" />-->
+                                    </StackLayout>
+                                </ViewCell.View>
+                            </ViewCell>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+                <Button Text="Start" HorizontalOptions="Center" VerticalOptions="EndAndExpand" Clicked="TryStart"></Button>
+                <Button Text="Cancel" HorizontalOptions="Center" VerticalOptions="EndAndExpand" Clicked="TryStop"></Button>
+            </StackLayout>
+            <StackLayout
+                x:Name="processLayout"
+                IsVisible="{Binding Process}"
+                HorizontalOptions="FillAndExpand"
+                VerticalOptions="FillAndExpand">
+                <ListView x:Name="gameView" HasUnevenRows="True" ItemsSource="{Binding Players}">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <ViewCell>
+                                <ViewCell.View>
+                                    <StackLayout Orientation="Horizontal" VerticalOptions="Center">
+                                        <Label Text="{Binding Id}"/>
+                                        <Label Text="{Binding Name}" />
                                         <Label Text="{Binding Level}" />
                                         <Label Text="{Binding Modifiers}" />
                                     </StackLayout>
@@ -38,14 +79,8 @@
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
-                <Button Text="Start" HorizontalOptions="Center" VerticalOptions="EndAndExpand" Clicked="TryStart"></Button>
-            </StackLayout>
-            <StackLayout
-                x:Name="processLayout"
-                IsVisible="{Binding Process}"
-                HorizontalOptions="FillAndExpand"
-                VerticalOptions="FillAndExpand">
-                
+
+                <Button Text="Cancel" HorizontalOptions="Center" VerticalOptions="EndAndExpand" Clicked="TryStop"></Button>
             </StackLayout>
         </StackLayout>
     </ContentPage.Content>

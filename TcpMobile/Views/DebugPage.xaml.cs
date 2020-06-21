@@ -32,6 +32,13 @@ namespace TcpMobile.Views
 
                 var messageLabel = new Label();
                 messageLabel.SetBinding(Label.TextProperty, "Message");
+                messageLabel.SetBinding(Label.BackgroundColorProperty, "Color");
+
+                var duplicateMessagesCounterLabel = new Label();
+                duplicateMessagesCounterLabel.SetBinding(Label.IsVisibleProperty, "ShowDuplicateMessagesCounter");
+                duplicateMessagesCounterLabel.SetBinding(Label.TextProperty, "DuplicateMessagesCounter");
+                duplicateMessagesCounterLabel.Padding = new Thickness(5, 0, 5, 0);
+                duplicateMessagesCounterLabel.BackgroundColor = Color.FromHex("#AAAAAA");
 
                 return new ViewCell
                 {
@@ -40,7 +47,7 @@ namespace TcpMobile.Views
                         Padding = new Thickness(0, 2),
                         Orientation = StackOrientation.Horizontal,
                         VerticalOptions = LayoutOptions.Center,
-                        Children = { dateLabel, messageLabel }
+                        Children = { dateLabel, messageLabel, duplicateMessagesCounterLabel }
                     }
                 };
             });

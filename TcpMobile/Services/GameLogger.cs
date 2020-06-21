@@ -1,31 +1,52 @@
 ﻿using Infrastracture.Interfaces;
 using Infrastracture.Models;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Text;
 
 namespace TcpMobile.Services
 {
     public class GameLogger: IGameLogger
     {
         private ObservableCollection<LogUnit> _history = new ObservableCollection<LogUnit>();
+        
+        private LogUnit _lastLogUnit = null;
 
         public void Debug(string message)
         {
-            _history.Add(new LogUnit { Message = message, Type = LogType.Debug});
+            WriteToHistory(message, LogType.Debug);
         }
 
         public void Warning(string message)
         {
-            _history.Add(new LogUnit { Message = message, Type = LogType.Warning });
+            WriteToHistory(message, LogType.Error);
         }
 
         public void Error(string message)
         {
-            _history.Add(new LogUnit { Message = message, Type = LogType.Error });
+            WriteToHistory(message, LogType.Error);
         }
 
         public ObservableCollection<LogUnit> GetHistory() => _history;
+
+        private void WriteToHistory(string message, LogType type)
+        {
+            if (IsDuplicateMessages(message))
+            {
+                _lastLogUnit.DuplicateMessagesCounter++;
+                _lastLogUnit.Date = DateTime.UtcNow;
+                return;
+            }
+
+            var logUnit = new LogUnit { Message = message, Type = type };
+            _lastLogUnit = logUnit;
+            _history.Add(logUnit);
+        }
+
+        private bool IsDuplicateMessages(string message)
+        {
+            if (_lastLogUnit == null) { return false; }
+
+            return _lastLogUnit.Message.Equals(message);
+        }
     }
 }

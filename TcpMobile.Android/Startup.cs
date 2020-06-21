@@ -61,20 +61,19 @@ namespace TcpMobile.Droid
             services.AddSingleton<App>();
             services.AddSingleton<MainPage>();
             services.AddSingleton<MenuPage>();
-            services.AddSingleton<SingleGamePage>();
             services.AddSingleton<SettingsPage>();
             services.AddSingleton<DebugPage>();
-            services.AddSingleton<ServerPage>();
-            services.AddSingleton<JoinGamePage>();
-            services.AddSingleton<MultiPlayerGamePage>();
-            services.AddSingleton<CreateGamePage>();
 
-            services.AddSingleton<ILanServer, LanServer>();
-            services.AddSingleton<ILanClient, LanClient>();
-            services.AddSingleton(typeof(IMultiPlayerService<Player>), typeof(GameServer));
-            services.AddSingleton<ServerPlayersData>();
+            services.AddSingleton<SingleGamePage>();
+            services.AddSingleton<CreateGamePage>();
+            services.AddSingleton<JoinGamePage>();
 
             services.AddSingleton<IGameLogger, GameLogger>();
+            services.AddSingleton<ILanServer, LanServer>();
+            services.AddSingleton<ILanClient, LanClient>();
+            services.AddSingleton<IGameClient, GameClient>();
+            services.AddSingleton<IGameServer, GameServer>();
+
             services.AddSingleton<IBrightnessService, AndroidBrightnessService>();
             
         }

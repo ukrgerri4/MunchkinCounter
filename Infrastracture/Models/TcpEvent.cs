@@ -4,8 +4,8 @@ namespace Infrastracture.Models
 {
     public enum TcpEventType
     {
-        ServerStart,
-        ClientConnect,
+        ServerStarted,
+        ClientConnected,
         ClientDisconnect,
         ReceiveData
     }
@@ -13,6 +13,6 @@ namespace Infrastracture.Models
     public class TcpEvent
     {
         public TcpEventType Type { get; set; }
-        public Packet Data { get; set; }
+        public object Data { get; set; }
     }
 }

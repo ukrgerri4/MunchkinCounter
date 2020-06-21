@@ -26,8 +26,7 @@ namespace TcpMobile
             {
                 new SideBarMenuItem { Type = MenuItemType.CreateGamePage, Name = "CREATE" },
                 new SideBarMenuItem { Type = MenuItemType.JoinGamePage, Name = "JOIN" },
-                new SideBarMenuItem { Type = MenuItemType.SingleGamePage, Name = "SINGLE" },
-                new SideBarMenuItem { Type = MenuItemType.MultiPlayerGamePage, Name = "MULTIPLAYER" }
+                new SideBarMenuItem { Type = MenuItemType.SingleGamePage, Name = "SINGLE" }
             };
 
             ListView = new ListView();

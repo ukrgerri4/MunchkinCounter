@@ -10,7 +10,7 @@ namespace Infrastracture.Interfaces.GameMunchkin
 {
     public interface ILanServer
     {
-        Subject<TcpEvent> PacketSubject { get; }
+        Subject<TcpEvent> TcpEventSubject { get; }
         void StartTcpServer(int port = 42420);
         void StopTcpServer();
 

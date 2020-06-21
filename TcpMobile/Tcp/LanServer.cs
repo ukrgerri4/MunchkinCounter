@@ -1,7 +1,9 @@
+using Core.Helpers;
 using Core.Models;
 using Infrastracture.Interfaces;
 using Infrastracture.Interfaces.GameMunchkin;
 using Infrastracture.Models;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -17,42 +19,36 @@ namespace TcpMobile.Tcp
     public class LanServer: ILanServer
     {
         private readonly IGameLogger _gameLogger;
+        private readonly IConfiguration _configuration;
 
-        private readonly byte[] UDP_BROADCAST_MESSAGE = { 42 };
+        public Dictionary<string, StateObject> ConfirmedConnections = new Dictionary<string, StateObject>();
 
-        public Subject<TcpEvent> PacketSubject { get; set; } = new Subject<TcpEvent>();
-
-        private Subject<Socket> _udpSubject;
-
-        public Dictionary<string, StateObject> —onfirmedConnections = new Dictionary<string, StateObject>();
-
-        public delegate void ServerStartCallback();
-        public delegate void ClientConnectCallback(string remoteIp);
-        public delegate void ClientDisconnectCallback();
-        public delegate void ReceiveDataCallback(Packet packet);
-
+        #region TCP
         private Socket _mainTcpSocket;
-        
+        public Subject<TcpEvent> TcpEventSubject { get; set; } = new Subject<TcpEvent>();
+        private IDisposable _connectionChecker;
+        #endregion
+
+        #region UDP
         private Socket _mainUdpSocket;
         private IPEndPoint udpClientEP = new IPEndPoint(IPAddress.Broadcast, 42424);
+        #endregion
 
-        //private byte[] _broadcastMessage = new byte[] { 3, 0, 1 };
-
-        public LanServer(IGameLogger gameLogger)
+        public LanServer(
+            IConfiguration configuration,
+            IGameLogger gameLogger)
         {
+            _configuration = configuration;
             _gameLogger = gameLogger;
         }
 
-        public bool IsListening
+        private bool IsConnected(Socket socket)
         {
-            get
-            {
-                if (_mainTcpSocket == null)
-                    return false;
-                else
-                    return _mainTcpSocket.IsBound;
-            }
+            if (!socket.Poll(100, SelectMode.SelectRead) || socket.Available != 0)
+                return true;
+            return false;
         }
+
         public void StartTcpServer(int port = 42420)
         {
             try
@@ -66,8 +62,10 @@ namespace TcpMobile.Tcp
                 _gameLogger.Debug($"Start server: [{_mainTcpSocket.LocalEndPoint}]");
 
                 _mainTcpSocket.BeginAccept(new AsyncCallback(OnReceiveConnection), _mainTcpSocket);
+                
+                StartConnectionsCheck();
 
-                PacketSubject?.OnNext(new TcpEvent { Type = TcpEventType.ServerStart });
+                TcpEventSubject?.OnNext(new TcpEvent { Type = TcpEventType.ServerStarted });
             }
 
             catch (SocketException se)
@@ -78,8 +76,8 @@ namespace TcpMobile.Tcp
 
         public void StopTcpServer()
         {
-            if (IsListening)
-                _mainTcpSocket.Close();
+            _mainTcpSocket?.Close();
+            _connectionChecker?.Dispose();
         }
 
         private void OnReceiveConnection(IAsyncResult asyncResult)
@@ -90,9 +88,9 @@ namespace TcpMobile.Tcp
                 var handler = listener.EndAccept(asyncResult);
                 var stateObj = new StateObject(handler);
 
-                //onClientConnect?.Invoke(stateObj.workSocket.RemoteEndPoint.ToString());
+                TcpEventSubject?.OnNext(new TcpEvent { Type = TcpEventType.ClientConnected });
 
-                —onfirmedConnections.Add(stateObj.Id, stateObj);
+                ConfirmedConnections.Add(stateObj.Id, stateObj);
                 handler.BeginReceive(stateObj.buffer, 0, StateObject.BufferSize, 0, new AsyncCallback(OnDataReceived), stateObj);
 
                 listener.BeginAccept(new AsyncCallback(OnReceiveConnection), listener);
@@ -104,15 +102,15 @@ namespace TcpMobile.Tcp
             catch (SocketException se)
             {
                 _gameLogger.Debug($"OnClientConnection: {se.Message}");
-                PacketSubject?.OnNext(new TcpEvent { Type = TcpEventType.ClientDisconnect });
+                TcpEventSubject?.OnNext(new TcpEvent { Type = TcpEventType.ClientDisconnect });
             }
         }
 
         private void OnDataReceived(IAsyncResult asyncResult)
         {
+            var stateObj = (StateObject)asyncResult.AsyncState;
             try
             {
-                var stateObj = (StateObject)asyncResult.AsyncState;
                 var handler = stateObj.workSocket;
 
                 if (handler == null || !handler.Connected)
@@ -125,28 +123,6 @@ namespace TcpMobile.Tcp
                 if (bytesRead > 0)
                 {
                     _gameLogger.Debug($"Message len - {bytesRead}");
-                    //var packet = new Packet(stateObj.buffer.Take(bytesRead).ToArray());
-
-                    //if (!stateObj.IdRecived)
-                    //{
-                    //    if (packet.MessageType != Enums.MunchkinMessageType.GetId)
-                    //    {
-                    //        handler.BeginReceive(stateObj.buffer, 0, StateObject.BufferSize, 0, new AsyncCallback(OnDataReceived), stateObj);
-                    //        return;
-                    //    }
-
-                    //    var id = Encoding.UTF8.GetString(packet.Buffer, 4, packet.Buffer[3]); // Ò 4-„Ó ·‡ÈÚ‡ Ë‰ÂÚ ID, ‚ 3-Ï ·‡ÈÚÂ ‰ÎËÌ‡ ID
-                    //    stateObj.Id = id;
-                    //    if (!—onfirmedConnections.ContainsKey(stateObj.Id))
-                    //    {
-                    //        —onfirmedConnections.Add(id, stateObj);
-                    //    }
-                    //    handler.BeginReceive(stateObj.buffer, 0, StateObject.BufferSize, 0, new AsyncCallback(OnDataReceived), stateObj);
-                    //    return;
-                    //}
-
-                    //packet.SenderId = stateObj.Id;
-                    //PacketSubject.OnNext(packet);
 
                     var pos = 0;
                     var dataLength = bytesRead + stateObj.offset;
@@ -184,7 +160,7 @@ namespace TcpMobile.Tcp
                         {
                             var packet = new Packet(messageBytes);
                             packet.SenderId = stateObj.Id;
-                            PacketSubject?.OnNext(new TcpEvent { Type = TcpEventType.ReceiveData, Data = packet } );
+                            TcpEventSubject?.OnNext(new TcpEvent { Type = TcpEventType.ReceiveData, Data = packet } );
                         }
                         pos = pos + len;
                     }
@@ -195,38 +171,33 @@ namespace TcpMobile.Tcp
                 else
                 {
                     handler.Close();
-                    if (stateObj.IdRecived && —onfirmedConnections.ContainsKey(stateObj.Id))
-                    {
-                        —onfirmedConnections.Remove(stateObj.Id);
-                    }
+                    OnDataReceivedErrorHandler(stateObj);
                 }
             }
             catch (ObjectDisposedException)
             {
-                _gameLogger.Error("OnDataReceived: Socket has been closed");
-                var stateObj = (StateObject)asyncResult.AsyncState;
-                var handler = stateObj.workSocket;
+                _gameLogger.Error("OnDataReceived disposed error: Socket has been closed");
+                OnDataReceivedErrorHandler(stateObj);
             }
             catch (SocketException se)
             {
-                _gameLogger.Error($"OnDataReceived: {se.Message}");
-                PacketSubject?.OnNext(new TcpEvent { Type = TcpEventType.ClientDisconnect });
-            }
-            catch (JsonReaderException jre)
-            {
-                _gameLogger.Error($"OnDataReceived: {jre.Message}");
+                _gameLogger.Error($"OnDataReceived socket error: {se.Message}");
+                OnDataReceivedErrorHandler(stateObj);
             }
             catch (Exception e)
             {
-                var stateObj = (StateObject)asyncResult.AsyncState;
-                var handler = stateObj.workSocket;
-                if (handler != null && handler.Connected)
-                {
-                    stateObj.offset = 0;
-                    handler.BeginReceive(stateObj.buffer, stateObj.offset, StateObject.BufferSize, 0, new AsyncCallback(OnDataReceived), stateObj);
-                }
                 _gameLogger.Error($"OnDataReceived unexpected: {e.Message}");
+                OnDataReceivedErrorHandler(stateObj);
             }
+        }
+
+        private void OnDataReceivedErrorHandler(StateObject stateObj)
+        {
+            if (ConfirmedConnections.ContainsKey(stateObj.Id))
+            {
+                ConfirmedConnections.Remove(stateObj.Id);
+            }
+            TcpEventSubject?.OnNext(new TcpEvent { Type = TcpEventType.ClientDisconnect, Data = stateObj.Id });
         }
 
         public Result<int> SendMessage(string id, byte[] message)
@@ -238,17 +209,12 @@ namespace TcpMobile.Tcp
                     return Result.Fail<int>("Server soket is null.");
                 }
 
-                //if (!_mainTcpSocket.Connected)
-                //{
-                //    return Result.Fail<int>("Server soket is not connected.");
-                //}
-
-                if (!—onfirmedConnections.ContainsKey(id))
+                if (!ConfirmedConnections.ContainsKey(id))
                 {
                     return Result.Fail<int>($"Soket with id - [{id}] not found.");
                 }
 
-                var remoteStateObj = —onfirmedConnections[id];
+                var remoteStateObj = ConfirmedConnections[id];
 
                 if (remoteStateObj.workSocket == null || !remoteStateObj.workSocket.Connected)
                 {
@@ -265,38 +231,49 @@ namespace TcpMobile.Tcp
             }
         }
 
+        private void StartConnectionsCheck()
+        {
+            _connectionChecker = Observable.Interval(TimeSpan.FromSeconds(1))
+                .Subscribe(
+                    _ =>
+                    {
+                        foreach(var connection in ConfirmedConnections.ToArray())
+                        {
+                            var stateObj = connection.Value;
+                            try
+                            {
+                                if (stateObj.workSocket != null && IsConnected(stateObj.workSocket)) { return;  }
+
+                                stateObj?.workSocket?.Close();
+                                OnDataReceivedErrorHandler(stateObj);
+                                _gameLogger.Debug($"Connection check: disconnected and removed");
+                            }
+                            catch(Exception e)
+                            {
+                                OnDataReceivedErrorHandler(stateObj);
+                                _gameLogger.Error($"Connection check error: {e.Message}");
+                            }
+                        }
+                    },
+                    error => _gameLogger.Error($"Connection check subscribe error: {error.Message}")
+                );
+        }
+
         public void StartUdpServer()
         {
             try
             {
                 StopUdpServer();
 
-                _udpSubject = new Subject<Socket>();
-
                 _mainUdpSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
                 _mainUdpSocket.EnableBroadcast = true;
-                _mainUdpSocket.Bind(new IPEndPoint(IPAddress.Any, 0));
 
-                //_udpSubject
-                //    .AsObservable()
-                //    .Throttle(TimeSpan.FromSeconds(1))
-                //    .Finally(() =>
-                //    {
-                //        _gameLogger.Debug("_udpSubject closed.");
-                //    })
-                //    .Subscribe(socket =>
-                //    {
-                //        socket.BeginSendTo(_broadcastMessage, 0, _broadcastMessage.Length, SocketFlags.None, udpClientEP, new AsyncCallback(SendCallback), socket);
-                //    });
-
-                //if (_udpSubject != null && !_udpSubject.IsDisposed)
-                //{
-                //    _udpSubject.OnNext(_mainUdpSocket);
-                //}
+                var ip = DnsHelper.GetLocalIp();
+                _mainUdpSocket.Bind(new IPEndPoint(ip, 0));
             }
             catch (Exception e)
             {
-                _gameLogger.Error($"StartBroadcast unexpected: {e.Message}");
+                _gameLogger.Error($"Start UDP server error: {e.Message}");
             }
         }
 
@@ -307,28 +284,18 @@ namespace TcpMobile.Tcp
 
         private void SendCallback(IAsyncResult asyncResult)
         {
-            //if (_udpSubject != null && !_udpSubject.IsDisposed)
-            //{
-            //    _udpSubject.OnNext((Socket)asyncResult.AsyncState);
-            //}
+            
         }
 
         public void StopUdpServer()
         {
             try
             {
-                if (_udpSubject != null && !_udpSubject.IsDisposed)
-                {
-                    _udpSubject.OnCompleted();
-                    _udpSubject.Dispose();
-                }
-
                _mainUdpSocket?.Close();
             }
             catch (Exception e)
             {
-                _gameLogger.Error($"OnDataReceived unexpected: {e.Message}");
-                _mainUdpSocket?.Close();
+                _gameLogger.Error($"Stop UDP server error: {e.Message}");
             }
         }
     }

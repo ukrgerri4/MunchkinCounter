@@ -13,10 +13,11 @@ using System.Reactive.Subjects;
 using System.Text;
 using TcpMobile.Game.Models;
 using TcpMobile.Tcp.Enums;
+using TcpMobile.Tcp.Models;
 
 namespace TcpMobile.Services
 {
-    public class GameServer
+    public class GameServer : IGameServer
     {
         private readonly IGameLogger _gameLogger;
         private readonly IConfiguration _configuration;
@@ -63,6 +64,7 @@ namespace TcpMobile.Services
                 StartBroadcastHostData();
                 StartBroadcastConnectedPlayersData();
                 StartListeningNewPlayersConnections();
+                StartListeningPlayersDisconnections();
 
                 return Result.Ok();
             }
@@ -78,6 +80,8 @@ namespace TcpMobile.Services
         {
             try
             {
+                StopConnectedPlayersBroadcast();
+
                 _lanServer.StopUdpServer();
                 _lanServer.StopTcpServer();
 
@@ -93,9 +97,18 @@ namespace TcpMobile.Services
             }
         }
 
-        public void StopHostBroadcast()
+        public Result StopBroadcast()
         {
-            _hostBroadcaster?.Dispose();
+            try
+            {
+                _hostBroadcaster?.Dispose();
+                _lanServer.StopUdpServer();
+                return Result.Ok();
+            }
+            catch(Exception e)
+            {
+                return Result.Fail($"Stop broadcasting error: {e.Message}");
+            }
         }
 
         public void StopConnectedPlayersBroadcast()
@@ -108,8 +121,9 @@ namespace TcpMobile.Services
             _hostBroadcaster = Observable.Interval(TimeSpan.FromMilliseconds(HOST_BROADCAST_PERIOD_MS))
                 .TakeUntil(_destroy)
                 .Finally(() => _gameLogger.Debug("Host data broadcast stoped."))
-                .Where(_ => string.IsNullOrWhiteSpace(Host.Id) && string.IsNullOrWhiteSpace(Host.Name))
-                .Select(data => {
+                //.Where(_ => string.IsNullOrWhiteSpace(Host.Id) && string.IsNullOrWhiteSpace(Host.Name))
+                .Select(data =>
+                {
                     using (MemoryStream memoryStream = new MemoryStream())
                     {
                         memoryStream.Write(BitConverter.GetBytes((ushort)0), 0, 2);
@@ -148,18 +162,18 @@ namespace TcpMobile.Services
 
         private void StartListeningNewPlayersConnections()
         {
-            _lanServer.PacketSubject.AsObservable()
+            _lanServer.TcpEventSubject.AsObservable()
                 .TakeUntil(_destroy)
                 .Where(tcpEvent => tcpEvent.Type == TcpEventType.ReceiveData)
                 .Where(tcpEvent => tcpEvent.Data != null)
-                .Where(tcpEvent => tcpEvent.Data.MessageType == MunchkinMessageType.InitInfo ||
-                    tcpEvent.Data.MessageType == MunchkinMessageType.UpdatePlayerState ||
-                    tcpEvent.Data.MessageType == MunchkinMessageType.UpdatePlayerName)
-                .Do(tcpEvent => _gameLogger.Debug($"Recieved message {tcpEvent.Data.MessageType}"))
+                .Where(tcpEvent => ((Packet)tcpEvent.Data).MessageType == MunchkinMessageType.InitInfo ||
+                    ((Packet)tcpEvent.Data).MessageType == MunchkinMessageType.UpdatePlayerState ||
+                    ((Packet)tcpEvent.Data).MessageType == MunchkinMessageType.UpdatePlayerName)
+                .Do(tcpEvent => _gameLogger.Debug($"Recieved message {((Packet)tcpEvent.Data).MessageType}"))
                 .Subscribe(
                     tcpEvent =>
                     {
-                        var packet = tcpEvent.Data;
+                        var packet = (Packet)tcpEvent.Data;
                         var position = 3;
 
                         switch (packet.MessageType)
@@ -221,6 +235,29 @@ namespace TcpMobile.Services
                 );
         }
 
+        private void StartListeningPlayersDisconnections()
+        {
+            _lanServer.TcpEventSubject.AsObservable()
+                .TakeUntil(_destroy)
+                .Where(tcpEvent => tcpEvent.Type == TcpEventType.ClientDisconnect)
+                .Where(tcpEvent => (string)tcpEvent.Data != null)
+                .Do(tcpEvent => _gameLogger.Debug($"Client disconnected handler - [{(string)tcpEvent.Data}]"))
+                .Subscribe(
+                    tcpEvent =>
+                    {
+                        var removeResult = ConnectedPlayers.TryRemove((string)tcpEvent.Data, out PlayerInfo pi);
+                        if (!removeResult)
+                        {
+                            _gameLogger.Error($"Player connection id:[{(string)tcpEvent.Data}] not found.");
+                        }
+                    },
+                    error =>
+                    {
+                        _gameLogger.Error($"Error during listening for new players: {error.Message}");
+                    }
+                );
+        }
+
         private void StartBroadcastConnectedPlayersData()
         {
             _connectedPlayersBroadcaster = _updatePlayersSubject.AsObservable()
@@ -231,26 +268,26 @@ namespace TcpMobile.Services
                 .Subscribe(
                     _ =>
                     {
-                        var playerKeys = ConnectedPlayers.Keys.ToList();
+                        var players = ConnectedPlayers.ToArray();
 
                         using (MemoryStream memoryStream = new MemoryStream())
                         {
                             memoryStream.Write(BitConverter.GetBytes((ushort)0), 0, 2);
                             memoryStream.WriteByte((byte)MunchkinMessageType.UpdatePlayers);
-                            memoryStream.WriteByte((byte)playerKeys.Count);
+                            memoryStream.WriteByte((byte)players.Length);
 
-                            foreach (var key in playerKeys)
+                            foreach (var player in players)
                             {
-                                var byteId = Encoding.UTF8.GetBytes(ConnectedPlayers[key].Id ?? string.Empty);
+                                var byteId = Encoding.UTF8.GetBytes(player.Value.Id ?? string.Empty);
                                 memoryStream.WriteByte((byte)byteId.Length);
                                 memoryStream.Write(byteId, 0, byteId.Length);
 
-                                var byteName = Encoding.UTF8.GetBytes(ConnectedPlayers[key].Name ?? string.Empty);
+                                var byteName = Encoding.UTF8.GetBytes(player.Value.Name ?? string.Empty);
                                 memoryStream.WriteByte((byte)byteName.Length);
                                 memoryStream.Write(byteName, 0, byteName.Length);
 
-                                memoryStream.WriteByte(ConnectedPlayers[key].Level);
-                                memoryStream.WriteByte(ConnectedPlayers[key].Modifiers);
+                                memoryStream.WriteByte(player.Value.Level);
+                                memoryStream.WriteByte(player.Value.Modifiers);
                             }
 
                             memoryStream.Seek(0, SeekOrigin.Begin);
@@ -259,9 +296,9 @@ namespace TcpMobile.Services
 
                             var message = memoryStream.ToArray();
 
-                            foreach (var key in playerKeys)
+                            foreach (var player in players)
                             {
-                                _lanServer.SendMessage(key, message);
+                                _lanServer.SendMessage(player.Key, message);
                             }
                         }
                     },
@@ -271,77 +308,5 @@ namespace TcpMobile.Services
                     }
                 );
         }
-
-        //public void StartUpdatePlayers()
-        //{
-        //    _gameClient.PacketSubject.AsObservable()
-        //        .TakeUntil(_destroy)
-        //        .Where(tcpEvent => tcpEvent.Type == TcpEventType.ReceiveData)
-        //        .Where(tcpEvent => tcpEvent.Data != null)
-        //        .Where(tcpEvent => tcpEvent.Data.MessageType == MunchkinMessageType.UpdatePlayers)
-        //        .Select(tcpEvent =>
-        //        {
-        //            var packet = tcpEvent.Data;
-        //            var position = 3;
-        //            var players = new List<PlayerInfo>();
-        //            var playersCount = packet.Buffer[position++];
-        //            for (byte i = 0; i < playersCount; i++)
-        //            {
-        //                var p = new PlayerInfo();
-
-        //                p.Id = Encoding.UTF8.GetString(packet.Buffer, position + 1, packet.Buffer[position]);
-        //                position += packet.Buffer[position];
-        //                position++;
-
-        //                p.Name = Encoding.UTF8.GetString(packet.Buffer, position + 1, packet.Buffer[position]);
-        //                position += packet.Buffer[position];
-        //                position++;
-
-        //                p.Level = packet.Buffer[position++];
-        //                p.Modifiers = packet.Buffer[position++];
-        //                players.Add(p);
-        //            }
-        //            return players;
-        //        })
-        //        .Subscribe(updatedPlayers =>
-        //        {
-        //            UpdatePlayers(updatedPlayers);
-        //        });
-        //}
-
-        //public void UpdatePlayers(List<PlayerInfo> updatedPlayers)
-        //{
-        //    var indexesToDelete = new List<int>();
-        //    for (var i = 0; i < _players.Count; i++)
-        //    {
-        //        if (!updatedPlayers.Any(p => p.Id == _players[i].Id))
-        //        {
-        //            indexesToDelete.Add(i);
-        //        }
-        //    }
-        //    indexesToDelete.ForEach(i => _players.RemoveAt(i));
-
-        //    foreach (var updatedPlayer in updatedPlayers)
-        //    {
-        //        var p = _players.FirstOrDefault(pl => pl.Id == updatedPlayer.Id);
-        //        if (p != null)
-        //        {
-        //            p.Name = updatedPlayer.Name;
-        //            p.Level = updatedPlayer.Level;
-        //            p.Modifiers = updatedPlayer.Modifiers;
-        //        }
-        //        else
-        //        {
-        //            _players.Add(new Player
-        //            {
-        //                Id = updatedPlayer.Id,
-        //                Name = updatedPlayer.Name,
-        //                Level = updatedPlayer.Level,
-        //                Modifiers = updatedPlayer.Modifiers
-        //            });
-        //        }
-
-        //    }
-        //}
     }
 }
