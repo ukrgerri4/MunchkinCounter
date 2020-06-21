@@ -3,6 +3,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reactive;
 using System.Reactive.Subjects;
+using TcpMobile.ExtendedComponents;
+using TcpMobile.Views;
 using Xamarin.Forms;
 
 namespace TcpMobile
@@ -23,7 +25,7 @@ namespace TcpMobile
 
             InitializeComponent();
 
-            MainPage = _serviceProvider.GetService<MainPage>();
+            MainPage = new MunchkinNavigationPage(_serviceProvider.GetService<SingleGamePage>(), _serviceProvider);
         }
 
         protected override void OnStart()

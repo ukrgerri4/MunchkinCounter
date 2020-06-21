@@ -116,15 +116,28 @@ namespace TcpMobile.Views
             BindingContext = _viewModel;
         }
 
-        private void TryCreate(object sender, EventArgs args)
+        private async void TryCreate(object sender, EventArgs args)
         {
-            _gameServer.Start();
-            
-            _gameClient.StartUpdatePlayers();
-            _gameClient.ConnectSelf();
-            _gameClient.SendPlayerInfo();
+            try
+            {
+                _gameServer.Start();
 
-            _viewModel.WaitingPlayers = true;
+                _gameClient.StartUpdatePlayers();
+                _gameClient.ConnectSelf();
+                _gameClient.SendPlayerInfo();
+
+                _viewModel.WaitingPlayers = true;
+            }
+            catch (Exception e)
+            {
+                await DisplayAlert("Create game error:", "Please check your lan connection.", "Ok");
+                
+                var stopResult = _gameServer.Stop();
+                _gameServer.ConnectedPlayers.Clear();
+                _gameClient.Players.Clear();
+
+                _gameLogger.Error($"Create game error: {e.Message}");
+            }
         }
 
         private async void TryStart(object sender, EventArgs args)

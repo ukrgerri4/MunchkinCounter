@@ -14,17 +14,22 @@ namespace TcpMobile.ExtendedComponents
     {
         public MunchkinNavigationPage(Page root, IServiceProvider serviceProvider) : base(root)
         {
-            On<Android>().SetBarHeight(80);
+            On<Android>().SetBarHeight(100);
 
-            ToolbarItems.Add(new ToolbarItem("", "settings64.png", async () =>
+            ToolbarItems.Add(new ToolbarItem("Menu", null, async () =>
             {
-                await Navigation.PushModalAsync(serviceProvider.GetService<SettingsPage>(), false);
+                await Navigation.PushModalAsync(serviceProvider.GetService<GameMenuPage>(), false);
             }));
 
-            ToolbarItems.Add(new ToolbarItem("", "console64.png", async () =>
-            {
-                await Navigation.PushModalAsync(serviceProvider.GetService<DebugPage>(), false);
-            }));
+            //ToolbarItems.Add(new ToolbarItem("", "settings64.png", async () =>
+            //{
+            //    await Navigation.PushModalAsync(serviceProvider.GetService<SettingsPage>(), false);
+            //}));
+
+            //ToolbarItems.Add(new ToolbarItem("", "console64.png", async () =>
+            //{
+            //    await Navigation.PushModalAsync(serviceProvider.GetService<DebugPage>(), false);
+            //}));
         }
     }
 }

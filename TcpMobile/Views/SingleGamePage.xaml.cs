@@ -3,7 +3,7 @@ using Infrastracture.Interfaces;
 using Infrastracture.Interfaces.GameMunchkin;
 using Microsoft.Extensions.Configuration;
 using System;
-
+using TcpMobile.Views;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 

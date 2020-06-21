@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             x:Class="TcpMobile.Views.GameMenuPage">
+    
+        <StackLayout VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand" Padding="40" BackgroundColor="Gray">
+            <StackLayout IsVisible="{Binding NotInGame}">
+                <Button Text="Create game" Clicked="GoToCreateGame"></Button>
+                <Button Text="Join game" Clicked="GoToJoinGame"></Button>
+                <Button Text="Single game" Clicked="GoToSingleGame"></Button>
+            </StackLayout>
+
+            <StackLayout IsVisible="{Binding InGame}">
+                <Button Text="Return to game" Clicked="CloseModal"></Button>
+                <Button Text="Exit to menu" Clicked="ExitToMenu"></Button>
+            </StackLayout>
+
+            <StackLayout>
+                <Button Text="Settings" Clicked="OpenSettings"></Button>
+                <Button Text="Debug" Clicked="OpenDebug"></Button>
+                <Button Text="Exit" Clicked="Exit"></Button>
+            </StackLayout>
+
+        </StackLayout>
+</ContentPage>

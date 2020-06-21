@@ -2,6 +2,7 @@
 using System;
 using System.Linq;
 using TcpMobile.Models;
+using TcpMobile.Views;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -49,18 +50,28 @@ namespace TcpMobile
                 };
             });
 
-            ListView.ItemSelected += (sender, e) =>
+            ListView.ItemSelected += async (sender, e) =>
             {
                 if (((SideBarMenuItem)(e?.SelectedItem))?.Type == null)
                     return;
 
                 var selectedType = ((SideBarMenuItem)e.SelectedItem).Type;
-                var mainPage = _serviceProvider.GetService<MainPage>();
-                mainPage.NavigateFromMenu(selectedType);
+                switch (selectedType)
+                {
+                    case MenuItemType.CreateGamePage:
+                        await Navigation.PushAsync(_serviceProvider.GetService<CreateGamePage>());
+                        break;
+                    case MenuItemType.JoinGamePage:
+                        await Navigation.PushAsync(_serviceProvider.GetService<JoinGamePage>());
+                        break;
+                    case MenuItemType.SingleGamePage:
+                        await Navigation.PushAsync(_serviceProvider.GetService<SingleGamePage>());
+                        break;
+                }
             };
 
 
-            this.Content = new StackLayout { Children = { ListView } };
+            Content = new StackLayout { Children = { ListView } };
         }
     }
 }

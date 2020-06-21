@@ -31,22 +31,15 @@ namespace TcpMobile.Droid
 
             base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
         }
-
-        private bool _isBackPressed;
-        public override void OnBackPressed()
+        
+        public async override void OnBackPressed()
         {
-            if (_isBackPressed)
+            if (App.Current.MainPage.Navigation.NavigationStack.Count > 1)
             {
-                FinishAffinity(); // inform Android that we are done with the activity
+                await App.Current.MainPage.Navigation.PopAsync();
                 return;
             }
-
-            _isBackPressed = true;
-            Toast.MakeText(this, "Press back again to exit", ToastLength.Short).Show();
-
-            // Disable back to exit after 2 seconds.
-            new Handler().PostDelayed(() => { _isBackPressed = false; }, 2000);
-            return;
+            base.OnBackPressed();
         }
 
         void ConfigureServices(HostBuilderContext ctx, IServiceCollection services)

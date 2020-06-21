@@ -1,11 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using TcpMobile.ExtendedComponents;
-using TcpMobile.Models;
 using TcpMobile.Views;
 using Xamarin.Forms;
 
@@ -18,7 +13,6 @@ namespace TcpMobile
     {
         private readonly System.IServiceProvider _serviceProvider;
         private readonly IConfiguration _configuration;
-        Dictionary<MenuItemType, Page> MenuPages;
 
         public MainPage(System.IServiceProvider serviceProvider,
             IConfiguration configuration)
@@ -26,27 +20,18 @@ namespace TcpMobile
             _serviceProvider = serviceProvider;
             _configuration = configuration;
             InitializeComponent();
-            
+
             MasterBehavior = MasterBehavior.Popover;
-            MenuPages = new Dictionary<MenuItemType, Page>
-            {
-                { MenuItemType.CreateGamePage, new MunchkinNavigationPage(_serviceProvider.GetService<CreateGamePage>(), _serviceProvider) },
-                { MenuItemType.JoinGamePage, new MunchkinNavigationPage(_serviceProvider.GetService<JoinGamePage>(), _serviceProvider) },
-                { MenuItemType.SingleGamePage, new MunchkinNavigationPage(_serviceProvider.GetService<SingleGamePage>(), _serviceProvider) }
-            };
-
-            var defaultPage = (MenuItemType)Convert.ToInt32(_configuration["DefaultPage"]);
-
-            var menuPage = _serviceProvider.GetService<MenuPage>();
-
-            Master = menuPage;
-            Detail = MenuPages[defaultPage];
-        }
-
-        public void NavigateFromMenu(MenuItemType page)
-        {
-            Detail = MenuPages[page];
             IsPresented = false;
+
+            Master = _serviceProvider.GetService<MenuPage>();
+            Detail = _serviceProvider.GetService<CreateGamePage>();
+
         }
+
+        //public async void GoBack()
+        //{
+        //    await Navigation.PopAsync();
+        //}
     }
 }
