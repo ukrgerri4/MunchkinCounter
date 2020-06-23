@@ -87,6 +87,9 @@ namespace TcpMobile.Services
 
                 _destroy.OnNext(Unit.Default);
 
+                Host.Fullness = 0;
+                ConnectedPlayers.Clear();
+
                 return Result.Ok();
             }
             catch (Exception e)
@@ -197,11 +200,17 @@ namespace TcpMobile.Services
                                     // log some warning
                                 }
 
-                                if (!ConnectedPlayers.TryAdd(packet.SenderId, playerInfo))
+                                var playerAdded = ConnectedPlayers.TryAdd(packet.SenderId, playerInfo);
+
+                                if (!playerAdded)
                                 {
                                     ConnectedPlayers[packet.SenderId].Name = playerInfo.Name;
                                     ConnectedPlayers[packet.SenderId].Level = playerInfo.Level;
                                     ConnectedPlayers[packet.SenderId].Modifiers = playerInfo.Modifiers;
+                                }
+                                else
+                                {
+                                    Host.Fullness++;
                                 }
 
                                 break;
@@ -249,7 +258,11 @@ namespace TcpMobile.Services
                         if (!removeResult)
                         {
                             _gameLogger.Error($"Player connection id:[{(string)tcpEvent.Data}] not found.");
+                            return;
                         }
+
+                        Host.Fullness--;
+                        _updatePlayersSubject.OnNext(Unit.Default);
                     },
                     error =>
                     {

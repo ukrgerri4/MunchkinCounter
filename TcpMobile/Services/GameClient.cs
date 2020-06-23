@@ -18,6 +18,7 @@ using System.Text;
 using TcpMobile.Game.Models;
 using TcpMobile.Tcp.Enums;
 using TcpMobile.Tcp.Models;
+using Xamarin.Forms;
 
 namespace TcpMobile.Services
 {
@@ -29,9 +30,9 @@ namespace TcpMobile.Services
 
         public ObservableCollection<MunchkinHost> Hosts { get; set; }
         public Player MyPlayer { get; set; }
-        public ObservableCollection<Player> Players { get; set; }
+        public List<Player> Players { get; set; }
 
-
+        
         private IDisposable _hostsSearchSubscribe;
 
         private Subject<Unit> _destroy = new Subject<Unit>();
@@ -53,12 +54,36 @@ namespace TcpMobile.Services
                 Id = _configuration["DeviceId"],
                 Name = "Player_1"
             };
-            Players = new ObservableCollection<Player>();
+            Players = new List<Player>();
         }
 
         public void Connect(IPAddress ip)
         {
             _lanClient.Connect(ip);
+        }
+
+        public Result Stop()
+        {
+            try
+            {
+                _hostsSearchSubscribe?.Dispose();
+                _destroy.OnNext(Unit.Default);
+                _lanClient.StopListeningBroadcast();
+                _lanClient.Disconnect();
+
+                Hosts.Clear();
+                Players.Clear();
+                MyPlayer.Level = 1;
+                MyPlayer.Modifiers = 0;
+
+                MessagingCenter.Send<IGameClient>(this, "PlayersUpdated");
+
+                return Result.Ok();
+            }
+            catch (Exception e)
+            {
+                return Result.Fail($"Client stop error: {e.Message}");
+            }
         }
 
         public void ConnectSelf()
@@ -106,6 +131,62 @@ namespace TcpMobile.Services
                 if (initMessageResult.IsFail)
                 {
                     return Result.Fail("Init message during connect to self fail.");
+                }
+
+                return Result.Ok();
+            }
+        }
+
+        public Result SendUpdatedPlayerState()
+        {
+            using (MemoryStream memoryStream = new MemoryStream())
+            {
+                memoryStream.Write(BitConverter.GetBytes((ushort)0), 0, 2);
+                memoryStream.WriteByte((byte)MunchkinMessageType.UpdatePlayerState);
+                memoryStream.WriteByte(MyPlayer.Level);
+                memoryStream.WriteByte(MyPlayer.Modifiers);
+
+                memoryStream.WriteByte(10);
+                memoryStream.WriteByte(4);
+
+                memoryStream.Seek(0, SeekOrigin.Begin);
+                memoryStream.Write(BitConverter.GetBytes((ushort)memoryStream.Length), 0, 2);
+                memoryStream.Seek(0, SeekOrigin.End);
+                
+                var initMessageResult = _lanClient.SendMessage(memoryStream.ToArray());
+
+                if (initMessageResult.IsFail)
+                {
+                    return Result.Fail("Update state message fail.");
+                }
+
+                return Result.Ok();
+            }
+        }
+
+        public Result SendUpdatedPlayerName()
+        {
+            using (MemoryStream memoryStream = new MemoryStream())
+            {
+                memoryStream.Write(BitConverter.GetBytes((ushort)0), 0, 2);
+                memoryStream.WriteByte((byte)MunchkinMessageType.UpdatePlayerName);
+
+                var byteName = Encoding.UTF8.GetBytes(MyPlayer.Name ?? string.Empty);
+                memoryStream.WriteByte((byte)byteName.Length);
+                memoryStream.Write(byteName, 0, byteName.Length);
+
+                memoryStream.WriteByte(10);
+                memoryStream.WriteByte(4);
+
+                memoryStream.Seek(0, SeekOrigin.Begin);
+                memoryStream.Write(BitConverter.GetBytes((ushort)memoryStream.Length), 0, 2);
+                memoryStream.Seek(0, SeekOrigin.End);
+
+                var initMessageResult = _lanClient.SendMessage(memoryStream.ToArray());
+
+                if (initMessageResult.IsFail)
+                {
+                    return Result.Fail("Update name message fail.");
                 }
 
                 return Result.Ok();
@@ -183,8 +264,9 @@ namespace TcpMobile.Services
                         Modifiers = updatedPlayer.Modifiers
                     });
                 }
-
             }
+
+            MessagingCenter.Send<IGameClient>(this, "PlayersUpdated");
         }
 
         public void StartSearchHosts()
@@ -232,6 +314,8 @@ namespace TcpMobile.Services
                         hostToUpdate.Capacity = host.Capacity;
                         hostToUpdate.Fullness = host.Fullness;
                     }
+
+                    MessagingCenter.Send<IGameClient>(this, "HostsUpdated");
                 });
         }
 

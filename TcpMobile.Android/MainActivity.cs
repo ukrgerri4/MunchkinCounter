@@ -1,7 +1,9 @@
 ﻿using Android.App;
+using Android.Content;
 using Android.Content.PM;
 using Android.OS;
 using Android.Runtime;
+using Android.Views;
 using Android.Widget;
 using Java.Lang;
 using Microsoft.Extensions.DependencyInjection;
@@ -31,7 +33,7 @@ namespace TcpMobile.Droid
 
             base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
         }
-        
+
         public async override void OnBackPressed()
         {
             if (App.Current.MainPage.Navigation.NavigationStack.Count > 1)

@@ -78,6 +78,7 @@ namespace TcpMobile.Tcp
         {
             _mainTcpSocket?.Close();
             _connectionChecker?.Dispose();
+            ConfirmedConnections.Clear();
         }
 
         private void OnReceiveConnection(IAsyncResult asyncResult)

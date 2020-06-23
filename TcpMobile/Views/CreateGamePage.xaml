@@ -4,7 +4,18 @@
              xmlns:d="http://xamarin.com/schemas/2014/forms/design"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
-             x:Class="TcpMobile.Views.CreateGamePage">
+             x:Class="TcpMobile.Views.CreateGamePage"
+             NavigationPage.HasBackButton="False">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Style x:Key="gameLabel" TargetType="Label">
+                <Setter Property = "FontAttributes" Value="Bold" />
+                <Setter Property = "FontSize"  Value="20" />
+                <Setter Property = "VerticalOptions"  Value="Center" />
+                <Setter Property = "HorizontalOptions"  Value="Center" />
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
     <ContentPage.Content>
         <StackLayout>
             <StackLayout
@@ -39,7 +50,13 @@
                 IsVisible="{Binding WaitingPlayers}"
                 HorizontalOptions="FillAndExpand"
                 VerticalOptions="FillAndExpand">
-                <ListView x:Name="connectedPlayersView" HasUnevenRows="True" ItemsSource="{Binding Players}">
+                <StackLayout Orientation="Horizontal">
+                    <Label Text="{Binding Host.Name}"></Label>
+                    <Label Text="{Binding Host.Fullness}"></Label>
+                    <Label Text="/"></Label>
+                    <Label Text="{Binding Host.Capacity}"></Label>
+                </StackLayout>
+                <ListView x:Name="connectedPlayersView" HasUnevenRows="True" ItemsSource="{Binding AllPlayers}">
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <ViewCell>
@@ -47,8 +64,6 @@
                                     <StackLayout Orientation="Horizontal" VerticalOptions="Center">
                                         <Label Text="{Binding Id}"/>
                                         <Label Text="{Binding Name}" />
-                                        <!--<Label Text="{Binding Level}" />
-                                        <Label Text="{Binding Modifiers}" />-->
                                     </StackLayout>
                                 </ViewCell.View>
                             </ViewCell>
@@ -59,28 +74,76 @@
                 <Button Text="Cancel" HorizontalOptions="Center" VerticalOptions="EndAndExpand" Clicked="TryStop"></Button>
             </StackLayout>
             <StackLayout
-                x:Name="processLayout"
                 IsVisible="{Binding Process}"
                 HorizontalOptions="FillAndExpand"
                 VerticalOptions="FillAndExpand">
-                <ListView x:Name="gameView" HasUnevenRows="True" ItemsSource="{Binding Players}">
-                    <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <ViewCell>
-                                <ViewCell.View>
-                                    <StackLayout Orientation="Horizontal" VerticalOptions="Center">
-                                        <Label Text="{Binding Id}"/>
-                                        <Label Text="{Binding Name}" />
-                                        <Label Text="{Binding Level}" />
-                                        <Label Text="{Binding Modifiers}" />
-                                    </StackLayout>
-                                </ViewCell.View>
-                            </ViewCell>
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>
+                <Grid RowSpacing="0" ColumnSpacing="0" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <StackLayout Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" Grid.ColumnSpan="2" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
+                        <ListView x:Name="gameView" HasUnevenRows="True" ItemsSource="{Binding ExeptMePlayers}">
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <ViewCell>
+                                        <ViewCell.View>
+                                            <StackLayout Orientation="Horizontal" VerticalOptions="Center">
+                                                <!--<Label Text="{Binding Id}"/>-->
+                                                <Frame BorderColor="Black" Padding="0">
+                                                    <Label Text="{Binding Name}" Style="{StaticResource gameLabel}"/>
+                                                </Frame> 
+                                                <Label Text="{Binding Level}" Style="{StaticResource gameLabel}"/>
+                                                <Label Text="{Binding Modifiers}" Style="{StaticResource gameLabel}"/>
+                                                <Label Text="{Binding Power}" Style="{StaticResource gameLabel}"/>
+                                            </StackLayout>
+                                        </ViewCell.View>
+                                    </ViewCell>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                    </StackLayout>
 
-                <Button Text="Cancel" HorizontalOptions="Center" VerticalOptions="EndAndExpand" Clicked="TryStop"></Button>
+                    <FlexLayout Grid.Row="2" Grid.ColumnSpan="2" Direction="Row" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
+                        <StackLayout FlexLayout.Basis="33.33%" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
+                            <Button Text="Up" Clicked="IncreaseLevel"></Button>
+                            <Label
+                                Text="{Binding MyPlayer.Level}"
+                                FontSize="30"
+                                HorizontalTextAlignment="Center"
+                                VerticalTextAlignment="Center"
+                                HorizontalOptions="FillAndExpand"
+                                VerticalOptions="FillAndExpand"></Label>
+                            <Button Text="Down" Clicked="DecreaseLevel"></Button>
+                        </StackLayout>
+                        <StackLayout FlexLayout.Basis="33.33%" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
+                            <Button Text="Up" Clicked="IncreaseModifiers"></Button>
+                            <Label 
+                                Text="{Binding MyPlayer.Modifiers}"
+                                FontSize="30"
+                                HorizontalTextAlignment="Center"
+                                VerticalTextAlignment="Center"
+                                HorizontalOptions="FillAndExpand"
+                                VerticalOptions="FillAndExpand"></Label>
+                            <Button Text="Down" Clicked="DecreaseModifiers"></Button>
+                        </StackLayout>
+                        <StackLayout FlexLayout.Basis="33.33%" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
+                            <Label 
+                                Text="{Binding MyPlayer.Power}"
+                                FontSize="30"
+                                HorizontalTextAlignment="Center"
+                                VerticalTextAlignment="Center"
+                                HorizontalOptions="FillAndExpand"
+                                VerticalOptions="FillAndExpand"></Label>
+                        </StackLayout>
+                    </FlexLayout>
+                </Grid>
+                <!--<Button Text="Cancel" HorizontalOptions="Center" VerticalOptions="EndAndExpand" Clicked="TryStop"></Button>-->
             </StackLayout>
         </StackLayout>
     </ContentPage.Content>

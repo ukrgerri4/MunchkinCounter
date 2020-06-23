@@ -5,6 +5,7 @@ using Infrastracture.Models;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Net;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
@@ -13,14 +14,20 @@ namespace TcpMobile
 {
     public class JoinGameViewModel: INotifyPropertyChanged
     {
+        private readonly IGameClient _gameClient;
+
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged(string prop = "") => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
 
-        public ObservableCollection<MunchkinHost> Hosts { get; set; }
-        public Player MyPlayer { get; set; }
+        public JoinGameViewModel(IGameClient gameClient)
+        {
+            _gameClient = gameClient;
+        }
 
-        public ObservableCollection<Player> Players { get; set; }
-
+        public ObservableCollection<MunchkinHost> Hosts => _gameClient.Hosts;
+        public Player MyPlayer => _gameClient.MyPlayer;
+        public ObservableCollection<Player> AllPlayers => new ObservableCollection<Player>(_gameClient.Players);
+        public ObservableCollection<Player> ExeptMePlayers => new ObservableCollection<Player>(_gameClient.Players.Where(p => p.Id != _gameClient.MyPlayer.Id));
 
         private bool _hostSearch = true;
         private bool _waitingPlayers = false;
@@ -82,6 +89,11 @@ namespace TcpMobile
                 }
             }
         }
+
+        public bool ConnectionsExists
+        {
+            get => _hostSearch && Hosts.Any();
+        }
     }
 
     [XamlCompilation(XamlCompilationOptions.Compile)]
@@ -101,15 +113,26 @@ namespace TcpMobile
 
             InitializeComponent();
 
-            _viewModel = new JoinGameViewModel
-            {
-                Hosts = _gameClient.Hosts,
-                Players = _gameClient.Players,
-                MyPlayer = _gameClient.MyPlayer,
-                HostSearch = true
-            };
+            _viewModel = new JoinGameViewModel(_gameClient);
 
             BindingContext = _viewModel;
+
+            _gameClient.StartSearchHosts();
+
+            MessagingCenter.Subscribe<IGameClient>(
+                this,
+                "HostsUpdated",
+                (sender) => {
+                    _viewModel.OnPropertyChanged(nameof(_viewModel.ConnectionsExists));
+            });
+
+            MessagingCenter.Subscribe<IGameClient>(
+                this,
+                "PlayersUpdated",
+                (sender) => {
+                    _viewModel.OnPropertyChanged(nameof(_viewModel.AllPlayers));
+                    _viewModel.OnPropertyChanged(nameof(_viewModel.ExeptMePlayers));
+                });
         }
 
         private void SearchForHosts(object sender, EventArgs e)
@@ -134,6 +157,7 @@ namespace TcpMobile
             if (hostsView.SelectedItem != null && hostsView.SelectedItem is MunchkinHost munchkinHost && munchkinHost?.IpAddress != null)
             {
                 _gameClient.Connect(munchkinHost.IpAddress);
+                _gameClient.StartUpdatePlayers();
                 var sendingInfoResult = _gameClient.SendPlayerInfo();
 
                 hostsView.SelectedItem = null;
@@ -144,17 +168,45 @@ namespace TcpMobile
                     return;
                 }
 
-                _viewModel.WaitingPlayers = true;
+                _viewModel.Process = true;
             }
         }
 
-        protected override void OnAppearing()
+        private void IncreaseLevel(object sender, EventArgs e)
         {
+            if (_gameClient.MyPlayer.Level < 10)
+            {
+                _gameClient.MyPlayer.Level++;
+                _gameClient.SendUpdatedPlayerState();
+            }
+
         }
 
-        protected override void OnDisappearing()
+        private void DecreaseLevel(object sender, EventArgs e)
         {
-            
+            if (_gameClient.MyPlayer.Level > 1)
+            {
+                _gameClient.MyPlayer.Level--;
+                _gameClient.SendUpdatedPlayerState();
+            }
+        }
+
+        private void IncreaseModifiers(object sender, EventArgs e)
+        {
+            if (_gameClient.MyPlayer.Modifiers < 255)
+            {
+                _gameClient.MyPlayer.Modifiers++;
+                _gameClient.SendUpdatedPlayerState();
+            }
+        }
+
+        private void DecreaseModifiers(object sender, EventArgs e)
+        {
+            if (_gameClient.MyPlayer.Modifiers > 0)
+            {
+                _gameClient.MyPlayer.Modifiers--;
+                _gameClient.SendUpdatedPlayerState();
+            }
         }
     }
 }

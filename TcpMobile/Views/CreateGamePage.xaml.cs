@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -16,13 +17,22 @@ namespace TcpMobile.Views
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged(string prop = "") => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
 
-        public MunchkinHost Host { get; set; }
-        public Player MyPlayer { get; set; }
-        public ObservableCollection<Player> Players { get; set; }
+        private readonly IGameClient _gameClient;
+        private readonly IGameServer _gameServer;
+        public CreateGameViewModel(IGameClient gameClient, IGameServer gameServer)
+        {
+            _gameClient = gameClient;
+            _gameServer = gameServer;
+        }
 
-        private bool _creatingGame;
-        private bool _waitingPlayers;
-        private bool _process;
+        public MunchkinHost Host => _gameServer.Host;
+        public Player MyPlayer => _gameClient.MyPlayer;
+        public ObservableCollection<Player> AllPlayers => new ObservableCollection<Player>(_gameClient.Players);
+        public ObservableCollection<Player> ExeptMePlayers => new ObservableCollection<Player>(_gameClient.Players.Where(p => p.Id != _gameClient.MyPlayer.Id));
+
+        private bool _creatingGame = true;
+        private bool _waitingPlayers = false;
+        private bool _process = false;
 
         public bool CreatingGame
         {
@@ -106,14 +116,23 @@ namespace TcpMobile.Views
 
             InitializeComponent();
 
-            _viewModel = new CreateGameViewModel {
-                Players = _gameClient.Players,
-                Host = _gameServer.Host,
-                MyPlayer = _gameClient.MyPlayer,
-                CreatingGame = true
-            };
+            _viewModel = new CreateGameViewModel(_gameClient, _gameServer);
+            //{
+            //    Players = _gameClient.Players,
+            //    Host = _gameServer.Host,
+            //    MyPlayer = _gameClient.MyPlayer,
+            //    CreatingGame = true
+            //};
 
             BindingContext = _viewModel;
+
+            MessagingCenter.Subscribe<IGameClient>(
+                this,
+                "PlayersUpdated",
+                (sender) => {
+                    _viewModel.OnPropertyChanged(nameof(_viewModel.AllPlayers));
+                    _viewModel.OnPropertyChanged(nameof(_viewModel.ExeptMePlayers));
+                });
         }
 
         private async void TryCreate(object sender, EventArgs args)
@@ -132,10 +151,9 @@ namespace TcpMobile.Views
             {
                 await DisplayAlert("Create game error:", "Please check your lan connection.", "Ok");
                 
-                var stopResult = _gameServer.Stop();
-                _gameServer.ConnectedPlayers.Clear();
-                _gameClient.Players.Clear();
-
+                var serverStopResult = _gameServer.Stop();
+                var clientStopResult = _gameClient.Stop();
+                
                 _gameLogger.Error($"Create game error: {e.Message}");
             }
         }
@@ -162,12 +180,47 @@ namespace TcpMobile.Views
 
                 if (stopResult.IsFail) { _gameLogger.Error(stopResult.Error); }
 
-                _gameServer.ConnectedPlayers.Clear();
                 _gameClient.Players.Clear();
 
                 _viewModel.CreatingGame = true;
             }
         }
-        
+
+        private void IncreaseLevel(object sender, EventArgs e)
+        {
+            if (_gameClient.MyPlayer.Level < 10)
+            {
+                _gameClient.MyPlayer.Level++;
+                _gameClient.SendUpdatedPlayerState();
+            }
+
+        }
+
+        private void DecreaseLevel(object sender, EventArgs e)
+        {
+            if (_gameClient.MyPlayer.Level > 1)
+            {
+                _gameClient.MyPlayer.Level--;
+                _gameClient.SendUpdatedPlayerState();
+            }
+        }
+
+        private void IncreaseModifiers(object sender, EventArgs e)
+        {
+            if (_gameClient.MyPlayer.Modifiers < 255)
+            {
+                _gameClient.MyPlayer.Modifiers++;
+                _gameClient.SendUpdatedPlayerState();
+            }
+        }
+
+        private void DecreaseModifiers(object sender, EventArgs e)
+        {
+            if (_gameClient.MyPlayer.Modifiers > 0)
+            {
+                _gameClient.MyPlayer.Modifiers--;
+                _gameClient.SendUpdatedPlayerState();
+            }
+        }
     }
 }

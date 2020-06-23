@@ -21,15 +21,15 @@ namespace TcpMobile.ExtendedComponents
                 await Navigation.PushModalAsync(serviceProvider.GetService<GameMenuPage>(), false);
             }));
 
-            //ToolbarItems.Add(new ToolbarItem("", "settings64.png", async () =>
-            //{
-            //    await Navigation.PushModalAsync(serviceProvider.GetService<SettingsPage>(), false);
-            //}));
+            ToolbarItems.Add(new ToolbarItem("", "settings64.png", async () =>
+            {
+                await Navigation.PushModalAsync(serviceProvider.GetService<SettingsPage>(), false);
+            }));
 
-            //ToolbarItems.Add(new ToolbarItem("", "console64.png", async () =>
-            //{
-            //    await Navigation.PushModalAsync(serviceProvider.GetService<DebugPage>(), false);
-            //}));
+            ToolbarItems.Add(new ToolbarItem("", "console64.png", async () =>
+            {
+                await Navigation.PushModalAsync(serviceProvider.GetService<DebugPage>(), false);
+            }));
         }
     }
 }

@@ -1,6 +1,8 @@
 ﻿using Core.Models;
 using GameMunchkin.Models;
 using Infrastracture.Models;
+using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Net;
 
@@ -9,14 +11,17 @@ namespace Infrastracture.Interfaces.GameMunchkin
     public interface IGameClient
     {
         Player MyPlayer { get; set; }
-        ObservableCollection<Player> Players { get; set; }
+        List<Player> Players { get; set; }
         ObservableCollection<MunchkinHost> Hosts { get; set; }
 
         void Connect(IPAddress ip);
         void ConnectSelf();
         Result SendPlayerInfo();
+        Result SendUpdatedPlayerName();
+        Result SendUpdatedPlayerState();
         void StartSearchHosts();
         void StartUpdatePlayers();
+        Result Stop();
         void StopSearchHosts();
     }
 }
