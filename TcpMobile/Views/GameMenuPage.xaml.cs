@@ -77,7 +77,9 @@ namespace TcpMobile.Views
 
         private void ExitToMenu(object sender, EventArgs e)
         {
-
+            MessagingCenter.Send(this, "EndGame");
+            App.Current.MainPage.Navigation.PopToRootAsync();
+            ChangeMenuState();
         }
 
         private void Exit(object sender, EventArgs e)
@@ -97,6 +99,12 @@ namespace TcpMobile.Views
 
         protected override void OnAppearing()
         {
+            ChangeMenuState();
+            base.OnAppearing();
+        }
+
+        private void ChangeMenuState()
+        {
             var page = App.Current.MainPage.Navigation.NavigationStack.LastOrDefault();
             var inGame = page != null && (page is CreateGamePage || page is JoinGamePage);
 
@@ -105,7 +113,6 @@ namespace TcpMobile.Views
 
             OnPropertyChanged(nameof(InGame));
             OnPropertyChanged(nameof(NotInGame));
-            base.OnAppearing();
         }
     }
 }

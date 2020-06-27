@@ -3,9 +3,32 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:d="http://xamarin.com/schemas/2014/forms/design"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:magicGradients="clr-namespace:MagicGradients;assembly=MagicGradients"
              mc:Ignorable="d"
              x:Class="TcpMobile.App">
     <Application.Resources>
+        <Style TargetType="ContentPage" ApplyToDerivedTypes="True">
+            <Setter Property="ControlTemplate">
+                <Setter.Value>
+                    <ControlTemplate>
+                        <Grid HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
 
+                            <magicGradients:GradientView HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
+                                <magicGradients:GradientView.GradientSource>
+                                    <magicGradients:LinearGradient Angle="0">
+                                        <magicGradients:GradientStop Color="#795544" Offset="0" />
+                                        <magicGradients:GradientStop Color="#b5977b" Offset="0.7" />
+                                    </magicGradients:LinearGradient>
+                                </magicGradients:GradientView.GradientSource>
+                            </magicGradients:GradientView>
+                            <!--<Frame CornerRadius="30" Padding="0" Margin="0">-->
+                                <!--<Image Source="bgImage" Aspect="AspectFill"></Image>-->
+                            <!--</Frame>-->
+                            <ContentPresenter />
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Application.Resources>
 </Application>

@@ -7,6 +7,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading.Tasks;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -132,7 +133,17 @@ namespace TcpMobile.Views
                 (sender) => {
                     _viewModel.OnPropertyChanged(nameof(_viewModel.AllPlayers));
                     _viewModel.OnPropertyChanged(nameof(_viewModel.ExeptMePlayers));
-                });
+                }
+            );
+
+            MessagingCenter.Subscribe<GameMenuPage>(
+                this,
+                "EndGame",
+                async (sender) =>
+                {
+                    await Stop();
+                }
+            );
         }
 
         private async void TryCreate(object sender, EventArgs args)
@@ -173,6 +184,13 @@ namespace TcpMobile.Views
 
         private async void TryStop(object sender, EventArgs args)
         {
+            await Stop();
+        }
+
+        private async Task Stop()
+        {
+            if (_viewModel.CreatingGame) { return; }
+
             var confirm = await DisplayAlert("Stop game!", "stopping the game will entail disconnecting players", "Yes", "No");
             if (confirm)
             {

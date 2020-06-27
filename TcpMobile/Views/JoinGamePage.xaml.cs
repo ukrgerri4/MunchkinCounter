@@ -7,6 +7,8 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
+using TcpMobile.Views;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -133,6 +135,15 @@ namespace TcpMobile
                     _viewModel.OnPropertyChanged(nameof(_viewModel.AllPlayers));
                     _viewModel.OnPropertyChanged(nameof(_viewModel.ExeptMePlayers));
                 });
+
+            MessagingCenter.Subscribe<GameMenuPage>(
+                this,
+                "EndGame",
+                async (sender) =>
+                {
+                    await Stop();
+                }
+            );
         }
 
         private void SearchForHosts(object sender, EventArgs e)
@@ -208,5 +219,21 @@ namespace TcpMobile
                 _gameClient.SendUpdatedPlayerState();
             }
         }
+
+        private async Task Stop()
+        {
+            if (!_viewModel.HostSearch)
+            {
+                var confirm = await DisplayAlert("Stop game!", "Are you sure you want disconnect?", "Yes", "No");
+                if (!confirm) { return; }
+            }
+
+            _gameClient.StopSearchHosts();
+            _gameClient.Stop();
+
+            _viewModel.HostSearch = true;
+        }
+
+
     }
 }

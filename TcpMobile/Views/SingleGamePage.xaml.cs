@@ -26,6 +26,9 @@ namespace TcpMobile
             _brightnessService = brightnessService;
 
             InitializeComponent();
+            player.Modifiers = 89;
+
+            BackgroundImageSource = FileImageSource.FromFile("settings64.png");
 
             var userLevelBinding = new Binding { Source = player, Path = "Level" };
             userLevelLabel.SetBinding(Label.TextProperty, userLevelBinding);
@@ -40,19 +43,15 @@ namespace TcpMobile
             var levelColor = new Binding { Source = player, Path = "Color", Mode = BindingMode.OneWay };
             publicLevelLabel.SetBinding(Label.TextProperty, publicLevelBinding);
             publicLevelLabel.SetBinding(Label.TextColorProperty, levelColor);
-            publicLevelLabel.LineBreakMode = LineBreakMode.NoWrap;
 
             var publicModifiersBinding = new Binding { Source = player, Path = "Modifiers", Mode = BindingMode.OneWay };
             publicModifiersLabel.SetBinding(Label.TextProperty, publicModifiersBinding);
-            publicModifiersLabel.LineBreakMode = LineBreakMode.NoWrap;
 
             var publicPowerBinding = new Binding { Source = player, Path = "Power", Mode = BindingMode.OneWay };
             publicPowerLabel.SetBinding(Label.TextProperty, publicPowerBinding);
-            publicPowerLabel.LineBreakMode = LineBreakMode.NoWrap;
 
-            var publicNameBinding = new Binding { Source = player, Path = "Name", Mode = BindingMode.OneWay };
-            publicNameLabel.SetBinding(Label.TextProperty, publicNameBinding);
-            publicNameLabel.LineBreakMode = LineBreakMode.NoWrap;
+            //var publicNameBinding = new Binding { Source = player, Path = "Name", Mode = BindingMode.OneWay };
+            //publicNameLabel.SetBinding(Label.TextProperty, publicNameBinding);
         }
 
         private void IncreaseLevel(object sender, EventArgs e)

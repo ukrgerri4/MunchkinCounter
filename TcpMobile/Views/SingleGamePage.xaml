@@ -5,89 +5,90 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
              x:Class="TcpMobile.SingleGamePage">
-    <Grid RowSpacing="0" ColumnSpacing="0">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*" />
-            <RowDefinition Height="*" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="2*" />
-            <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
-        <StackLayout Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
-            <Label
-                x:Name="publicPowerLabel"
-                FontSize="200"
-                FontAttributes="Bold"
-                HorizontalOptions="FillAndExpand"
-                VerticalOptions="FillAndExpand"
-                HorizontalTextAlignment="Center"
-                VerticalTextAlignment="Center"
-                Rotation="180"></Label>
-            <Label x:Name="publicNameLabel" HorizontalTextAlignment="Center" Rotation="180"></Label>
-        </StackLayout>
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Style x:Key="singleGameLabel" TargetType="Label">
+                <Setter Property = "LineBreakMode"  Value="NoWrap" />
+                <Setter Property = "Padding" Value="0" />
+                <Setter Property = "FontFamily" Value="Quasimodo Regular.ttf#Quasimodo Regular" />
+                <Setter Property = "FontAttributes" Value="Bold" />
+                <Setter Property = "VerticalOptions"  Value="FillAndExpand" />
+                <Setter Property = "VerticalTextAlignment"  Value="Center" />
+                <Setter Property = "HorizontalOptions"  Value="FillAndExpand" />
+                <Setter Property = "HorizontalTextAlignment"  Value="Center" />
+            </Style>
 
-        <StackLayout Grid.Row="0" Grid.Column="1" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" Spacing="0">
-            <Label
-                x:Name="publicModifiersLabel"
-                FontSize="50"
-                FontAttributes="Bold"
-                HorizontalOptions="FillAndExpand"
-                VerticalOptions="FillAndExpand"
-                HorizontalTextAlignment="Center"
-                VerticalTextAlignment="Center"
-                Rotation="180"></Label>
-            <Label HorizontalTextAlignment="Center" Rotation="180">MOD</Label>
-        </StackLayout>
+            <Style x:Key="singleGameButton" TargetType="Button">
+                <Setter Property = "FontFamily" Value="Quasimodo Regular.ttf#Quasimodo Regular" />
+                <Setter Property = "FontSize" Value="20" />
+                <Setter Property = "TextColor" Value="#f9e9c4" />
+                <Setter Property = "Padding" Value="10,0,10,0" />
+                <Setter Property = "FontAttributes" Value="Bold" />
+                <Setter Property = "BorderColor" Value="Black" />
+                <Setter Property = "BorderWidth" Value="1" />
+                <Setter Property = "Margin"  Value="10,0,10,0" />
+                <Setter Property = "CornerRadius"  Value="30" />
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    <ContentPage.Content>
+        <Grid RowSpacing="0" ColumnSpacing="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
 
-        <StackLayout Grid.Row="1" Grid.Column="1" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" Spacing="0">
-            <Label 
-                    x:Name="publicLevelLabel"
-                    FontSize="80"
-                    FontAttributes="Bold"
-                    TextColor="Red"
-                    HorizontalOptions="FillAndExpand"
-                    VerticalOptions="FillAndExpand"
-                    HorizontalTextAlignment="Center"
-                    VerticalTextAlignment="Center"
-                    Rotation="180"></Label>
-                <Label HorizontalTextAlignment="Center" Rotation="180">LVL</Label>
-        </StackLayout>
-
-        <FlexLayout Grid.Row="2" Grid.ColumnSpan="2" Direction="Row" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
-            <StackLayout FlexLayout.Basis="33.33%" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
-                <Button Text="Up" Clicked="IncreaseLevel"></Button>
+            <Grid Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
                 <Label
-                    x:Name="userLevelLabel"
-                    FontSize="30"
-                    HorizontalTextAlignment="Center"
-                    VerticalTextAlignment="Center"
-                    HorizontalOptions="FillAndExpand"
-                    VerticalOptions="FillAndExpand"></Label>
-                <Button Text="Down" Clicked="DecreaseLevel"></Button>
-            </StackLayout>
-            <StackLayout FlexLayout.Basis="33.33%" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
-                <Button Text="Up" Clicked="IncreaseModifiers"></Button>
-                <Label 
-                    x:Name="userModifyersLabel"
-                    FontSize="30"
-                    HorizontalTextAlignment="Center"
-                    VerticalTextAlignment="Center"
-                    HorizontalOptions="FillAndExpand"
-                    VerticalOptions="FillAndExpand"></Label>
-                <Button Text="Down" Clicked="DecreaseModifiers"></Button>
-            </StackLayout>
-            <StackLayout FlexLayout.Basis="33.33%" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
-                <Label 
-                    x:Name="userPowerLabel"
-                    FontSize="30"
-                    HorizontalTextAlignment="Center"
-                    VerticalTextAlignment="Center"
-                    HorizontalOptions="FillAndExpand"
-                    VerticalOptions="FillAndExpand"></Label>
-            </StackLayout>
-        </FlexLayout>
+                    x:Name="publicPowerLabel"
+                    Style="{StaticResource singleGameLabel}"
+                    FontSize="150"
+                    TextColor="#7E8A48"
+                    Rotation="180"></Label>
+                <!--<Label x:Name="publicNameLabel" HorizontalTextAlignment="Center" Rotation="180" FontFamily="Quasimodo Regular.ttf#Quasimodo Regular"></Label>-->
+            </Grid>
 
-    </Grid>
+            <StackLayout Grid.Row="0" Grid.Column="1" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" Spacing="0">
+                <Label
+                    x:Name="publicModifiersLabel"
+                    Style="{StaticResource singleGameLabel}"
+                    FontSize="50"
+                    TextColor="#7E8A48"
+                    Rotation="180"></Label>
+                <Label HorizontalTextAlignment="Center" Rotation="180" FontFamily="Quasimodo Regular.ttf#Quasimodo Regular" FontSize="30">MOD</Label>
+            </StackLayout>
+
+            <StackLayout Grid.Row="1" Grid.Column="1" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" Spacing="0">
+                <Label 
+                        x:Name="publicLevelLabel"
+                        Style="{StaticResource singleGameLabel}"    
+                        FontSize="80"
+                        TextColor="Red"
+                        Rotation="180"></Label>
+                <Label HorizontalTextAlignment="Center" Rotation="180" FontFamily="Quasimodo Regular.ttf#Quasimodo Regular" FontSize="30">LVL</Label>
+            </StackLayout>
+
+            <FlexLayout Grid.Row="2" Grid.ColumnSpan="2" Direction="Row" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
+                <StackLayout FlexLayout.Basis="33.33%" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
+                    <Button Text="Up" Clicked="IncreaseLevel" BackgroundColor="#785343" Style="{StaticResource singleGameButton}"></Button>
+                    <Label x:Name="userLevelLabel" Style="{StaticResource singleGameLabel}" FontSize="35" TextColor="#90916f"></Label>
+                    <Button Text="Down" Clicked="DecreaseLevel" BackgroundColor="#B5977B" Style="{StaticResource singleGameButton}"></Button>    
+                </StackLayout>
+                <StackLayout FlexLayout.Basis="33.33%" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
+                    <Button Text="Up" Clicked="IncreaseModifiers" BackgroundColor="#785343" Style="{StaticResource singleGameButton}"></Button>
+                    <Label x:Name="userModifyersLabel" Style="{StaticResource singleGameLabel}" FontSize="35" TextColor="#90916f"></Label>
+                    <Button Text="Down" Clicked="DecreaseModifiers" BackgroundColor="#B5977B" Style="{StaticResource singleGameButton}"></Button>
+                </StackLayout>
+                <StackLayout FlexLayout.Basis="33.33%" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
+                    <Label x:Name="userPowerLabel" Style="{StaticResource singleGameLabel}" FontSize="35" TextColor="#90916f"></Label>
+                </StackLayout>
+            </FlexLayout>
+
+        </Grid>
+    </ContentPage.Content>
 </ContentPage>
