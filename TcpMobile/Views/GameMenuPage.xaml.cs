@@ -89,12 +89,12 @@ namespace TcpMobile.Views
 
         private async void OpenSettings(object sender, EventArgs e)
         {
-            await Navigation.PushModalAsync(_serviceProvider.GetService<SettingsPage>());
+            await Navigation.PushModalAsync(new MunchkinModalNavigationPage(_serviceProvider.GetService<SettingsPage>()));
         }
 
         private async void OpenDebug(object sender, EventArgs e)
         {
-            await Navigation.PushModalAsync(_serviceProvider.GetService<DebugPage>());
+            await Navigation.PushModalAsync(new MunchkinModalNavigationPage(_serviceProvider.GetService<DebugPage>()));
         }
 
         protected override void OnAppearing()

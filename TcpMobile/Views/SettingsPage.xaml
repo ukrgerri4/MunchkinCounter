@@ -5,6 +5,9 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
              x:Class="TcpMobile.SettingsPage">
+    <NavigationPage.TitleView>
+        <Label Text="Settings" Style="{StaticResource navBarTitleLabel}"/>
+    </NavigationPage.TitleView>
     <ContentPage.Content>
         <StackLayout VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand" Padding="20" >
             <StackLayout x:Name="infoBlock" VerticalOptions="Start" HorizontalOptions="Start">

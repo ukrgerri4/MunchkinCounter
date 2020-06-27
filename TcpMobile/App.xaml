@@ -22,13 +22,19 @@
                                 </magicGradients:GradientView.GradientSource>
                             </magicGradients:GradientView>
                             <!--<Frame CornerRadius="30" Padding="0" Margin="0">-->
-                            <Image Source="bgImage" Aspect="AspectFill"></Image>
+                                <Image Source="bgImage" Aspect="AspectFill"></Image>
                             <!--</Frame>-->
                             <ContentPresenter />
                         </Grid>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
+        </Style>
+        <Style x:Key="navBarTitleLabel" TargetType="{x:Type Label}">
+            <Setter Property = "FontFamily" Value="Quasimodo Regular.ttf#Quasimodo Regular" />
+            <Setter Property = "FontSize" Value="25" />
+            <Setter Property = "TextColor" Value="#f9e9c4" />
+            <Setter Property = "FontAttributes" Value="Bold" />
         </Style>
     </Application.Resources>
 </Application>

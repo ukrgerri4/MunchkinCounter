@@ -72,7 +72,7 @@ namespace TcpMobile
 
         private void IncreaseModifiers(object sender, EventArgs e)
         {
-            if (player.Modifiers < 255)
+            if (player.Power < 99)
             {
                 player.Modifiers++;
             }

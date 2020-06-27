@@ -18,17 +18,17 @@ namespace TcpMobile.ExtendedComponents
 
             ToolbarItems.Add(new ToolbarItem("Menu", null, async () =>
             {
-                await Navigation.PushModalAsync(serviceProvider.GetService<GameMenuPage>(), false);
+                await Navigation.PushModalAsync(new MunchkinModalNavigationPage(serviceProvider.GetService<GameMenuPage>()));
             }));
 
             ToolbarItems.Add(new ToolbarItem("", "settings64.png", async () =>
             {
-                await Navigation.PushModalAsync(serviceProvider.GetService<SettingsPage>(), false);
+                await Navigation.PushModalAsync(new MunchkinModalNavigationPage(serviceProvider.GetService<SettingsPage>()));
             }));
 
             ToolbarItems.Add(new ToolbarItem("", "console64.png", async () =>
             {
-                await Navigation.PushModalAsync(serviceProvider.GetService<DebugPage>(), false);
+                await Navigation.PushModalAsync(new MunchkinModalNavigationPage(serviceProvider.GetService<DebugPage>()));
             }));
             
             this.BarBackgroundColor = Color.FromHex("795544");

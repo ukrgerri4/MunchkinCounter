@@ -5,6 +5,9 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
              x:Class="TcpMobile.Views.DebugPage">
+    <NavigationPage.TitleView>
+        <Label Text="Debug" Style="{StaticResource navBarTitleLabel}"/>
+    </NavigationPage.TitleView>
     <ContentPage.Content>
         <StackLayout VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand">
             <ListView x:Name="debugConsoleView"></ListView>
