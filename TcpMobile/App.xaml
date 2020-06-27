@@ -22,7 +22,7 @@
                                 </magicGradients:GradientView.GradientSource>
                             </magicGradients:GradientView>
                             <!--<Frame CornerRadius="30" Padding="0" Margin="0">-->
-                                <!--<Image Source="bgImage" Aspect="AspectFill"></Image>-->
+                            <Image Source="bgImage" Aspect="AspectFill"></Image>
                             <!--</Frame>-->
                             <ContentPresenter />
                         </Grid>

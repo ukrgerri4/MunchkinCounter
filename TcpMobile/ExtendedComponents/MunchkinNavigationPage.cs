@@ -30,6 +30,8 @@ namespace TcpMobile.ExtendedComponents
             {
                 await Navigation.PushModalAsync(serviceProvider.GetService<DebugPage>(), false);
             }));
+            
+            this.BarBackgroundColor = Color.FromHex("795544");
         }
     }
 }
