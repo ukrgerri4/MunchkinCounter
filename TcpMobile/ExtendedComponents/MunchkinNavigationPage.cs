@@ -30,8 +30,8 @@ namespace TcpMobile.ExtendedComponents
             {
                 await Navigation.PushModalAsync(new MunchkinModalNavigationPage(serviceProvider.GetService<DebugPage>()));
             }));
-            
-            this.BarBackgroundColor = Color.FromHex("795544");
+
+            BarBackgroundColor = Color.FromHex("795544");
         }
     }
 }

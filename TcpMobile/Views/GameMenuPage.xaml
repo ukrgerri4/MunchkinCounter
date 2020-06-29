@@ -59,7 +59,7 @@
                 <StackLayout>
                     <Button Text="Settings" Clicked="OpenSettings" Style="{StaticResource menuButton}"></Button>
                     <Button Text="Debug" Clicked="OpenDebug" Style="{StaticResource menuButton}"></Button>
-                    <Button Text="Exit" Clicked="Exit" Style="{StaticResource menuButton}"></Button>
+                    <!--<Button Text="Exit" Clicked="Exit" Style="{StaticResource menuButton}"></Button>-->
                 </StackLayout>
             </StackLayout>
 

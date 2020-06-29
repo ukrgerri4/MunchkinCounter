@@ -43,49 +43,34 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <Grid Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
-                <Label
-                    x:Name="publicPowerLabel"
-                    Style="{StaticResource singleGameLabel}"
-                    FontSize="150"
-                    TextColor="#7E8A48"
-                    Rotation="180"></Label>
+            <StackLayout Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
+                <Label Text="{Binding Player.Power, Mode=OneWay}" FontSize="150" TextColor="#7E8A48" Rotation="180" Style="{StaticResource singleGameLabel}"/>
                 <!--<Label x:Name="publicNameLabel" HorizontalTextAlignment="Center" Rotation="180" FontFamily="Quasimodo Regular.ttf#Quasimodo Regular"></Label>-->
-            </Grid>
+            </StackLayout>
 
             <StackLayout Grid.Row="0" Grid.Column="1" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" Spacing="0">
-                <Label
-                    x:Name="publicModifiersLabel"
-                    Style="{StaticResource singleGameLabel}"
-                    FontSize="50"
-                    TextColor="#7E8A48"
-                    Rotation="180"></Label>
+                <Label Text="{Binding Player.Modifiers, Mode=OneWay}" FontSize="50" TextColor="#7E8A48" Rotation="180" Style="{StaticResource singleGameLabel}"/>
                 <Label HorizontalTextAlignment="Center" Rotation="180" FontFamily="Quasimodo Regular.ttf#Quasimodo Regular" FontSize="30">MOD</Label>
             </StackLayout>
 
             <StackLayout Grid.Row="1" Grid.Column="1" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" Spacing="0">
-                <Label 
-                        x:Name="publicLevelLabel"
-                        Style="{StaticResource singleGameLabel}"    
-                        FontSize="80"
-                        TextColor="Red"
-                        Rotation="180"></Label>
+                <Label Text="{Binding Player.Level, Mode=OneWay}" FontSize="80" TextColor="{Binding Player.Color}" Rotation="180" Style="{StaticResource singleGameLabel}"/>
                 <Label HorizontalTextAlignment="Center" Rotation="180" FontFamily="Quasimodo Regular.ttf#Quasimodo Regular" FontSize="30">LVL</Label>
             </StackLayout>
 
             <FlexLayout Grid.Row="2" Grid.ColumnSpan="2" Direction="Row" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
                 <StackLayout FlexLayout.Basis="33.33%" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
                     <Button Text="Up" Clicked="IncreaseLevel" BackgroundColor="#785343" Style="{StaticResource singleGameButton}"></Button>
-                    <Label x:Name="userLevelLabel" Style="{StaticResource singleGameLabel}" FontSize="35" TextColor="#90916f"></Label>
+                    <Label Text="{Binding Player.Level}" Style="{StaticResource singleGameLabel}" FontSize="35" TextColor="#90916f"></Label>
                     <Button Text="Down" Clicked="DecreaseLevel" BackgroundColor="#B5977B" Style="{StaticResource singleGameButton}"></Button>    
                 </StackLayout>
                 <StackLayout FlexLayout.Basis="33.33%" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
                     <Button Text="Up" Clicked="IncreaseModifiers" BackgroundColor="#785343" Style="{StaticResource singleGameButton}"></Button>
-                    <Label x:Name="userModifyersLabel" Style="{StaticResource singleGameLabel}" FontSize="35" TextColor="#90916f"></Label>
+                    <Label Text="{Binding Player.Modifiers}" Style="{StaticResource singleGameLabel}" FontSize="35" TextColor="#90916f"></Label>
                     <Button Text="Down" Clicked="DecreaseModifiers" BackgroundColor="#B5977B" Style="{StaticResource singleGameButton}"></Button>
                 </StackLayout>
                 <StackLayout FlexLayout.Basis="33.33%" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
-                    <Label x:Name="userPowerLabel" Style="{StaticResource singleGameLabel}" FontSize="35" TextColor="#90916f"></Label>
+                    <Label Text="{Binding Player.Power}" Style="{StaticResource singleGameLabel}" FontSize="35" TextColor="#90916f"></Label>
                 </StackLayout>
             </FlexLayout>
 

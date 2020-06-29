@@ -12,19 +12,24 @@
                 <Setter.Value>
                     <ControlTemplate>
                         <Grid HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
-
-                            <magicGradients:GradientView HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
+                            <Image Source="bgImage" Aspect="Fill"/>
+                            <ContentPresenter />
+                                <!--<magicGradients:GradientView>
                                 <magicGradients:GradientView.GradientSource>
                                     <magicGradients:LinearGradient Angle="0">
-                                        <magicGradients:GradientStop Color="#795544" Offset="0" />
-                                        <magicGradients:GradientStop Color="#b5977b" Offset="0.7" />
+                                        <magicGradients:GradientStop Color="#b5977b" Offset="0" />
+                                        <magicGradients:GradientStop Color="#795544" Offset="0.7" />
                                     </magicGradients:LinearGradient>
                                 </magicGradients:GradientView.GradientSource>
-                            </magicGradients:GradientView>
-                            <!--<Frame CornerRadius="30" Padding="0" Margin="0">-->
-                                <Image Source="bgImage" Aspect="AspectFill"></Image>
-                            <!--</Frame>-->
-                            <ContentPresenter />
+                            </magicGradients:GradientView>-->
+                                <!--<RelativeLayout Grid.Row="0" Grid.Column="0" Padding="0" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" BackgroundColor="Blue">
+                                <Image
+                                    Source="bgImage"
+                                    Aspect="AspectFill"
+                                    RelativeLayout.WidthConstraint= "{ConstraintExpression Type=RelativeToParent, Property=Width}"
+                                    RelativeLayout.HeightConstraint= "{ConstraintExpression Type=RelativeToParent, Property=Height}"/>
+                                <ContentPresenter />
+                            </RelativeLayout>-->
                         </Grid>
                     </ControlTemplate>
                 </Setter.Value>
