@@ -2,6 +2,7 @@
 using Infrastracture.Interfaces;
 using Microsoft.Extensions.Configuration;
 using System;
+using TcpMobile.ExtendedComponents;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -16,6 +17,21 @@ namespace TcpMobile
 
         public Player Player { get; set; } = new Player();
 
+        private bool _isControlsVisible = true;
+        public bool IsControlsVisible
+        {
+            get => _isControlsVisible;
+            set
+            {
+                if(value != _isControlsVisible)
+                {
+                    _isControlsVisible = value;
+                    NavigationPage.SetHasNavigationBar(this, _isControlsVisible);
+                    OnPropertyChanged(nameof(IsControlsVisible));
+                }
+            }
+        }
+
         public SingleGamePage(IServiceProvider serviceProvider,
             IConfiguration configuration,
             IBrightnessService brightnessService)
@@ -27,6 +43,23 @@ namespace TcpMobile
             InitializeComponent();
 
             BindingContext = this;
+
+            MessagingCenter.Subscribe<MunchkinNavigationPage>(
+                this,
+                "ExpandView",
+                (sender) => {
+                    IsControlsVisible = !IsControlsVisible;
+                }
+            );
+
+            var tapGestureRecognizer = new TapGestureRecognizer();
+            tapGestureRecognizer.Tapped += (s, e) => {
+                if (!IsControlsVisible)
+                {
+                    IsControlsVisible = true;
+                }
+            };
+            gameViewGrid.GestureRecognizers.Add(tapGestureRecognizer);
         }
 
         private void IncreaseLevel(object sender, EventArgs e)
@@ -47,7 +80,7 @@ namespace TcpMobile
 
         private void IncreaseModifiers(object sender, EventArgs e)
         {
-            if (Player.Power < 91)
+            if (Player.Modifiers < 255)
             {
                 Player.Modifiers++;
             }

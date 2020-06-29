@@ -9,24 +9,15 @@
         <Label Text="Settings" Style="{StaticResource navBarTitleLabel}"/>
     </NavigationPage.TitleView>
     <ContentPage.Content>
-        <StackLayout VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand" Padding="20" >
-            <StackLayout x:Name="infoBlock" VerticalOptions="Start" HorizontalOptions="Start">
-                
-            </StackLayout>
-            
-            <StackLayout x:Name="commonSettings" VerticalOptions="Start" HorizontalOptions="Start">
-                <StackLayout x:Name="sleepModeSettings" Orientation="Horizontal" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand">
-                    <Switch x:Name="sleepModeSwitch" IsToggled="{Binding SleepModeSwitchValue, Mode=TwoWay}" Toggled="ToggleSleepMode"></Switch>
-                    <Label Text="Screen sleep mode off">
-                        <Label.Triggers>
-                            <DataTrigger TargetType="Label" Binding="{Binding Source={x:Reference sleepModeSwitch}, Path=IsToggled}" Value="false">
-                                <Setter Property="TextColor" Value="LightGray" />
-                            </DataTrigger>
-                        </Label.Triggers>
-                    </Label>
-                </StackLayout>
-            </StackLayout>
-            <Button Text="Close" Clicked="CloseModal" VerticalOptions="EndAndExpand" HorizontalOptions="Center"></Button>
-        </StackLayout>
+        <TableView>
+            <TableView.Root>
+                <TableRoot>
+                    <TableSection x:Name="ipAddressSection" Title="Ip address:" TextColor="Black"></TableSection>
+                    <TableSection Title="Screen:" TextColor="Black">
+                        <SwitchCell Text="Screen sleep mode off" On="{Binding SleepModeSwitchValue}"/>
+                    </TableSection>
+                </TableRoot>
+            </TableView.Root>
+        </TableView>
     </ContentPage.Content>
 </ContentPage>

@@ -106,7 +106,7 @@ namespace TcpMobile
 
         private JoinGameViewModel _viewModel;
 
-        //private Subject<Unit> _destroy = new Subject<Unit>();
+        private bool _isSearching = false;
 
         public JoinGamePage(IGameLogger gameLogger, IGameClient gameClient)
         {
@@ -118,8 +118,6 @@ namespace TcpMobile
             _viewModel = new JoinGameViewModel(_gameClient);
 
             BindingContext = _viewModel;
-
-            _gameClient.StartSearchHosts();
 
             MessagingCenter.Subscribe<IGameClient>(
                 this,
@@ -144,13 +142,6 @@ namespace TcpMobile
                     await Stop();
                 }
             );
-        }
-
-        private void SearchForHosts(object sender, EventArgs e)
-        {
-            _gameClient.StartSearchHosts();
-            
-            _gameLogger.Debug("Listening broadcast started");
         }
 
         private void StopSearching(object sender, EventArgs e)
@@ -232,8 +223,15 @@ namespace TcpMobile
             _gameClient.Stop();
 
             _viewModel.HostSearch = true;
+            _isSearching = false;
         }
 
+        protected override void OnAppearing()
+        {
+            base.OnAppearing();
 
+            _gameClient.StartSearchHosts();
+            _isSearching = true;
+        }
     }
 }

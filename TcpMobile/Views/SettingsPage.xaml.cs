@@ -70,11 +70,11 @@ namespace TcpMobile
 
         private void SetInfo()
         {
-            infoBlock.Children.Clear();
+            ipAddressSection.Clear();
 
             var dnsName = Dns.GetHostName();
             var ips = Dns.GetHostAddresses(dnsName);
-            ips.ForEach(ip => infoBlock.Children.Add(new Label { Text = ip.ToString() }));
+            ips.ForEach(ip => ipAddressSection.Add(new TextCell { Text = ip.ToString() }));
         }
 
         protected override void OnAppearing()

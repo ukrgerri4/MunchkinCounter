@@ -27,7 +27,8 @@ namespace TcpMobile.Droid
             var configStream = Assets.Open("appsettings.json");
             LoadApplication(Startup.Init(ConfigureServices, configStream));
 
-            //this.Window.AddFlags(WindowManagerFlags.Fullscreen | WindowManagerFlags.TurnScreenOn);
+            //Window.AddFlags(WindowManagerFlags.Fullscreen);
+            //Window.DecorView.SystemUiVisibility = (StatusBarVisibility)SystemUiFlags.HideNavigation;
         }
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Android.Content.PM.Permission[] grantResults)
         {

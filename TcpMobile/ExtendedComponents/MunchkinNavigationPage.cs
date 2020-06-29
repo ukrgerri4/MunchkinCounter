@@ -14,6 +14,7 @@ namespace TcpMobile.ExtendedComponents
     {
         public MunchkinNavigationPage(Page root, IServiceProvider serviceProvider) : base(root)
         {
+            BarBackgroundColor = Color.FromHex("795544");
             On<Android>().SetBarHeight(100);
 
             ToolbarItems.Add(new ToolbarItem("Menu", null, async () =>
@@ -31,7 +32,11 @@ namespace TcpMobile.ExtendedComponents
                 await Navigation.PushModalAsync(new MunchkinModalNavigationPage(serviceProvider.GetService<DebugPage>()));
             }));
 
-            BarBackgroundColor = Color.FromHex("795544");
+            ToolbarItems.Add(new ToolbarItem("", "expand64.png", () =>
+            {
+                MessagingCenter.Send(this, "ExpandView");
+            }));
+
         }
     }
 }

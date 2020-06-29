@@ -1,10 +1,12 @@
-﻿using Infrastracture.Interfaces;
+﻿using Infrastracture.Definitions;
+using Infrastracture.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reactive;
 using System.Reactive.Subjects;
 using TcpMobile.ExtendedComponents;
 using TcpMobile.Views;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 
 namespace TcpMobile
@@ -14,18 +16,26 @@ namespace TcpMobile
         private readonly System.IServiceProvider _serviceProvider;
         private readonly IConfiguration _configuration;
         private readonly IGameLogger _gameLogger;
+        private readonly IBrightnessService _brightnessService;
 
         public App(System.IServiceProvider serviceProvider,
             IConfiguration configuration,
-            IGameLogger gameLogger)
+            IGameLogger gameLogger,
+            IBrightnessService brightnessService)
         {
             _serviceProvider = serviceProvider;
             _configuration = configuration;
             _gameLogger = gameLogger;
+            _brightnessService = brightnessService;
 
             InitializeComponent();
 
             MainPage = new MunchkinNavigationPage(_serviceProvider.GetService<SingleGamePage>(), _serviceProvider);
+
+            if (Preferences.Get(PreferencesKey.KeepScreenOn, false))
+            {
+                _brightnessService.KeepScreenOn();
+            }
         }
 
         protected override void OnStart()
