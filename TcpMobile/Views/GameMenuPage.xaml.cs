@@ -47,13 +47,13 @@ namespace TcpMobile.Views
         private async void GoToCreateGame(object sender, EventArgs e)
         {
             await App.Current.MainPage.Navigation.PushAsync(_serviceProvider.GetService<CreateGamePage>());
-            await App.Current.MainPage.Navigation.PopModalAsync(false);
+            await App.Current.MainPage.Navigation.PopModalAsync();
         }
 
         private async void GoToJoinGame(object sender, EventArgs e)
         {
             await App.Current.MainPage.Navigation.PushAsync(_serviceProvider.GetService<JoinGamePage>());
-            await App.Current.MainPage.Navigation.PopModalAsync(false);
+            await App.Current.MainPage.Navigation.PopModalAsync();
         }
 
         private async void GoToSingleGame(object sender, EventArgs e)
@@ -63,7 +63,7 @@ namespace TcpMobile.Views
             var page = App.Current.MainPage.Navigation.NavigationStack.LastOrDefault();
             if (page == null || page is SingleGamePage)
             {
-                await App.Current.MainPage.Navigation.PopModalAsync(false);
+                await App.Current.MainPage.Navigation.PopModalAsync();
                 return;
             }
 
@@ -72,7 +72,7 @@ namespace TcpMobile.Views
 
         private async void CloseModal(object sender, EventArgs e)
         {
-            await Navigation.PopModalAsync(false);
+            await Navigation.PopModalAsync();
         }
 
         private void ExitToMenu(object sender, EventArgs e)

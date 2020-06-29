@@ -55,7 +55,7 @@ namespace TcpMobile.Views
 
         private async void Close(object sender, System.EventArgs e)
         {
-            await Navigation.PopModalAsync(false);
+            await Navigation.PopModalAsync();
         }
     }
 }

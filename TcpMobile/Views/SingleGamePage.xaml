@@ -33,7 +33,7 @@
         </ResourceDictionary>
     </ContentPage.Resources>
     <ContentPage.Content>
-        <Grid RowSpacing="0" ColumnSpacing="0" Margin="0" Padding="0">
+        <Grid RowSpacing="0" ColumnSpacing="0" Margin="0" Padding="10,0,10,0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="3*" />
                 <RowDefinition Height="auto" />

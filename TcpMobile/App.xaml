@@ -12,18 +12,42 @@
                 <Setter.Value>
                     <ControlTemplate>
                         <Grid>
-                            <Image Source="bgImage" Aspect="Fill"/>
+                            <magicGradients:GradientView>
+                                <magicGradients:GradientView.GradientSource>
+                                    <magicGradients:LinearGradient Angle="0">
+                                        <magicGradients:GradientStop Color="#795544" Offset="0" />
+                                        <magicGradients:GradientStop Color="#b5977b" Offset="0.7" />
+                                    </magicGradients:LinearGradient>
+                                </magicGradients:GradientView.GradientSource>
+                            </magicGradients:GradientView>
+                            <Frame BorderColor="Transparent" Padding="0" CornerRadius="20" Margin="5,0,5,0">
+                                <Image Source="bgImage" Aspect="Fill"/>
+                            </Frame>
                             <ContentPresenter />
                         </Grid>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
         </Style>
-        <Style x:Key="navBarTitleLabel" TargetType="{x:Type Label}">
-            <Setter Property = "FontFamily" Value="Quasimodo Regular.ttf#Quasimodo Regular" />
-            <Setter Property = "FontSize" Value="25" />
-            <Setter Property = "TextColor" Value="#f9e9c4" />
-            <Setter Property = "FontAttributes" Value="Bold" />
-        </Style>
+        <ResourceDictionary>
+            <Style x:Key="navBarTitleLabel" TargetType="{x:Type Label}">
+                <Setter Property = "FontFamily" Value="Quasimodo Regular.ttf#Quasimodo Regular" />
+                <Setter Property = "FontSize" Value="25" />
+                <Setter Property = "TextColor" Value="#f9e9c4" />
+                <Setter Property = "FontAttributes" Value="Bold" />
+            </Style>
+            <Style x:Key="mButton" TargetType="Button">
+                <Setter Property = "FontFamily" Value="Quasimodo Regular.ttf#Quasimodo Regular" />
+                <Setter Property = "FontSize" Value="20" />
+                <Setter Property = "TextColor" Value="#f9e9c4" />
+                <Setter Property = "BackgroundColor" Value="#795544" />
+                <Setter Property = "Padding" Value="10,0,10,0" />
+                <Setter Property = "FontAttributes" Value="Bold" />
+                <Setter Property = "BorderColor" Value="Black" />
+                <Setter Property = "BorderWidth" Value="1" />
+                <Setter Property = "Margin"  Value="10,0,10,10" />
+                <Setter Property = "CornerRadius"  Value="30" />
+            </Style>
+        </ResourceDictionary>
     </Application.Resources>
 </Application>

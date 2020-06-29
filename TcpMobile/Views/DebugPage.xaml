@@ -9,9 +9,9 @@
         <Label Text="Debug" Style="{StaticResource navBarTitleLabel}"/>
     </NavigationPage.TitleView>
     <ContentPage.Content>
-        <StackLayout VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand">
+        <StackLayout Padding="10,0,10,0">
             <ListView x:Name="debugConsoleView"></ListView>
-            <Button Text="Close" Clicked="Close"></Button>
+            <Button Text="Close" Style="{StaticResource mButton}" Clicked="Close"></Button>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

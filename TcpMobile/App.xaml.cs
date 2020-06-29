@@ -31,6 +31,7 @@ namespace TcpMobile
             InitializeComponent();
 
             MainPage = new MunchkinNavigationPage(_serviceProvider.GetService<SingleGamePage>(), _serviceProvider);
+            //MainPage = new NavigationPage(_serviceProvider.GetService<SingleGamePage>());
 
             if (Preferences.Get(PreferencesKey.KeepScreenOn, false))
             {

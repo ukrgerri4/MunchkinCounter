@@ -9,15 +9,19 @@
         <Label Text="Settings" Style="{StaticResource navBarTitleLabel}"/>
     </NavigationPage.TitleView>
     <ContentPage.Content>
-        <TableView>
-            <TableView.Root>
-                <TableRoot>
-                    <TableSection x:Name="ipAddressSection" Title="Ip address:" TextColor="Black"></TableSection>
-                    <TableSection Title="Screen:" TextColor="Black">
-                        <SwitchCell Text="Screen sleep mode off" On="{Binding SleepModeSwitchValue}"/>
-                    </TableSection>
-                </TableRoot>
-            </TableView.Root>
-        </TableView>
+        <StackLayout Padding="15,0,15,0">
+            <TableView>
+                <TableView.Root>
+                    <TableRoot>
+                        <TableSection x:Name="ipAddressSection" Title="Ip address:" TextColor="Black"></TableSection>
+                        <TableSection Title="Screen:" TextColor="Black">
+                            <SwitchCell Text="Screen sleep mode off" On="{Binding SleepModeSwitchValue}"/>
+                        </TableSection>
+                    </TableRoot>
+                </TableView.Root>
+            </TableView>
+            <Button Text="Close" Style="{StaticResource mButton}" VerticalOptions="End" Clicked="CloseModal"></Button>
+        </StackLayout>
+        
     </ContentPage.Content>
 </ContentPage>

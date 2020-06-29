@@ -65,7 +65,7 @@ namespace TcpMobile
 
         private async void CloseModal(object sender, EventArgs e)
         {
-            await Navigation.PopModalAsync(false);
+            await Navigation.PopModalAsync();
         }
 
         private void SetInfo()
