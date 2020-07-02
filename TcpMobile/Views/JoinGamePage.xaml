@@ -12,7 +12,7 @@
                 <Setter Property = "FontFamily" Value="Quasimodo Regular.ttf#Quasimodo Regular" />
                 <Setter Property = "FontSize" Value="20" />
                 <Setter Property = "TextColor" Value="#f9e9c4" />
-                <Setter Property = "BackgroundColor" Value="#795544" />
+                <!--<Setter Property = "BackgroundColor" Value="#795544" />-->
                 <Setter Property = "FontAttributes" Value="Bold" />
                 <Setter Property = "VerticalOptions"  Value="Center" />
                 <Setter Property = "HorizontalOptions"  Value="Center" />
@@ -49,13 +49,13 @@
                     IsVisible="{Binding HostSearch}"
                     HorizontalOptions="FillAndExpand"
                     VerticalOptions="FillAndExpand">
-                <Frame BorderColor="#7E8A48" BackgroundColor="Transparent">
+                <Frame BorderColor="#7E8A48" CornerRadius="20" BackgroundColor="Transparent">
                     <ListView x:Name="hostsView" HasUnevenRows="True" ItemsSource="{Binding Hosts}">
                         <ListView.ItemTemplate>
                             <DataTemplate>
                                 <ViewCell>
                                     <ViewCell.View>
-                                        <Frame Padding="0" BackgroundColor="Transparent" BorderColor="Transparent" HasShadow="True">
+                                        <Frame Padding="0" CornerRadius="10" BackgroundColor="Transparent" BorderColor="Transparent" HasShadow="True">
                                             <FlexLayout Direction="Row" JustifyContent="SpaceBetween" BackgroundColor="#795544" Padding="10,5,10,5">
                                                 <StackLayout Orientation="Horizontal" VerticalOptions="Start">
                                                     <!--<Label Text="{Binding Id}" Style="{StaticResource gameLabel}"/>-->
@@ -78,26 +78,7 @@
 
                 <Button Text="Connect" Clicked="Connect" IsVisible="{Binding ConnectionsExists}"></Button>
             </StackLayout>
-            <StackLayout
-                    x:Name="waitingPlayersLayout"
-                    IsVisible="{Binding WaitingPlayers}"
-                    HorizontalOptions="FillAndExpand"
-                    VerticalOptions="FillAndExpand">
-                <ListView x:Name="playersView" HasUnevenRows="True" ItemsSource="{Binding AllPlayers}">
-                    <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <ViewCell>
-                                <ViewCell.View>
-                                    <StackLayout Orientation="Horizontal" VerticalOptions="Center">
-                                        <Label Text="{Binding Id}"/>
-                                        <Label Text="{Binding Name}" FontAttributes="Bold" />
-                                    </StackLayout>
-                                </ViewCell.View>
-                            </ViewCell>
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>
-            </StackLayout>
+           
             <StackLayout
                     IsVisible="{Binding Process}"
                     HorizontalOptions="FillAndExpand"
@@ -117,15 +98,26 @@
                                 <DataTemplate>
                                     <ViewCell>
                                         <ViewCell.View>
-                                            <StackLayout Orientation="Horizontal" VerticalOptions="Center">
-                                                <!--<Label Text="{Binding Id}"/>-->
-                                                <Frame BorderColor="Black" Padding="0">
-                                                    <Label Text="{Binding Name}" Style="{StaticResource gameLabel}"/>
-                                                </Frame>
-                                                <Label Text="{Binding Level}" Style="{StaticResource gameLabel}"/>
-                                                <Label Text="{Binding Modifiers}" Style="{StaticResource gameLabel}"/>
-                                                <Label Text="{Binding Power}" Style="{StaticResource gameLabel}"/>
-                                            </StackLayout>
+                                            <!--<FlexLayout Direction="Row" JustifyContent="SpaceBetween" BackgroundColor="#795544" Padding="10,5,10,5">-->
+                                            <Grid BackgroundColor="#795544">
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="*" />
+                                                </Grid.RowDefinitions>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="1*" />
+                                                    <ColumnDefinition Width="6*" />
+                                                    <ColumnDefinition Width="1*" />
+                                                    <ColumnDefinition Width="1*" />
+                                                    <ColumnDefinition Width="1*" />
+                                                </Grid.ColumnDefinitions>
+
+                                                <Image Grid.Row="0" Grid.Column="0" Source="mustache32.png" HorizontalOptions="Center"></Image>
+                                                <Label Grid.Row="0" Grid.Column="1" Text="{Binding Name}" Style="{StaticResource gameLabel}"/>
+                                                <Label Grid.Row="0" Grid.Column="2" Text="{Binding Level}" Style="{StaticResource gameLabel}"/>
+                                                <Label Grid.Row="0" Grid.Column="3" Text="{Binding Modifiers}" Style="{StaticResource gameLabel}"/>
+                                                <Label Grid.Row="0" Grid.Column="4" Text="{Binding Power}" Style="{StaticResource gameLabel}"/>
+                                            </Grid>
+                                            <!--</FlexLayout>-->
                                         </ViewCell.View>
                                     </ViewCell>
                                 </DataTemplate>
@@ -157,7 +149,6 @@
                         </StackLayout>
                     </Grid>
                 </Grid>
-                <!--<Button Text="Cancel" HorizontalOptions="Center" VerticalOptions="EndAndExpand" Clicked="TryStop"></Button>-->
             </StackLayout>
         </StackLayout>
     </ContentPage.Content>

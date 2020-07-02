@@ -28,11 +28,17 @@ namespace TcpMobile
 
         public ObservableCollection<MunchkinHost> Hosts => _gameClient.Hosts;
         public Player MyPlayer => _gameClient.MyPlayer;
-        public ObservableCollection<Player> AllPlayers => new ObservableCollection<Player>(_gameClient.Players);
-        public ObservableCollection<Player> ExeptMePlayers => new ObservableCollection<Player>(_gameClient.Players.Where(p => p.Id != _gameClient.MyPlayer.Id));
+        //public ObservableCollection<Player> AllPlayers => new ObservableCollection<Player>(_gameClient.Players);
+        public ObservableCollection<Player> ExeptMePlayers =>
+            new ObservableCollection<Player>(
+                _gameClient.Players
+                    .Where(p => p.Id != _gameClient.MyPlayer.Id)
+                    .OrderByDescending(p => p.Id)
+                    .ThenByDescending(p => p.Modifiers)
+                    .ThenBy(p => p.Name)
+            );
 
         private bool _hostSearch = true;
-        private bool _waitingPlayers = false;
         private bool _process = false;
 
         public bool HostSearch
@@ -45,30 +51,10 @@ namespace TcpMobile
                     _hostSearch = value;
                     if (_hostSearch)
                     {
-                        WaitingPlayers = false;
                         Process = false;
                     }
 
                     OnPropertyChanged(nameof(HostSearch));
-                }
-            }
-        }
-
-        public bool WaitingPlayers
-        {
-            get => _waitingPlayers;
-            set
-            {
-                if (_waitingPlayers != value)
-                {
-                    _waitingPlayers = value;
-                    if (_waitingPlayers)
-                    {
-                        HostSearch = false;
-                        Process = false;
-                    }
-
-                    OnPropertyChanged(nameof(WaitingPlayers));
                 }
             }
         }
@@ -84,7 +70,6 @@ namespace TcpMobile
                     if (_process)
                     {
                         HostSearch = false;
-                        WaitingPlayers = false;
                     }
 
                     OnPropertyChanged(nameof(Process));
@@ -130,7 +115,7 @@ namespace TcpMobile
                 this,
                 "PlayersUpdated",
                 (sender) => {
-                    _viewModel.OnPropertyChanged(nameof(_viewModel.AllPlayers));
+                    //_viewModel.OnPropertyChanged(nameof(_viewModel.AllPlayers));
                     _viewModel.OnPropertyChanged(nameof(_viewModel.ExeptMePlayers));
                 });
 
@@ -230,8 +215,11 @@ namespace TcpMobile
         {
             base.OnAppearing();
 
-            _gameClient.StartSearchHosts();
-            _isSearching = true;
+            if (!_isSearching)
+            {
+                _gameClient.StartSearchHosts();
+                _isSearching = true;
+            }
         }
     }
 }

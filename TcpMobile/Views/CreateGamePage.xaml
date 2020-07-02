@@ -12,7 +12,7 @@
                 <Setter Property = "FontFamily" Value="Quasimodo Regular.ttf#Quasimodo Regular" />
                 <Setter Property = "FontSize" Value="20" />
                 <Setter Property = "TextColor" Value="#f9e9c4" />
-                <Setter Property = "BackgroundColor" Value="#795544" />
+                <!--<Setter Property = "BackgroundColor" Value="#795544" />-->
                 <Setter Property = "FontAttributes" Value="Bold" />
                 <Setter Property = "VerticalOptions"  Value="Center" />
                 <Setter Property = "HorizontalOptions"  Value="Center" />

@@ -192,6 +192,7 @@ namespace TcpMobile.Services
                                 position += packet.Buffer[position];
                                 position++;
 
+                                playerInfo.Sex = packet.Buffer[position++];
                                 playerInfo.Level = packet.Buffer[position++];
                                 playerInfo.Modifiers = packet.Buffer[position++];
 
@@ -215,11 +216,13 @@ namespace TcpMobile.Services
 
                                 break;
                             case MunchkinMessageType.UpdatePlayerState:
+                                var sex = packet.Buffer[position++];
                                 var level = packet.Buffer[position++];
                                 var modifiers = packet.Buffer[position++];
 
                                 if (ConnectedPlayers.ContainsKey(packet.SenderId))
                                 {
+                                    ConnectedPlayers[packet.SenderId].Sex = sex;
                                     ConnectedPlayers[packet.SenderId].Level = level;
                                     ConnectedPlayers[packet.SenderId].Modifiers = modifiers;
                                 }
@@ -299,6 +302,7 @@ namespace TcpMobile.Services
                                 memoryStream.WriteByte((byte)byteName.Length);
                                 memoryStream.Write(byteName, 0, byteName.Length);
 
+                                memoryStream.WriteByte(player.Value.Sex);
                                 memoryStream.WriteByte(player.Value.Level);
                                 memoryStream.WriteByte(player.Value.Modifiers);
                             }

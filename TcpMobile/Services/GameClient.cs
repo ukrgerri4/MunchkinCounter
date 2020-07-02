@@ -116,6 +116,7 @@ namespace TcpMobile.Services
                 memoryStream.WriteByte((byte)byteName.Length);
                 memoryStream.Write(byteName, 0, byteName.Length);
 
+                memoryStream.WriteByte(MyPlayer.Sex);
                 memoryStream.WriteByte(MyPlayer.Level);
                 memoryStream.WriteByte(MyPlayer.Modifiers);
 
@@ -143,6 +144,7 @@ namespace TcpMobile.Services
             {
                 memoryStream.Write(BitConverter.GetBytes((ushort)0), 0, 2);
                 memoryStream.WriteByte((byte)MunchkinMessageType.UpdatePlayerState);
+                memoryStream.WriteByte(MyPlayer.Sex);
                 memoryStream.WriteByte(MyPlayer.Level);
                 memoryStream.WriteByte(MyPlayer.Modifiers);
 
@@ -226,6 +228,7 @@ namespace TcpMobile.Services
                 position += packet.Buffer[position];
                 position++;
 
+                p.Sex = packet.Buffer[position++];
                 p.Level = packet.Buffer[position++];
                 p.Modifiers = packet.Buffer[position++];
                 players.Add(p);
@@ -251,6 +254,7 @@ namespace TcpMobile.Services
                 if (p != null)
                 {
                     p.Name = updatedPlayer.Name;
+                    p.Sex = updatedPlayer.Sex;
                     p.Level = updatedPlayer.Level;
                     p.Modifiers = updatedPlayer.Modifiers;
                 }
@@ -260,6 +264,7 @@ namespace TcpMobile.Services
                     {
                         Id = updatedPlayer.Id,
                         Name = updatedPlayer.Name,
+                        Sex = updatedPlayer.Sex,
                         Level = updatedPlayer.Level,
                         Modifiers = updatedPlayer.Modifiers
                     });

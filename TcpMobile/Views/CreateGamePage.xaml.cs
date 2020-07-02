@@ -118,12 +118,6 @@ namespace TcpMobile.Views
             InitializeComponent();
 
             _viewModel = new CreateGameViewModel(_gameClient, _gameServer);
-            //{
-            //    Players = _gameClient.Players,
-            //    Host = _gameServer.Host,
-            //    MyPlayer = _gameClient.MyPlayer,
-            //    CreatingGame = true
-            //};
 
             BindingContext = _viewModel;
 

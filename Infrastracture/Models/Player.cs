@@ -9,6 +9,7 @@ namespace GameMunchkin.Models
 
         private string _id;
         private string _name;
+        private byte _sex; // 0 - female, 1 - male
         private byte _level;
         private byte _modifiers;
 
@@ -22,7 +23,7 @@ namespace GameMunchkin.Models
                 if (_id != value)
                 {
                     _id = value;
-                    OnPropertyChanged("Id");
+                    OnPropertyChanged(nameof(Id));
                 }
             }
         }
@@ -34,10 +35,24 @@ namespace GameMunchkin.Models
                 if (_name != value)
                 {
                     _name = value;
-                    OnPropertyChanged("Name");
+                    OnPropertyChanged(nameof(Name));
                 }
             }
         }
+
+        public byte Sex
+        {
+            get => _sex;
+            set
+            {
+                if (_sex != value)
+                {
+                    _sex = value;
+                    OnPropertyChanged(nameof(Sex));
+                }
+            }
+        }
+
         public byte Level
         {
             get => _level;
@@ -46,9 +61,9 @@ namespace GameMunchkin.Models
                 if (_level != value)
                 {
                     _level = value;
-                    OnPropertyChanged("Level");
-                    OnPropertyChanged("Power");
-                    OnPropertyChanged("Color");
+                    OnPropertyChanged(nameof(Level));
+                    OnPropertyChanged(nameof(Power));
+                    OnPropertyChanged(nameof(Color));
                 }
             }
         }
@@ -60,8 +75,8 @@ namespace GameMunchkin.Models
                 if (_modifiers != value)
                 {
                     _modifiers = value;
-                    OnPropertyChanged("Modifiers");
-                    OnPropertyChanged("Power");
+                    OnPropertyChanged(nameof(Modifiers));
+                    OnPropertyChanged(nameof(Power));
                 }
             }
         }
