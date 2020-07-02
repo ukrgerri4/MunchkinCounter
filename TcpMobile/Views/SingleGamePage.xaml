@@ -65,7 +65,7 @@
 
                 <StackLayout Grid.Row="1" Grid.Column="1" Rotation="180">
                     <Label HorizontalTextAlignment="Center" FontFamily="Quasimodo Regular.ttf#Quasimodo Regular" FontSize="30">LVL</Label>
-                    <Label Text="{Binding Player.Level, Mode=OneWay}" FontSize="80" TextColor="{Binding Player.Color}" Style="{StaticResource singleGameLabel}"/>
+                    <Label Text="{Binding Player.Level, Mode=OneWay}" FontSize="60" TextColor="{Binding Player.Color}" Style="{StaticResource singleGameLabel}"/>
                 </StackLayout>
             </Grid>
 

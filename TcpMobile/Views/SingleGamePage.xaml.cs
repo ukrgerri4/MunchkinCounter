@@ -93,5 +93,10 @@ namespace TcpMobile
                 Player.Modifiers--;
             }
         }
+
+        protected override bool OnBackButtonPressed()
+        {
+            return base.OnBackButtonPressed();
+        }
     }
 }

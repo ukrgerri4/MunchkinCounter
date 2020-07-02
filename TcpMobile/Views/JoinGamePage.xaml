@@ -9,8 +9,11 @@
     <ContentPage.Resources>
         <ResourceDictionary>
             <Style x:Key="gameLabel" TargetType="Label">
+                <Setter Property = "FontFamily" Value="Quasimodo Regular.ttf#Quasimodo Regular" />
+                <Setter Property = "FontSize" Value="20" />
+                <Setter Property = "TextColor" Value="#f9e9c4" />
+                <Setter Property = "BackgroundColor" Value="#795544" />
                 <Setter Property = "FontAttributes" Value="Bold" />
-                <Setter Property = "FontSize"  Value="20" />
                 <Setter Property = "VerticalOptions"  Value="Center" />
                 <Setter Property = "HorizontalOptions"  Value="Center" />
             </Style>
@@ -40,32 +43,37 @@
         </ResourceDictionary>
     </ContentPage.Resources>
     <ContentPage.Content>
-        <StackLayout>
+        <StackLayout Padding="10">
             <StackLayout
                     x:Name="creatingGameLayout"
                     IsVisible="{Binding HostSearch}"
                     HorizontalOptions="FillAndExpand"
                     VerticalOptions="FillAndExpand">
-                <ListView x:Name="hostsView" HasUnevenRows="True" ItemsSource="{Binding Hosts}">
-                    <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <ViewCell>
-                                <ViewCell.View>
-                                    <StackLayout Orientation="Horizontal" VerticalOptions="Center">
-                                        <Label Text="{Binding Id}"/>
-                                        <Label Text="{Binding Name}" FontAttributes="Bold" />
-                                        <StackLayout Orientation="Horizontal" VerticalOptions="End">
-                                            <Label Text="{Binding Fullness}" />
-                                            <Label Text=" / " />
-                                            <Label Text="{Binding Capacity}" />
-                                        </StackLayout>
-                                    </StackLayout>
-                                </ViewCell.View>
-                            </ViewCell>
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>
-
+                <Frame BorderColor="#7E8A48" BackgroundColor="Transparent">
+                    <ListView x:Name="hostsView" HasUnevenRows="True" ItemsSource="{Binding Hosts}">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <ViewCell>
+                                    <ViewCell.View>
+                                        <Frame Padding="0" BackgroundColor="Transparent" BorderColor="Transparent" HasShadow="True">
+                                            <FlexLayout Direction="Row" JustifyContent="SpaceBetween" BackgroundColor="#795544" Padding="10,5,10,5">
+                                                <StackLayout Orientation="Horizontal" VerticalOptions="Start">
+                                                    <!--<Label Text="{Binding Id}" Style="{StaticResource gameLabel}"/>-->
+                                                    <Label Text="{Binding Name}" Style="{StaticResource gameLabel}"/>
+                                                </StackLayout>
+                                                <StackLayout Orientation="Horizontal" VerticalOptions="End">
+                                                    <Label Text="{Binding Fullness}" Style="{StaticResource gameLabel}"/>
+                                                    <Label Text=" / " Style="{StaticResource gameLabel}"/>
+                                                    <Label Text="{Binding Capacity}" Style="{StaticResource gameLabel}"/>
+                                                </StackLayout>
+                                            </FlexLayout>
+                                        </Frame>
+                                    </ViewCell.View>
+                                </ViewCell>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </Frame>
                 <ActivityIndicator IsRunning="{Binding HostSearch}" />
 
                 <Button Text="Connect" Clicked="Connect" IsVisible="{Binding ConnectionsExists}"></Button>
