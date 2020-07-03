@@ -8,6 +8,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using TcpMobile.ExtendedComponents;
 using TcpMobile.Views;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
@@ -28,7 +29,7 @@ namespace TcpMobile
 
         public ObservableCollection<MunchkinHost> Hosts => _gameClient.Hosts;
         public Player MyPlayer => _gameClient.MyPlayer;
-        //public ObservableCollection<Player> AllPlayers => new ObservableCollection<Player>(_gameClient.Players);
+
         public ObservableCollection<Player> ExeptMePlayers =>
             new ObservableCollection<Player>(
                 _gameClient.Players
@@ -39,8 +40,6 @@ namespace TcpMobile
             );
 
         private bool _hostSearch = true;
-        private bool _process = false;
-
         public bool HostSearch
         {
             get => _hostSearch;
@@ -59,6 +58,7 @@ namespace TcpMobile
             }
         }
 
+        private bool _process = false;
         public bool Process
         {
             get => _process;
@@ -127,6 +127,8 @@ namespace TcpMobile
                     await Stop();
                 }
             );
+
+            _viewModel.Process = true;
         }
 
         private void StopSearching(object sender, EventArgs e)
@@ -196,6 +198,12 @@ namespace TcpMobile
             }
         }
 
+        private void ToggleSex(object sender, EventArgs e)
+        {
+            _gameClient.MyPlayer.Sex = _gameClient.MyPlayer.Sex == 1 ? (byte)0 : (byte)1;
+            _gameClient.SendUpdatedPlayerState();
+        }
+
         private async Task Stop()
         {
             if (!_viewModel.HostSearch)
@@ -209,6 +217,15 @@ namespace TcpMobile
 
             _viewModel.HostSearch = true;
             _isSearching = false;
+        }
+
+        private async void KillMunchkin(object sender, EventArgs e)
+        {
+            if (!await DisplayAlert("", "Confirm!", "Yes", "No")) { return; }
+
+            _viewModel.MyPlayer.Level = 1;
+            _viewModel.MyPlayer.Modifiers = 0;
+            _gameClient.SendUpdatedPlayerState();
         }
 
         protected override void OnAppearing()

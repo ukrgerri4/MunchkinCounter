@@ -49,6 +49,7 @@ namespace GameMunchkin.Models
                 {
                     _sex = value;
                     OnPropertyChanged(nameof(Sex));
+                    OnPropertyChanged(nameof(SexIcon));
                 }
             }
         }
@@ -89,6 +90,11 @@ namespace GameMunchkin.Models
         public string Color
         {
             get => _colors[Level];
+        }
+
+        public string SexIcon
+        {
+            get => _sex == 1 ? "viking64.png" : "princess64.png";
         }
 
         public Player()

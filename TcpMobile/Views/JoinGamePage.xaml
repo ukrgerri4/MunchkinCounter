@@ -31,19 +31,17 @@
 
             <Style x:Key="singleGameButton" TargetType="Button">
                 <Setter Property = "FontFamily" Value="Quasimodo Regular.ttf#Quasimodo Regular" />
-                <Setter Property = "FontSize" Value="20" />
+                <Setter Property = "FontSize" Value="14" />
                 <Setter Property = "TextColor" Value="#f9e9c4" />
-                <Setter Property = "Padding" Value="10,0,10,0" />
-                <Setter Property = "FontAttributes" Value="Bold" />
+                <Setter Property = "Padding" Value="0" />
                 <Setter Property = "BorderColor" Value="Black" />
                 <Setter Property = "BorderWidth" Value="1" />
-                <Setter Property = "Margin"  Value="10,0,10,0" />
                 <Setter Property = "CornerRadius"  Value="30" />
             </Style>
         </ResourceDictionary>
     </ContentPage.Resources>
     <ContentPage.Content>
-        <StackLayout Padding="10">
+        <Grid Padding="10">
             <StackLayout
                     x:Name="creatingGameLayout"
                     IsVisible="{Binding HostSearch}"
@@ -79,77 +77,86 @@
                 <Button Text="Connect" Clicked="Connect" IsVisible="{Binding ConnectionsExists}"></Button>
             </StackLayout>
            
-            <StackLayout
-                    IsVisible="{Binding Process}"
-                    HorizontalOptions="FillAndExpand"
-                    VerticalOptions="FillAndExpand">
-                <Grid RowSpacing="0" ColumnSpacing="0">
+            <Grid IsVisible="{Binding Process}" RowSpacing="0" ColumnSpacing="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
+                    <!--<RowDefinition Height="10" />-->
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid x:Name="gameViewGrid" Grid.Row="0" Grid.Column="0" RowSpacing="0" ColumnSpacing="0">
+                    <ListView x:Name="gameView" HasUnevenRows="True" ItemsSource="{Binding ExeptMePlayers}">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <ViewCell>
+                                    <ViewCell.View>
+                                        <!--<FlexLayout Direction="Row" JustifyContent="SpaceBetween" BackgroundColor="#795544" Padding="10,5,10,5">-->
+                                        <Grid BackgroundColor="#795544">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="*" />
+                                            </Grid.RowDefinitions>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="1*" />
+                                                <ColumnDefinition Width="6*" />
+                                                <ColumnDefinition Width="1*" />
+                                                <ColumnDefinition Width="1*" />
+                                                <ColumnDefinition Width="1*" />
+                                            </Grid.ColumnDefinitions>
+
+                                            <Image Grid.Row="0" Grid.Column="0" Source="{Binding SexIcon}" HorizontalOptions="Center"></Image>
+                                            <Label Grid.Row="0" Grid.Column="1" Text="{Binding Name}" Style="{StaticResource gameLabel}"/>
+                                            <Label Grid.Row="0" Grid.Column="2" Text="{Binding Level}" Style="{StaticResource gameLabel}"/>
+                                            <Label Grid.Row="0" Grid.Column="3" Text="{Binding Modifiers}" Style="{StaticResource gameLabel}"/>
+                                            <Label Grid.Row="0" Grid.Column="4" Text="{Binding Power}" Style="{StaticResource gameLabel}"/>
+                                        </Grid>
+                                        <!--</FlexLayout>-->
+                                    </ViewCell.View>
+                                </ViewCell>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </Grid>
+
+                <Grid Grid.Row="1" Grid.Column="0" RowSpacing="0" ColumnSpacing="0" IsVisible="{Binding IsControlsVisible}">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="3*" />
                         <RowDefinition Height="auto" />
-                        <RowDefinition Height="10" />
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="3*" />
+                        <ColumnDefinition Width="3*" />
+                        <ColumnDefinition Width="3*" />
+                        <ColumnDefinition Width="2*" />
                     </Grid.ColumnDefinitions>
-                    <Grid Grid.Row="0" Grid.Column="0" RowSpacing="0" ColumnSpacing="0">
-                        <ListView x:Name="gameView" HasUnevenRows="True" ItemsSource="{Binding ExeptMePlayers}">
-                            <ListView.ItemTemplate>
-                                <DataTemplate>
-                                    <ViewCell>
-                                        <ViewCell.View>
-                                            <!--<FlexLayout Direction="Row" JustifyContent="SpaceBetween" BackgroundColor="#795544" Padding="10,5,10,5">-->
-                                            <Grid BackgroundColor="#795544">
-                                                <Grid.RowDefinitions>
-                                                    <RowDefinition Height="*" />
-                                                </Grid.RowDefinitions>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="1*" />
-                                                    <ColumnDefinition Width="6*" />
-                                                    <ColumnDefinition Width="1*" />
-                                                    <ColumnDefinition Width="1*" />
-                                                    <ColumnDefinition Width="1*" />
-                                                </Grid.ColumnDefinitions>
-
-                                                <Image Grid.Row="0" Grid.Column="0" Source="mustache32.png" HorizontalOptions="Center"></Image>
-                                                <Label Grid.Row="0" Grid.Column="1" Text="{Binding Name}" Style="{StaticResource gameLabel}"/>
-                                                <Label Grid.Row="0" Grid.Column="2" Text="{Binding Level}" Style="{StaticResource gameLabel}"/>
-                                                <Label Grid.Row="0" Grid.Column="3" Text="{Binding Modifiers}" Style="{StaticResource gameLabel}"/>
-                                                <Label Grid.Row="0" Grid.Column="4" Text="{Binding Power}" Style="{StaticResource gameLabel}"/>
-                                            </Grid>
-                                            <!--</FlexLayout>-->
-                                        </ViewCell.View>
-                                    </ViewCell>
-                                </DataTemplate>
-                            </ListView.ItemTemplate>
-                        </ListView>
-                    </Grid>
-
-                    <Grid Grid.Row="1" Grid.Column="0" RowSpacing="0" ColumnSpacing="0">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="auto" />
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-                        <StackLayout Grid.Row="0" Grid.Column="0">
-                            <Button Text="Up" Clicked="IncreaseLevel" BackgroundColor="#785343" Style="{StaticResource singleGameButton}"></Button>
-                            <Label Text="{Binding MyPlayer.Level}" Style="{StaticResource singleGameLabel}" FontSize="45" TextColor="#90916f"></Label>
-                            <Button Text="Down" Clicked="DecreaseLevel" BackgroundColor="#B5977B" Style="{StaticResource singleGameButton}"></Button>
-                        </StackLayout>
-                        <StackLayout Grid.Row="0" Grid.Column="1">
-                            <Button Text="Up" Clicked="IncreaseModifiers" BackgroundColor="#785343" Style="{StaticResource singleGameButton}"></Button>
-                            <Label Text="{Binding MyPlayer.Modifiers}" Style="{StaticResource singleGameLabel}" FontSize="45" TextColor="#90916f"></Label>
-                            <Button Text="Down" Clicked="DecreaseModifiers" BackgroundColor="#B5977B" Style="{StaticResource singleGameButton}"></Button>
-                        </StackLayout>
-                        <StackLayout Grid.Row="0" Grid.Column="2">
-                            <Label Text="{Binding MyPlayer.Power}" Style="{StaticResource singleGameLabel}" FontSize="45" TextColor="#90916f"></Label>
-                        </StackLayout>
-                    </Grid>
+                    <StackLayout Grid.Row="0" Grid.Column="0" Spacing="0" Margin="0,0,5,0">
+                        <Label Text="Level" Style="{StaticResource singleGameLabel}" FontSize="16" TextColor="#7E8A48" VerticalOptions="End"></Label>
+                        <Button Text="Up" Clicked="IncreaseLevel" BackgroundColor="#785343" Style="{StaticResource singleGameButton}"></Button>
+                        <Label Text="{Binding MyPlayer.Level}" Style="{StaticResource singleGameLabel}" FontSize="45" TextColor="#7E8A48"></Label>
+                        <Button Text="Down" Clicked="DecreaseLevel" BackgroundColor="#B5977B" Style="{StaticResource singleGameButton}"></Button>
+                    </StackLayout>
+                    <StackLayout Grid.Row="0" Grid.Column="1" Spacing="0" Margin="0,0,5,0">
+                        <Label Text="Modifiers" Style="{StaticResource singleGameLabel}" FontSize="16" TextColor="#7E8A48" VerticalOptions="End"></Label>
+                        <!--<ImageButton Source="arrow64_1.png" BackgroundColor="#785343" Clicked="IncreaseLevel" HorizontalOptions="CenterAndExpand" Rotation="180" BorderWidth="1" BorderColor="Black" CornerRadius="10"></ImageButton>-->
+                        <Button Text="Up" Clicked="IncreaseModifiers" BackgroundColor="#785343" Style="{StaticResource singleGameButton}"></Button>
+                        <Label Text="{Binding MyPlayer.Modifiers}" Style="{StaticResource singleGameLabel}" FontSize="45" TextColor="#7E8A48"></Label>
+                        <!--<ImageButton Source="arrow64_1.png" BackgroundColor="#785343" Clicked="DecreaseLevel" HorizontalOptions="CenterAndExpand" BorderWidth="1" BorderColor="Black" CornerRadius="10"></ImageButton>-->
+                        <Button Text="Down" Clicked="DecreaseModifiers" BackgroundColor="#B5977B" Style="{StaticResource singleGameButton}"></Button>
+                    </StackLayout>
+                    <StackLayout Grid.Row="0" Grid.Column="2" Spacing="0">
+                        <Label Text="Power" Style="{StaticResource singleGameLabel}" FontSize="16" TextColor="#7E8A48" VerticalOptions="End"></Label>
+                        <Label Text="{Binding MyPlayer.Power}" Style="{StaticResource singleGameLabel}" FontSize="45" TextColor="#7E8A48"></Label>
+                    </StackLayout>
+                    <StackLayout Grid.Row="0" Grid.Column="3" Orientation="Horizontal" Spacing="0">
+                        <BoxView WidthRequest="2" HorizontalOptions="StartAndExpand" VerticalOptions="FillAndExpand" Color="#90916f" />
+                        <FlexLayout Direction="Column" JustifyContent="SpaceAround">
+                            <ImageButton Source="{Binding MyPlayer.SexIcon}" BackgroundColor="Transparent" Clicked="ToggleSex"></ImageButton>
+                            <ImageButton Source="skull64.png" BackgroundColor="Transparent" Clicked="KillMunchkin"></ImageButton>
+                            <ImageButton Source="dice64.png" BackgroundColor="Transparent"></ImageButton>
+                        </FlexLayout>
+                    </StackLayout>
                 </Grid>
-            </StackLayout>
-        </StackLayout>
+            </Grid>
+        </Grid>
     </ContentPage.Content>
 </ContentPage>
