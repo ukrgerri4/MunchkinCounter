@@ -14,7 +14,7 @@ namespace TcpMobile.ExtendedComponents
     {
         public MunchkinNavigationPage(Page root, IServiceProvider serviceProvider) : base(root)
         {
-            BarBackgroundColor = Color.FromHex("795544");
+            BarBackgroundColor = Color.FromHex("491714");
             On<Android>().SetBarHeight(100);
 
             ToolbarItems.Add(new ToolbarItem("Menu", null, async () =>
