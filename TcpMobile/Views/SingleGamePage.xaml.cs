@@ -44,7 +44,7 @@ namespace TcpMobile
 
             BindingContext = this;
 
-            MessagingCenter.Subscribe<MunchkinNavigationPage>(
+            MessagingCenter.Subscribe<SingleGamePage>(
                 this,
                 "ExpandView",
                 (sender) => {
@@ -93,6 +93,18 @@ namespace TcpMobile
                 Player.Modifiers--;
             }
         }
+
+        
+        private void ToggleSex(object sender, EventArgs e)
+        {
+            Player.Sex = Player.Sex == 1 ? (byte)0 : (byte)1;
+        }
+
+        private void Expand(object sender, EventArgs e)
+        {
+            MessagingCenter.Send(this, "ExpandView");
+        }
+        
 
         protected override bool OnBackButtonPressed()
         {

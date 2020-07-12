@@ -94,7 +94,7 @@ namespace GameMunchkin.Models
 
         public string SexIcon
         {
-            get => _sex == 1 ? "viking64.png" : "princess64.png";
+            get => _sex == 1 ? "male64.png" : "female64.png";
         }
 
         public Player()

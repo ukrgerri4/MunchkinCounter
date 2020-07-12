@@ -128,7 +128,9 @@ namespace TcpMobile
                 }
             );
 
+            /* FOR TEST */
             _viewModel.Process = true;
+            /* FOR TEST */
         }
 
         private void StopSearching(object sender, EventArgs e)

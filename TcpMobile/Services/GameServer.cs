@@ -30,7 +30,7 @@ namespace TcpMobile.Services
         private Subject<Unit> _destroy = new Subject<Unit>();
 
         private double HOST_BROADCAST_PERIOD_MS = 1000;
-        private double CONNECTED_PLAYERS_BROADCAST_PERIOD_MS = 500;
+        private double CONNECTED_PLAYERS_BROADCAST_PERIOD_MS = 1000;
 
         public MunchkinHost Host { get; set; }
         public ConcurrentDictionary<string, PlayerInfo> ConnectedPlayers { get; set; }
@@ -279,7 +279,7 @@ namespace TcpMobile.Services
             _connectedPlayersBroadcaster = _updatePlayersSubject.AsObservable()
                 .TakeUntil(_destroy)
                 .Finally(() => _gameLogger.Debug("Connected players data broadcast stoped."))
-                .Throttle(TimeSpan.FromMilliseconds(CONNECTED_PLAYERS_BROADCAST_PERIOD_MS))
+                .Sample(TimeSpan.FromMilliseconds(CONNECTED_PLAYERS_BROADCAST_PERIOD_MS))
                 .Do(_ => _gameLogger.Debug("Start send players data."))
                 .Subscribe(
                     _ =>

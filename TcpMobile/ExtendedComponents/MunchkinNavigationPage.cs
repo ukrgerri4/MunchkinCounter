@@ -32,10 +32,10 @@ namespace TcpMobile.ExtendedComponents
                 await Navigation.PushModalAsync(new MunchkinModalNavigationPage(serviceProvider.GetService<DebugPage>()));
             }));
 
-            ToolbarItems.Add(new ToolbarItem("", "expand64.png", () =>
-            {
-                MessagingCenter.Send(this, "ExpandView");
-            }));
+            //ToolbarItems.Add(new ToolbarItem("", "expand64.png", () =>
+            //{
+            //    MessagingCenter.Send(this, "ExpandView");
+            //}));
 
         }
     }
