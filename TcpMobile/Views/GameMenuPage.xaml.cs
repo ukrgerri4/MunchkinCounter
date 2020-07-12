@@ -97,6 +97,12 @@ namespace TcpMobile.Views
             await Navigation.PushModalAsync(new MunchkinModalNavigationPage(_serviceProvider.GetService<DebugPage>()));
         }
 
+        private async void OpenAbout(object sender, EventArgs e)
+        {
+            await Navigation.PushModalAsync(new MunchkinModalNavigationPage(_serviceProvider.GetService<AboutPage>()));
+        }
+        
+
         protected override void OnAppearing()
         {
             ChangeMenuState();

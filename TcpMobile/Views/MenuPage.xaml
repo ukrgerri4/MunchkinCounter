@@ -5,5 +5,84 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
              x:Class="TcpMobile.MenuPage"
-             Title="Menu">
+             Title="Menu"
+             BackgroundColor="#fff3e5">
+    
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Style x:Key="menuLabel" TargetType="Label">
+                <Setter Property = "LineBreakMode"  Value="NoWrap" />
+                <Setter Property = "Margin"  Value="10" />
+                <Setter Property = "FontSize"  Value="30" />
+                <Setter Property = "TextColor"  Value="#491714" />
+                <Setter Property = "FontFamily" Value="Acme-Regular.ttf#Acme-Regular" />
+                <Setter Property = "VerticalOptions"  Value="FillAndExpand" />
+                <Setter Property = "HorizontalOptions"  Value="FillAndExpand" />
+                <Setter Property = "VerticalTextAlignment"  Value="Center" />
+                <Setter Property = "HorizontalTextAlignment"  Value="Center" />
+            </Style>
+
+            <Style x:Key="menuButton" TargetType="Button">
+                <Setter Property = "FontSize"  Value="30" />
+                <Setter Property = "Margin"  Value="10" />
+                <Setter Property = "TextColor"  Value="#491714" />
+                <Setter Property = "FontFamily" Value="Acme-Regular.ttf#Acme-Regular" />
+                <Setter Property = "VerticalOptions"  Value="FillAndExpand" />
+                <Setter Property = "HorizontalOptions"  Value="FillAndExpand" />
+                <Setter Property = "VisualStateManager.VisualStateGroups">
+                    <VisualStateGroupList x:Name="CommonStates">
+                        <VisualStateGroup>
+                            <VisualState x:Name="Normal">
+                                <VisualState.Setters>
+                                    <Setter Property="BackgroundColor" Value="Transparent" />
+                                </VisualState.Setters>
+                            </VisualState>
+                            <VisualState x:Name="Pressed">
+                                <VisualState.Setters>
+                                    <Setter Property="BackgroundColor" Value="#7E8A48" />
+                                </VisualState.Setters>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateGroupList>
+                </Setter>
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    <ContentPage.ControlTemplate>
+        <ControlTemplate>
+            <ContentPresenter/>
+        </ControlTemplate>
+    </ContentPage.ControlTemplate>
+    <ContentPage.Content>
+        <StackLayout Orientation="Vertical" Spacing="0" Padding="0" Margin="0">
+            <!--<Button Text="SINGLE GAME" Style="{StaticResource menuButton}"/>
+            <Button Text="CREATE GAME" Style="{StaticResource menuButton}"/>
+            <Button Text="JOIN GAME" Style="{StaticResource menuButton}"/>
+            <BoxView HeightRequest="1" HorizontalOptions="FillAndExpand" VerticalOptions="StartAndExpand" Color="#90916f" Margin="20, 0, 20, 0"/>
+            <Button Text="Debug" Style="{StaticResource menuButton}"/>
+            <Button Text="Settings" Style="{StaticResource menuButton}"/>
+            <Button Text="About" Style="{StaticResource menuButton}"/>
+            <Label Text="v 1.0" FontFamily="Acme-Regular.ttf#Acme-Regular" FontSize="20" TextColor="#491714" HorizontalTextAlignment="End" Padding="0,0,5,5"/>-->
+            
+            <ListView HasUnevenRows="True" ItemsSource="{Binding MenuItems}" ItemTapped="ItemTapped">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <ViewCell.View>
+                                <Label Text="{Binding Name}" Style="{StaticResource menuLabel}"/>
+                            </ViewCell.View>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+            <BoxView HeightRequest="1" HorizontalOptions="FillAndExpand" VerticalOptions="StartAndExpand" Color="#7E8A48" Margin="20, 0, 20, 0"/>
+            <StackLayout Orientation="Vertical">
+                <Button Text="Debug" Style="{StaticResource menuButton}"/>
+                <Button Text="Settings" Style="{StaticResource menuButton}"/>
+                <Button Text="About" Style="{StaticResource menuButton}"/>
+                <Label Text="v 1.0" FontFamily="Acme-Regular.ttf#Acme-Regular" FontSize="20" TextColor="#491714" HorizontalTextAlignment="End" Padding="0,0,5,5"/>
+            </StackLayout>
+        </StackLayout>
+    </ContentPage.Content>
 </ContentPage>

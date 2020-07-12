@@ -8,6 +8,7 @@ using Android.Widget;
 using Java.Lang;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using TcpMobile.Views;
 
 namespace TcpMobile.Droid
 {
@@ -39,12 +40,23 @@ namespace TcpMobile.Droid
 
         public async override void OnBackPressed()
         {
-            if (App.Current.MainPage.Navigation.NavigationStack.Count > 1)
+            if (App.Current.MainPage.Navigation.ModalStack.Count > 0)
             {
-                await App.Current.MainPage.Navigation.PopAsync();
+                await App.Current.MainPage.Navigation.PopModalAsync();
                 return;
             }
-            base.OnBackPressed();
+
+            if (!(App.Current.MainPage is MainMDPage mainPage)) { return; }
+
+            if (mainPage.IsPresented)
+            {
+                mainPage.IsPresented = false;
+                return;
+            }
+
+            Intent main = new Intent(Intent.ActionMain);
+            main.AddCategory(Intent.CategoryHome);
+            StartActivity(main);
         }
 
         void ConfigureServices(HostBuilderContext ctx, IServiceCollection services)

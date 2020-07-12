@@ -13,7 +13,7 @@ namespace TcpMobile.ExtendedComponents
         public MunchkinModalNavigationPage(Page root) : base(root)
         {
             On<Android>().SetBarHeight(100);
-            BarBackgroundColor = Color.FromHex("795544");
+            BarBackgroundColor = Color.FromHex("491714");
         }
     }
 }

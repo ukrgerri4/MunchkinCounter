@@ -61,6 +61,10 @@
                     <Button Text="Debug" Clicked="OpenDebug" Style="{StaticResource menuButton}"></Button>
                     <!--<Button Text="Exit" Clicked="Exit" Style="{StaticResource menuButton}"></Button>-->
                 </StackLayout>
+                <StackLayout>
+                    <Button Text="About" Clicked="OpenAbout" Style="{StaticResource menuButton}"></Button>
+                    <!--<Button Text="Exit" Clicked="Exit" Style="{StaticResource menuButton}"></Button>-->
+                </StackLayout>
             </StackLayout>
 
         </Grid>

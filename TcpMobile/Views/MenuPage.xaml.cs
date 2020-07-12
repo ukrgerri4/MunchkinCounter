@@ -14,8 +14,8 @@ namespace TcpMobile
         private readonly IServiceProvider _serviceProvider;
         private readonly IConfiguration _configuration;
 
-        private ListView ListView;
-        private SideBarMenuItem[] MenuItems;
+        public SideBarMenuItem[] MenuItems { get; set; }
+
         public MenuPage(IServiceProvider serviceProvider,
             IConfiguration configuration)
         {
@@ -25,53 +25,21 @@ namespace TcpMobile
 
             MenuItems = new SideBarMenuItem[]
             {
-                new SideBarMenuItem { Type = MenuItemType.CreateGamePage, Name = "CREATE" },
-                new SideBarMenuItem { Type = MenuItemType.JoinGamePage, Name = "JOIN" },
-                new SideBarMenuItem { Type = MenuItemType.SingleGamePage, Name = "SINGLE" }
+                new SideBarMenuItem { Type = MenuItemType.SingleGame, Name = "SINGLE GAME" },
+                new SideBarMenuItem { Type = MenuItemType.JoinGame, Name = "JOIN GAME" },
+                new SideBarMenuItem { Type = MenuItemType.CreateGame, Name = "CREATE GAME" }
             };
 
-            ListView = new ListView();
-            ListView.ItemsSource = MenuItems;
-            var defaultPage = (MenuItemType)Convert.ToInt32(_configuration["DefaultPage"]);
-            ListView.SelectedItem = MenuItems.FirstOrDefault(i => i.Type == defaultPage);
-            ListView.ItemTemplate = new DataTemplate(() =>
-            {
-                Label titleLabel = new Label {
-                    FontSize = 20,
-                    VerticalTextAlignment = TextAlignment.Center,
-                    Padding = new Thickness(10, 0, 0, 0),
-                    FontAttributes = FontAttributes.Bold
-                };
-                titleLabel.SetBinding(Label.TextProperty, "Name");
+            BindingContext = this;
+        }
 
-                return new ViewCell
-                {
-                    View = titleLabel
-                };
-            });
+        private void ItemTapped(object sender, ItemTappedEventArgs e)
+        {
+            if (((SideBarMenuItem)(e?.Item))?.Type == null)
+                return;
 
-            ListView.ItemSelected += async (sender, e) =>
-            {
-                if (((SideBarMenuItem)(e?.SelectedItem))?.Type == null)
-                    return;
-
-                var selectedType = ((SideBarMenuItem)e.SelectedItem).Type;
-                switch (selectedType)
-                {
-                    case MenuItemType.CreateGamePage:
-                        await Navigation.PushAsync(_serviceProvider.GetService<CreateGamePage>());
-                        break;
-                    case MenuItemType.JoinGamePage:
-                        await Navigation.PushAsync(_serviceProvider.GetService<JoinGamePage>());
-                        break;
-                    case MenuItemType.SingleGamePage:
-                        await Navigation.PushAsync(_serviceProvider.GetService<SingleGamePage>());
-                        break;
-                }
-            };
-
-
-            Content = new StackLayout { Children = { ListView } };
+            var selectedType = ((SideBarMenuItem)e.Item).Type;
+            MessagingCenter.Send(this, "GoTo", selectedType);
         }
     }
 }

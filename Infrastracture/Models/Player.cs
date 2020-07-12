@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Core.Utils;
+using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace GameMunchkin.Models
@@ -94,7 +95,8 @@ namespace GameMunchkin.Models
 
         public string SexIcon
         {
-            get => _sex == 1 ? "male64.png" : "female64.png";
+            get => _sex == 1 ? FontAwesomeIcons.Mars : FontAwesomeIcons.Venus;
+            //get => _sex == 1 ? "male64.png" : "female64.png";
         }
 
         public Player()

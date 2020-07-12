@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Shell  xmlns="http://xamarin.com/schemas/2014/forms"
+        xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+        xmlns:views="clr-namespace:TcpMobile.Views"
+        xmlns:fact="clr-namespace:TcpMobile.Factories"
+        x:Class="TcpMobile.Views.MainShell">
+    <!--<FlyoutItem Title="example1">
+        <ShellContent Title="p1"  ContentTemplate="{DataTemplate fact:M}">
+            
+        </ShellContent>
+    </FlyoutItem>-->
+</Shell>

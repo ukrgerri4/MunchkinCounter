@@ -2,11 +2,15 @@
 using Infrastracture.Interfaces;
 using Microsoft.Extensions.Configuration;
 using System;
+using System.Reactive;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using TcpMobile.ExtendedComponents;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
-namespace TcpMobile
+namespace TcpMobile.Views
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class SingleGamePage : ContentPage
@@ -31,6 +35,8 @@ namespace TcpMobile
                 }
             }
         }
+
+        private Subject<Unit> _expandSubject = new Subject<Unit>();
 
         public SingleGamePage(IServiceProvider serviceProvider,
             IConfiguration configuration,
@@ -60,6 +66,18 @@ namespace TcpMobile
                 }
             };
             gameViewGrid.GestureRecognizers.Add(tapGestureRecognizer);
+
+            _expandSubject.AsObservable()
+                .Throttle(TimeSpan.FromSeconds(5))
+                .Subscribe(_ => {
+                    MainThread.BeginInvokeOnMainThread(() =>
+                    {
+                        //if (IsControlsVisible)
+                        //{
+                        //    IsControlsVisible = false;
+                        //}
+                    });
+                });
         }
 
         private void IncreaseLevel(object sender, EventArgs e)
@@ -68,6 +86,7 @@ namespace TcpMobile
             {
                 Player.Level++;
             }
+            _expandSubject.OnNext(Unit.Default);
         }
 
         private void DecreaseLevel(object sender, EventArgs e)
@@ -76,6 +95,7 @@ namespace TcpMobile
             {
                 Player.Level--;
             }
+            _expandSubject.OnNext(Unit.Default);
         }
 
         private void IncreaseModifiers(object sender, EventArgs e)
@@ -84,6 +104,7 @@ namespace TcpMobile
             {
                 Player.Modifiers++;
             }
+            _expandSubject.OnNext(Unit.Default);
         }
 
         private void DecreaseModifiers(object sender, EventArgs e)
@@ -92,23 +113,19 @@ namespace TcpMobile
             {
                 Player.Modifiers--;
             }
+            _expandSubject.OnNext(Unit.Default);
         }
 
         
         private void ToggleSex(object sender, EventArgs e)
         {
             Player.Sex = Player.Sex == 1 ? (byte)0 : (byte)1;
+            _expandSubject.OnNext(Unit.Default);
         }
 
         private void Expand(object sender, EventArgs e)
         {
             MessagingCenter.Send(this, "ExpandView");
-        }
-        
-
-        protected override bool OnBackButtonPressed()
-        {
-            return base.OnBackButtonPressed();
         }
     }
 }
