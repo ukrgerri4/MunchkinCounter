@@ -3,6 +3,7 @@ using Infrastracture.Interfaces;
 using Infrastracture.Interfaces.GameMunchkin;
 using Infrastracture.Models;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
@@ -30,13 +31,28 @@ namespace TcpMobile
         public ObservableCollection<MunchkinHost> Hosts => _gameClient.Hosts;
         public Player MyPlayer => _gameClient.MyPlayer;
 
+        //public ObservableCollection<Player> ExeptMePlayers =>
+        //    new ObservableCollection<Player>(
+        //        _gameClient.Players
+        //            .Where(p => p.Id != _gameClient.MyPlayer.Id)
+        //            .OrderByDescending(p => p.Id)
+        //            .ThenByDescending(p => p.Modifiers)
+        //            .ThenBy(p => p.Name)
+        //    );
+
         public ObservableCollection<Player> ExeptMePlayers =>
             new ObservableCollection<Player>(
-                _gameClient.Players
-                    .Where(p => p.Id != _gameClient.MyPlayer.Id)
-                    .OrderByDescending(p => p.Id)
-                    .ThenByDescending(p => p.Modifiers)
-                    .ThenBy(p => p.Name)
+                new List<Player>
+                {
+                    new Player {Id = "1", Name = "KryvenkoIgorVasilievich", Level = 3, Modifiers = 0, Sex = 1 },
+                    new Player {Id = "2", Name = "Murina", Level = 7, Modifiers = 55, Sex = 0 },
+                    new Player {Id = "3", Name = "Stas", Level = 8, Modifiers = 10, Sex = 1 },
+                    new Player {Id = "4", Name = "Zepsen", Level = 2, Modifiers = 15, Sex = 1 },
+                    new Player {Id = "5", Name = "Yulia", Level = 3, Modifiers = 4, Sex = 0 },
+                    new Player {Id = "6", Name = "Saniz", Level = 10, Modifiers = 55, Sex = 1 },
+                    new Player {Id = "1", Name = "Gleb", Level = 2, Modifiers = 0, Sex = 1 },
+                    new Player {Id = "2", Name = "Vika", Level = 9, Modifiers = 13, Sex = 0 }
+                }.OrderByDescending(p => p.Level).ToList()
             );
 
         private bool _hostSearch = true;
@@ -221,7 +237,7 @@ namespace TcpMobile
             _isSearching = false;
         }
 
-        private async void KillMunchkin(object sender, EventArgs e)
+        private async void ResetMunchkin(object sender, EventArgs e)
         {
             if (!await DisplayAlert("", "Confirm!", "Yes", "No")) { return; }
 

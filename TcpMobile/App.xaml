@@ -6,7 +6,7 @@
              mc:Ignorable="d"
              x:Class="TcpMobile.App">
     <Application.Resources>
-        <Style TargetType="ContentPage" ApplyToDerivedTypes="True">
+        <Style x:Key="mainBgView" TargetType="ContentPage">
             <Setter Property="ControlTemplate">
                 <Setter.Value>
                     <ControlTemplate>
@@ -24,13 +24,18 @@
                 <On Platform="iOS" Value="FontAwesome5Free-Solid" />
             </OnPlatform>
 
+            <OnPlatform x:TypeArguments="x:String" x:Key="DefaultFont">
+                <On Platform="Android" Value="Acme-Regular.ttf#Acme-Regular" />
+                <On Platform="iOS" Value="Acme-Regular.ttf#Acme-Regular" />
+            </OnPlatform>
+
             <OnPlatform x:TypeArguments="x:String" x:Key="FontAwesomeRegular">
                 <On Platform="Android" Value="FontAwesome5Regular.otf#Regular" />
                 <On Platform="iOS" Value="FontAwesome5Free-Regular" />
             </OnPlatform>
 
             <Style x:Key="iconButton" TargetType="Button">
-                <Setter Property = "FontFamily" Value="FontAwesome5Solid.otf#Regular" />
+                <Setter Property = "FontFamily" Value="{StaticResource FontAwesomeSolid}" />
                 <Setter Property = "BackgroundColor" Value="Transparent" />
                 <Setter Property = "Padding" Value="0" />
                 <Setter Property = "Margin"  Value="0" />
@@ -53,25 +58,41 @@
                     </VisualStateGroupList>
                 </Setter>
             </Style>
-            
-            
-            <Style x:Key="navBarTitleLabel" TargetType="{x:Type Label}">
-                <Setter Property = "FontFamily" Value="Quasimodo Regular.ttf#Quasimodo Regular" />
-                <Setter Property = "FontSize" Value="25" />
-                <Setter Property = "TextColor" Value="#f9e9c4" />
-                <Setter Property = "FontAttributes" Value="Bold" />
+
+            <Style x:Key="actionIconButton" TargetType="Button" BasedOn="{StaticResource iconButton}">
+                <Setter Property = "WidthRequest" Value="64" />
+                <Setter Property = "HeightRequest" Value="64" />
+                <Setter Property = "FontSize" Value="48" />
+                <Setter Property = "TextColor" Value="#491714" />
             </Style>
-            <Style x:Key="mButton" TargetType="Button">
-                <Setter Property = "FontFamily" Value="Quasimodo Regular.ttf#Quasimodo Regular" />
-                <Setter Property = "FontSize" Value="20" />
-                <Setter Property = "TextColor" Value="#f9e9c4" />
-                <Setter Property = "BackgroundColor" Value="#795544" />
-                <Setter Property = "Padding" Value="10,0,10,0" />
-                <Setter Property = "FontAttributes" Value="Bold" />
-                <Setter Property = "BorderColor" Value="Black" />
-                <Setter Property = "BorderWidth" Value="1" />
-                <Setter Property = "Margin"  Value="10,0,10,10" />
+
+            <Style x:Key="upDownButton" TargetType="Button">
+                <Setter Property = "FontFamily" Value="{StaticResource FontAwesomeSolid}" />
+                <Setter Property = "FontSize" Value="36" />
+                <Setter Property = "Margin" Value="0" />
+                <Setter Property = "Padding" Value="0" />
+                <Setter Property = "TextColor" Value="#FCCF98" />
+                <Setter Property = "BackgroundColor" Value="#491714" />
                 <Setter Property = "CornerRadius"  Value="30" />
+            </Style>
+
+            <Style x:Key="textButton" TargetType="Button">
+                <Setter Property = "FontFamily" Value="{StaticResource DefaultFont}" />
+                <Setter Property = "Margin" Value="0" />
+                <Setter Property = "Padding" Value="0" />
+                <Setter Property = "TextColor" Value="#FCCF98" />
+                <Setter Property = "BackgroundColor" Value="#491714" />
+                <Setter Property = "CornerRadius"  Value="0" />
+            </Style>
+
+            <Style x:Key="centeredLabel" TargetType="Label">
+                <Setter Property = "LineBreakMode"  Value="NoWrap" />
+                <Setter Property = "FontFamily" Value="Acme-Regular.ttf#Acme-Regular" />
+                <Setter Property = "TextColor" Value="#491714" />
+                <Setter Property = "VerticalOptions"  Value="FillAndExpand" />
+                <Setter Property = "HorizontalOptions"  Value="FillAndExpand" />
+                <Setter Property = "VerticalTextAlignment"  Value="Center" />
+                <Setter Property = "HorizontalTextAlignment"  Value="Center" />
             </Style>
         </ResourceDictionary>
     </Application.Resources>

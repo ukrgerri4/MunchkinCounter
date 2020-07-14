@@ -1,17 +1,18 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+<pages:PopupPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:d="http://xamarin.com/schemas/2014/forms/design"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:pages="clr-namespace:Rg.Plugins.Popup.Pages;assembly=Rg.Plugins.Popup"
+             xmlns:fa="clr-namespace:Core.Utils;assembly=Core"
              mc:Ignorable="d"
-             x:Class="TcpMobile.Views.DebugPage">
-    <NavigationPage.TitleView>
-        <Label Text="Debug" Style="{StaticResource navBarTitleLabel}"/>
-    </NavigationPage.TitleView>
-    <ContentPage.Content>
-        <StackLayout Padding="10,0,10,0">
-            <ListView x:Name="debugConsoleView"></ListView>
-            <Button Text="Close" Style="{StaticResource mButton}" Clicked="Close"></Button>
+             x:Class="TcpMobile.Views.DebugPage"
+             BackgroundColor="#CC000000"
+             CloseWhenBackgroundIsClicked="False">
+    <StackLayout BackgroundColor="#FCCF98" Padding="10,0,10,0">
+        <ListView x:Name="debugConsoleView"></ListView>
+        <StackLayout VerticalOptions="End" HorizontalOptions="Start">
+            <Button Clicked="Close" Text="{x:Static fa:FontAwesomeIcons.ChevronCircleLeft}" Style="{StaticResource actionIconButton}"/>
         </StackLayout>
-    </ContentPage.Content>
-</ContentPage>
+    </StackLayout>
+</pages:PopupPage>

@@ -5,7 +5,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
              x:Class="TcpMobile.Views.CreateGamePage"
-             NavigationPage.HasBackButton="False">
+             Style="{StaticResource mainBgView}">
     <ContentPage.Resources>
         <ResourceDictionary>
             <Style x:Key="gameLabel" TargetType="Label">
@@ -101,8 +101,8 @@
                         </ListView.ItemTemplate>
                     </ListView>
                 </Frame>
-                <Button Text="Start" Style="{StaticResource mButton}" Clicked="TryStart"></Button>
-                <Button Text="Cancel" Style="{StaticResource mButton}" Clicked="TryStop"></Button>
+                <Button Text="Start" Style="{StaticResource iconButton}" Clicked="TryStart"></Button>
+                <Button Text="Cancel" Style="{StaticResource iconButton}" Clicked="TryStop"></Button>
             </StackLayout>
             <StackLayout
                 IsVisible="{Binding Process}"

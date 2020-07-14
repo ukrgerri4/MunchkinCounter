@@ -41,5 +41,20 @@ namespace TcpMobile
             var selectedType = ((SideBarMenuItem)e.Item).Type;
             MessagingCenter.Send(this, "GoTo", selectedType);
         }
+
+        private void GoToDebug(object sender, EventArgs e)
+        {
+            MessagingCenter.Send(this, "GoTo", MenuItemType.Debug);
+        }
+
+        private void GoToSettings(object sender, EventArgs e)
+        {
+            MessagingCenter.Send(this, "GoTo", MenuItemType.Settings);
+        }
+
+        private void GoToAbout(object sender, EventArgs e)
+        {
+            MessagingCenter.Send(this, "GoTo", MenuItemType.About);
+        }
     }
 }

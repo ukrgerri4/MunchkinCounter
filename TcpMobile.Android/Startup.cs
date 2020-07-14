@@ -66,7 +66,9 @@ namespace TcpMobile.Droid
             
 
             services.AddSingleton<GameMenuPage>();
-            
+
+            services.AddSingleton<DicePage>();
+
             services.AddSingleton<SettingsPage>();
             services.AddSingleton<DebugPage>();
             services.AddSingleton<AboutPage>();

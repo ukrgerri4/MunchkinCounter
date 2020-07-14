@@ -1,20 +1,18 @@
 ﻿using Infrastracture.Definitions;
 using Infrastracture.Interfaces;
+using Rg.Plugins.Popup.Pages;
+using Rg.Plugins.Popup.Services;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Xaml;
 
-namespace TcpMobile
+namespace TcpMobile.Views
 {
-    public class SettingsViewModel: INotifyPropertyChanged
+    public class SettingsViewModel : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged(string prop = "") => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
@@ -31,7 +29,7 @@ namespace TcpMobile
     }
 
     [XamlCompilation(XamlCompilationOptions.Compile)]
-    public partial class SettingsPage : ContentPage
+    public partial class SettingsPage : PopupPage
     {
         private readonly IGameLogger _gameLogger;
         private readonly IBrightnessService _brightnessService;
@@ -52,7 +50,7 @@ namespace TcpMobile
         private void ToggleSleepMode(object sender, EventArgs e)
         {
             if (!(sender is Switch sw)) { return; }
-            
+
             if (sw.IsToggled)
             {
                 _brightnessService.KeepScreenOn();
@@ -63,9 +61,9 @@ namespace TcpMobile
             }
         }
 
-        private async void CloseModal(object sender, EventArgs e)
+        private async void Close(object sender, EventArgs e)
         {
-            await Navigation.PopModalAsync();
+            await PopupNavigation.Instance.PopAsync();
         }
 
         private void SetInfo()

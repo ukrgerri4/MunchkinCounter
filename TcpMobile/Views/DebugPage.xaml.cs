@@ -1,12 +1,13 @@
 ﻿using Infrastracture.Interfaces;
-
+using Rg.Plugins.Popup.Pages;
+using Rg.Plugins.Popup.Services;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
 namespace TcpMobile.Views
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
-    public partial class DebugPage : ContentPage
+    public partial class DebugPage : PopupPage
     {
         private readonly IGameLogger _gameLogger;
 
@@ -55,7 +56,7 @@ namespace TcpMobile.Views
 
         private async void Close(object sender, System.EventArgs e)
         {
-            await Navigation.PopModalAsync();
+            await PopupNavigation.Instance.PopAsync();
         }
     }
 }

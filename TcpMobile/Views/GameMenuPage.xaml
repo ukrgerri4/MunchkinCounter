@@ -5,9 +5,6 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
              x:Class="TcpMobile.Views.GameMenuPage">
-    <NavigationPage.TitleView>
-        <Label Text="Menu" Style="{StaticResource navBarTitleLabel}"/>
-    </NavigationPage.TitleView>
     <ContentPage.Resources>
         <ResourceDictionary>
             <Style x:Key="menuLayout" TargetType="StackLayout">

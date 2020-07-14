@@ -3,45 +3,31 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:d="http://xamarin.com/schemas/2014/forms/design"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:fa="clr-namespace:Core.Utils;assembly=Core"
              mc:Ignorable="d"
              x:Class="TcpMobile.JoinGamePage"
-             NavigationPage.HasBackButton="False">
+             Style="{StaticResource mainBgView}">
     <ContentPage.Resources>
         <ResourceDictionary>
             <Style x:Key="gameLabel" TargetType="Label">
-                <Setter Property = "FontFamily" Value="Quasimodo Regular.ttf#Quasimodo Regular" />
+                <Setter Property = "LineBreakMode"  Value="NoWrap" />
+                <Setter Property = "FontFamily" Value="Acme-Regular.ttf#Acme-Regular" />
                 <Setter Property = "FontSize" Value="20" />
-                <Setter Property = "TextColor" Value="#f9e9c4" />
+                <Setter Property = "TextColor" Value="#F9E9C4" />
                 <!--<Setter Property = "BackgroundColor" Value="#795544" />-->
                 <Setter Property = "FontAttributes" Value="Bold" />
-                <Setter Property = "VerticalOptions"  Value="Center" />
-                <Setter Property = "HorizontalOptions"  Value="Center" />
-            </Style>
-            <Style x:Key="singleGameLabel" TargetType="Label">
-                <Setter Property = "LineBreakMode"  Value="NoWrap" />
-                <Setter Property = "Padding" Value="0" />
-                <Setter Property = "FontFamily" Value="Quasimodo Regular.ttf#Quasimodo Regular" />
-                <Setter Property = "FontAttributes" Value="Bold" />
                 <Setter Property = "VerticalOptions"  Value="FillAndExpand" />
-                <Setter Property = "VerticalTextAlignment"  Value="Center" />
                 <Setter Property = "HorizontalOptions"  Value="FillAndExpand" />
+                <Setter Property = "VerticalTextAlignment"  Value="Center" />
                 <Setter Property = "HorizontalTextAlignment"  Value="Center" />
-                <Setter Property = "MaxLines"  Value="1" />
             </Style>
-
-            <Style x:Key="singleGameButton" TargetType="Button">
-                <Setter Property = "FontFamily" Value="Quasimodo Regular.ttf#Quasimodo Regular" />
-                <Setter Property = "FontSize" Value="14" />
-                <Setter Property = "TextColor" Value="#f9e9c4" />
-                <Setter Property = "Padding" Value="0" />
-                <Setter Property = "BorderColor" Value="Black" />
-                <Setter Property = "BorderWidth" Value="1" />
-                <Setter Property = "CornerRadius"  Value="30" />
+            <Style x:Key="gameTitleLabel" TargetType="Label" BasedOn="{StaticResource gameLabel}">
+                <Setter Property = "FontSize" Value="16" />
             </Style>
         </ResourceDictionary>
     </ContentPage.Resources>
     <ContentPage.Content>
-        <Grid Padding="10">
+        <Grid RowSpacing="0" ColumnSpacing="0" Margin="0" Padding="10,5,10,5">
             <StackLayout
                     x:Name="creatingGameLayout"
                     IsVisible="{Binding HostSearch}"
@@ -76,40 +62,70 @@
 
                 <Button Text="Connect" Clicked="Connect" IsVisible="{Binding ConnectionsExists}"></Button>
             </StackLayout>
-           
-            <Grid IsVisible="{Binding Process}" RowSpacing="0" ColumnSpacing="0">
+
+            <Grid IsVisible="{Binding Process}" RowSpacing="0" ColumnSpacing="0" Padding="0" Margin="0">
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="3*" />
                     <RowDefinition Height="auto" />
-                    <RowDefinition Height="auto" />
-                    <!--<RowDefinition Height="10" />-->
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
-                <Grid x:Name="gameViewGrid" Grid.Row="0" Grid.Column="0" RowSpacing="0" ColumnSpacing="0">
-                    <ListView x:Name="gameView" HasUnevenRows="True" ItemsSource="{Binding ExeptMePlayers}">
+
+                <Grid Grid.Row="0" Grid.Column="0" RowSpacing="0" ColumnSpacing="0" Padding="0,10,0,5" Margin="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <Grid Grid.Row="0" Grid.Column="0" RowSpacing="0" ColumnSpacing="0" BackgroundColor="#7E8A48" Padding="5,0,5,0" Margin="0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*" />
+                            <ColumnDefinition Width="1" />
+                            <ColumnDefinition Width="6*" />
+                            <ColumnDefinition Width="1*" />
+                            <ColumnDefinition Width="1*" />
+                            <ColumnDefinition Width="1*" />
+                        </Grid.ColumnDefinitions>
+
+                        <Label Grid.Row="0" Grid.Column="0" Text="Sex" Style="{StaticResource gameTitleLabel}"/>
+                        <!--<BoxView Grid.Row="0" Grid.Column="1" HorizontalOptions="StartAndExpand" VerticalOptions="FillAndExpand" Color="Black" Margin="0,3,0,3" />-->
+                        <Label Grid.Row="0" Grid.Column="2" Text="Name" Style="{StaticResource gameTitleLabel}"/>
+                        <Label Grid.Row="0" Grid.Column="3" Text="Lvl" Style="{StaticResource gameTitleLabel}"/>
+                        <Label Grid.Row="0" Grid.Column="4" Text="Mod" Style="{StaticResource gameTitleLabel}"/>
+                        <Label Grid.Row="0" Grid.Column="5" Text="Pwr" Style="{StaticResource gameTitleLabel}"/>
+                    </Grid>
+                    <ListView Grid.Row="1" Grid.Column="0" x:Name="gameListView" ItemsSource="{Binding ExeptMePlayers}" Margin="0" SelectionMode="None">
                         <ListView.ItemTemplate>
                             <DataTemplate>
                                 <ViewCell>
                                     <ViewCell.View>
                                         <!--<FlexLayout Direction="Row" JustifyContent="SpaceBetween" BackgroundColor="#795544" Padding="10,5,10,5">-->
-                                        <Grid BackgroundColor="#795544">
+                                        <Grid RowSpacing="0" ColumnSpacing="0" BackgroundColor="#491714" Padding="5,0,5,0">
                                             <Grid.RowDefinitions>
                                                 <RowDefinition Height="*" />
                                             </Grid.RowDefinitions>
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="1*" />
+                                                <ColumnDefinition Width="1" />
                                                 <ColumnDefinition Width="6*" />
                                                 <ColumnDefinition Width="1*" />
                                                 <ColumnDefinition Width="1*" />
                                                 <ColumnDefinition Width="1*" />
                                             </Grid.ColumnDefinitions>
 
-                                            <Image Grid.Row="0" Grid.Column="0" Source="{Binding SexIcon}" HorizontalOptions="Center"></Image>
-                                            <Label Grid.Row="0" Grid.Column="1" Text="{Binding Name}" Style="{StaticResource gameLabel}"/>
-                                            <Label Grid.Row="0" Grid.Column="2" Text="{Binding Level}" Style="{StaticResource gameLabel}"/>
-                                            <Label Grid.Row="0" Grid.Column="3" Text="{Binding Modifiers}" Style="{StaticResource gameLabel}"/>
-                                            <Label Grid.Row="0" Grid.Column="4" Text="{Binding Power}" Style="{StaticResource gameLabel}"/>
+                                            <Label Grid.Row="0" Grid.Column="0" Text="{Binding SexIcon, Mode=OneWay}" FontFamily="{StaticResource FontAwesomeSolid}" FontSize="24" TextColor="#F9E9C4" VerticalOptions="Center" HorizontalOptions="Center"/>
+                                            <BoxView Grid.Row="0" Grid.Column="1" HorizontalOptions="StartAndExpand" VerticalOptions="FillAndExpand" Color="#7E8A48" Margin="0,3,0,3" />
+                                            <Label Grid.Row="0" Grid.Column="2" Text="{Binding Name, Mode=OneWay}" Style="{StaticResource gameLabel}"/>
+                                            <Label Grid.Row="0" Grid.Column="3" Text="{Binding Level, Mode=OneWay}" Style="{StaticResource gameLabel}"/>
+                                            <Label Grid.Row="0" Grid.Column="4" Text="{Binding Modifiers, Mode=OneWay}" Style="{StaticResource gameLabel}"/>
+                                            <Label Grid.Row="0" Grid.Column="5" Text="{Binding Power, Mode=OneWay}" Style="{StaticResource gameLabel}"/>
                                         </Grid>
                                         <!--</FlexLayout>-->
                                     </ViewCell.View>
@@ -119,9 +135,10 @@
                     </ListView>
                 </Grid>
 
-                <Grid Grid.Row="1" Grid.Column="0" RowSpacing="0" ColumnSpacing="0" IsVisible="{Binding IsControlsVisible}">
+                <Grid Grid.Row="1" Grid.Column="0" RowSpacing="0" ColumnSpacing="0" Padding="0" Margin="0">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="1" />
+                        <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="3*" />
@@ -129,30 +146,29 @@
                         <ColumnDefinition Width="3*" />
                         <ColumnDefinition Width="2*" />
                     </Grid.ColumnDefinitions>
-                    <StackLayout Grid.Row="0" Grid.Column="0" Spacing="0" Margin="0,0,5,0">
-                        <Label Text="Level" Style="{StaticResource singleGameLabel}" FontSize="16" TextColor="#7E8A48" VerticalOptions="End"></Label>
-                        <Button Text="Up" Clicked="IncreaseLevel" BackgroundColor="#785343" Style="{StaticResource singleGameButton}"></Button>
-                        <Label Text="{Binding MyPlayer.Level}" Style="{StaticResource singleGameLabel}" FontSize="45" TextColor="#7E8A48"></Label>
-                        <Button Text="Down" Clicked="DecreaseLevel" BackgroundColor="#B5977B" Style="{StaticResource singleGameButton}"></Button>
+                    <BoxView Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="4" HorizontalOptions="FillAndExpand" VerticalOptions="StartAndExpand" Color="#7E8A48" Margin="5,0,5,0"/>
+                    <StackLayout Grid.Row="1" Grid.Column="0" Spacing="0" Margin="0,0,5,0">
+                        <Label Text="level" Style="{StaticResource centeredLabel}" FontSize="20" TextColor="#7E8A48" VerticalOptions="End"/>
+                        <Button Clicked="IncreaseLevel" Text="{x:Static fa:FontAwesomeIcons.ChevronUp}" Style="{StaticResource upDownButton}"/>
+                        <Label Text="{Binding MyPlayer.Level}" Style="{StaticResource centeredLabel}" FontSize="50"/>
+                        <Button Clicked="DecreaseLevel" Text="{x:Static fa:FontAwesomeIcons.ChevronDown}" Style="{StaticResource upDownButton}"/>
                     </StackLayout>
-                    <StackLayout Grid.Row="0" Grid.Column="1" Spacing="0" Margin="0,0,5,0">
-                        <Label Text="Modifiers" Style="{StaticResource singleGameLabel}" FontSize="16" TextColor="#7E8A48" VerticalOptions="End"></Label>
-                        <!--<ImageButton Source="arrow64_1.png" BackgroundColor="#785343" Clicked="IncreaseLevel" HorizontalOptions="CenterAndExpand" Rotation="180" BorderWidth="1" BorderColor="Black" CornerRadius="10"></ImageButton>-->
-                        <Button Text="Up" Clicked="IncreaseModifiers" BackgroundColor="#785343" Style="{StaticResource singleGameButton}"></Button>
-                        <Label Text="{Binding MyPlayer.Modifiers}" Style="{StaticResource singleGameLabel}" FontSize="45" TextColor="#7E8A48"></Label>
-                        <!--<ImageButton Source="arrow64_1.png" BackgroundColor="#785343" Clicked="DecreaseLevel" HorizontalOptions="CenterAndExpand" BorderWidth="1" BorderColor="Black" CornerRadius="10"></ImageButton>-->
-                        <Button Text="Down" Clicked="DecreaseModifiers" BackgroundColor="#B5977B" Style="{StaticResource singleGameButton}"></Button>
+                    <StackLayout Grid.Row="1" Grid.Column="1"  Spacing="0" Margin="0,0,5,0">
+                        <Label Text="modifiers" Style="{StaticResource centeredLabel}" FontSize="20" TextColor="#7E8A48" VerticalOptions="End"/>
+                        <Button Clicked="IncreaseModifiers" Text="{x:Static fa:FontAwesomeIcons.ChevronUp}" Style="{StaticResource upDownButton}"/>
+                        <Label Text="{Binding MyPlayer.Modifiers}" Style="{StaticResource centeredLabel}" FontSize="50"/>
+                        <Button Clicked="DecreaseModifiers" Text="{x:Static fa:FontAwesomeIcons.ChevronDown}" Style="{StaticResource upDownButton}"/>
                     </StackLayout>
-                    <StackLayout Grid.Row="0" Grid.Column="2" Spacing="0">
-                        <Label Text="Power" Style="{StaticResource singleGameLabel}" FontSize="16" TextColor="#7E8A48" VerticalOptions="End"></Label>
-                        <Label Text="{Binding MyPlayer.Power}" Style="{StaticResource singleGameLabel}" FontSize="45" TextColor="#7E8A48"></Label>
+                    <StackLayout Grid.Row="1" Grid.Column="2"  Spacing="0">
+                        <Label Text="power" Style="{StaticResource centeredLabel}" FontSize="20" TextColor="#7E8A48" VerticalOptions="End"></Label>
+                        <Label Text="{Binding MyPlayer.Power}" Style="{StaticResource centeredLabel}" FontSize="50"></Label>
                     </StackLayout>
-                    <StackLayout Grid.Row="0" Grid.Column="3" Orientation="Horizontal" Spacing="0">
-                        <BoxView WidthRequest="2" HorizontalOptions="StartAndExpand" VerticalOptions="FillAndExpand" Color="#90916f" />
+                    <StackLayout Grid.Row="1" Grid.Column="3" Spacing="0" Orientation="Horizontal">
+                        <BoxView WidthRequest="1" HorizontalOptions="StartAndExpand" VerticalOptions="FillAndExpand" Color="#7E8A48" Margin="0,5,0,0" />
                         <FlexLayout Direction="Column" JustifyContent="SpaceAround">
-                            <ImageButton Source="{Binding MyPlayer.SexIcon}" BackgroundColor="Transparent" Clicked="ToggleSex"></ImageButton>
-                            <ImageButton Source="skull64.png" BackgroundColor="Transparent" Clicked="KillMunchkin"></ImageButton>
-                            <ImageButton Source="dice64.png" BackgroundColor="Transparent"></ImageButton>
+                            <Button Clicked="ResetMunchkin" Text="{x:Static fa:FontAwesomeIcons.Skull}" Style="{StaticResource actionIconButton}"/>
+                            <Button Clicked="ToggleSex" Text="{Binding MyPlayer.SexIcon}" Style="{StaticResource actionIconButton}"/>
+                            <!--<Button Text="{x:Static fa:FontAwesomeIcons.Expand}"  Style="{StaticResource iconButton}" WidthRequest="64" HeightRequest="64" FontSize="48" TextColor="#491714" />-->
                         </FlexLayout>
                     </StackLayout>
                 </Grid>

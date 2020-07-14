@@ -8,11 +8,12 @@ using Android.Widget;
 using Java.Lang;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Rg.Plugins.Popup.Services;
 using TcpMobile.Views;
 
 namespace TcpMobile.Droid
 {
-    [Activity(Label = "TcpMobile", Icon = "@mipmap/icon", Theme = "@style/MainTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
+    [Activity(Label = "Munchkin counter", Icon = "@mipmap/icon", Theme = "@style/MainTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
     public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity
     {
         protected override void OnCreate(Bundle savedInstanceState)
@@ -21,6 +22,8 @@ namespace TcpMobile.Droid
             ToolbarResource = Resource.Layout.Toolbar;
 
             base.OnCreate(savedInstanceState);
+            Rg.Plugins.Popup.Popup.Init(this, savedInstanceState);
+            Xamarin.Forms.Forms.Init(this, savedInstanceState);
 
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
             global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
@@ -40,15 +43,19 @@ namespace TcpMobile.Droid
 
         public async override void OnBackPressed()
         {
-            if (App.Current.MainPage.Navigation.ModalStack.Count > 0)
+            if (Rg.Plugins.Popup.Popup.SendBackPressed(base.OnBackPressed))
             {
-                await App.Current.MainPage.Navigation.PopModalAsync();
+                await PopupNavigation.Instance.PopAsync();
                 return;
             }
 
-            if (!(App.Current.MainPage is MainMDPage mainPage)) { return; }
+            //if (App.Current.MainPage.Navigation.ModalStack.Count > 0)
+            //{
+            //    await App.Current.MainPage.Navigation.PopModalAsync();
+            //    return;
+            //}
 
-            if (mainPage.IsPresented)
+            if (App.Current.MainPage is MainMDPage mainPage && mainPage.IsPresented)
             {
                 mainPage.IsPresented = false;
                 return;

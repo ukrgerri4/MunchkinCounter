@@ -1,6 +1,7 @@
 ﻿using GameMunchkin.Models;
 using Infrastracture.Interfaces;
 using Microsoft.Extensions.Configuration;
+using Rg.Plugins.Popup.Services;
 using System;
 using System.Reactive;
 using System.Reactive.Linq;
@@ -19,7 +20,7 @@ namespace TcpMobile.Views
         private readonly IConfiguration _configuration;
         private readonly IBrightnessService _brightnessService;
 
-        public Player Player { get; set; } = new Player();
+        public Player MyPlayer { get; set; } = new Player();
 
         private bool _isControlsVisible = true;
         public bool IsControlsVisible
@@ -68,50 +69,50 @@ namespace TcpMobile.Views
             gameViewGrid.GestureRecognizers.Add(tapGestureRecognizer);
 
             _expandSubject.AsObservable()
-                .Throttle(TimeSpan.FromSeconds(5))
+                .Throttle(TimeSpan.FromSeconds(15))
                 .Subscribe(_ => {
                     MainThread.BeginInvokeOnMainThread(() =>
                     {
-                        //if (IsControlsVisible)
-                        //{
-                        //    IsControlsVisible = false;
-                        //}
+                        if (IsControlsVisible)
+                        {
+                            IsControlsVisible = false;
+                        }
                     });
                 });
         }
 
         private void IncreaseLevel(object sender, EventArgs e)
         {
-            if (Player.Level < 10)
+            if (MyPlayer.Level < 10)
             {
-                Player.Level++;
+                MyPlayer.Level++;
             }
             _expandSubject.OnNext(Unit.Default);
         }
 
         private void DecreaseLevel(object sender, EventArgs e)
         {
-            if (Player.Level > 1)
+            if (MyPlayer.Level > 1)
             {
-                Player.Level--;
+                MyPlayer.Level--;
             }
             _expandSubject.OnNext(Unit.Default);
         }
 
         private void IncreaseModifiers(object sender, EventArgs e)
         {
-            if (Player.Modifiers < 255)
+            if (MyPlayer.Modifiers < 255)
             {
-                Player.Modifiers++;
+                MyPlayer.Modifiers++;
             }
             _expandSubject.OnNext(Unit.Default);
         }
 
         private void DecreaseModifiers(object sender, EventArgs e)
         {
-            if (Player.Modifiers > 0)
+            if (MyPlayer.Modifiers > 0)
             {
-                Player.Modifiers--;
+                MyPlayer.Modifiers--;
             }
             _expandSubject.OnNext(Unit.Default);
         }
@@ -119,8 +120,35 @@ namespace TcpMobile.Views
         
         private void ToggleSex(object sender, EventArgs e)
         {
-            Player.Sex = Player.Sex == 1 ? (byte)0 : (byte)1;
+            MyPlayer.Sex = MyPlayer.Sex == 1 ? (byte)0 : (byte)1;
             _expandSubject.OnNext(Unit.Default);
+        }
+
+        private async void ResetMunchkin(object sender, EventArgs e)
+        {
+            var confirmPage = new ConfirmPage();
+            confirmPage.OnReset += (s, ev) => {
+                switch (ev)
+                {
+                    case "level":
+                        MyPlayer.Level = 1;
+                        break;
+                    case "modifiers":
+                        MyPlayer.Modifiers = 0;
+                        break;
+                    case "all":
+                        MyPlayer.Level = 1;
+                        MyPlayer.Modifiers = 0;
+                        break;
+                }
+            };
+
+            await PopupNavigation.Instance.PushAsync(confirmPage);
+        }
+
+        private async void ThrowDice(object sender, EventArgs e)
+        {
+            await PopupNavigation.Instance.PushAsync(_serviceProvider.GetService<DicePage>());
         }
 
         private void Expand(object sender, EventArgs e)

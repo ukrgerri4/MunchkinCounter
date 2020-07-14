@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Rg.Plugins.Popup.Pages;
+using Rg.Plugins.Popup.Services;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -29,6 +31,7 @@ namespace TcpMobile.Views
                 { MenuItemType.SingleGame, typeof(SingleGamePage) },
                 { MenuItemType.CreateGame, typeof(CreateGamePage) },
                 { MenuItemType.JoinGame, typeof(JoinGamePage) },
+                { MenuItemType.Debug, typeof(DebugPage) },
                 { MenuItemType.Settings, typeof(SettingsPage) },
                 { MenuItemType.About, typeof(AboutPage) },
             };
@@ -42,23 +45,26 @@ namespace TcpMobile.Views
                 async (sender, type) => {
                     switch (type)
                     {
+                        case MenuItemType.Debug:
                         case MenuItemType.Settings:
                         case MenuItemType.About:
-                            await Navigation.PushModalAsync((Page)_serviceProvider.GetService(MenuPages[type]));
+                            await PopupNavigation.Instance.PushAsync((PopupPage)_serviceProvider.GetService(MenuPages[type]));
                             break;
                         default:
                             if (Detail.GetType() != MenuPages[type].GetType())
                             {
                                 Detail = (Page)_serviceProvider.GetService(MenuPages[type]);
                             }
+                            _ = Task.Run(async () =>
+                            {
+                                await Task.Delay(200);
+                                IsPresented = false;
+                            });
+
                             break;
                     }
 
-                    _ = Task.Run(async () =>
-                    {
-                        await Task.Delay(200);
-                        IsPresented = false;
-                    });
+
                 }
             );
         }

@@ -3,30 +3,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:d="http://xamarin.com/schemas/2014/forms/design"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:fontawesome="clr-namespace:Core.Utils;assembly=Core"
+             xmlns:fa="clr-namespace:Core.Utils;assembly=Core"
              mc:Ignorable="d"
-             x:Class="TcpMobile.Views.SingleGamePage">
-    <ContentPage.Resources>
-        <ResourceDictionary>
-            <Style x:Key="singleGameLabel" TargetType="Label">
-                <Setter Property = "LineBreakMode"  Value="NoWrap" />
-                <Setter Property = "FontFamily" Value="Acme-Regular.ttf#Acme-Regular" />
-                <Setter Property = "VerticalOptions"  Value="FillAndExpand" />
-                <Setter Property = "HorizontalOptions"  Value="FillAndExpand" />
-                <Setter Property = "VerticalTextAlignment"  Value="Center" />
-                <Setter Property = "HorizontalTextAlignment"  Value="Center" />
-            </Style>
-
-            <Style x:Key="singleGameButton" TargetType="Button">
-                <Setter Property = "FontFamily" Value="Acme-Regular.ttf#Acme-Regular" />
-                <Setter Property = "FontSize" Value="30" />
-                <Setter Property = "Margin" Value="0" />
-                <Setter Property = "Padding" Value="0" />
-                <Setter Property = "TextColor" Value="#fccf98" />
-                <Setter Property = "CornerRadius"  Value="30" />
-            </Style>
-        </ResourceDictionary>
-    </ContentPage.Resources>
+             x:Class="TcpMobile.Views.SingleGamePage"
+             Style="{StaticResource mainBgView}">
     <ContentPage.Content>
         <Grid RowSpacing="0" ColumnSpacing="0" Margin="0" Padding="10,5,10,5">
             <Grid.RowDefinitions>
@@ -50,24 +30,24 @@
                 <StackLayout Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" Rotation="180" Padding="0" Margin="0" Spacing="0" Orientation="Vertical">
                     <StackLayout Orientation="Vertical" HorizontalOptions="FillAndExpand" VerticalOptions="End" Padding="0" Margin="0" Spacing="0">
                         <StackLayout Orientation="Horizontal" Padding="0" Margin="0" Spacing="0">
-                            <Button Text="{Binding Player.SexIcon, Mode=OneWay}" Style="{StaticResource iconButton}" WidthRequest="64" HeightRequest="64" FontSize="48" TextColor="#491714" />
+                            <Button Text="{Binding MyPlayer.SexIcon, Mode=OneWay}" Style="{StaticResource iconButton}" WidthRequest="64" HeightRequest="64" FontSize="48" TextColor="#491714" />
                         </StackLayout>
-                        <Label Text="power" HorizontalTextAlignment="Center" FontFamily="Acme-Regular.ttf#Acme-Regular" FontSize="30" TextColor="Black" HorizontalOptions="CenterAndExpand"/>
+                        <Label Text="power" HorizontalTextAlignment="Center" FontFamily="Acme-Regular.ttf#Acme-Regular" FontSize="30" TextColor="#7E8A48" HorizontalOptions="CenterAndExpand"/>
                     </StackLayout>
                     <StackLayout HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" Padding="0" Margin="0" Spacing="0">
-                        <!--<Label Text="55" FontSize="220" TextColor="#491714" Style="{StaticResource singleGameLabel}" BackgroundColor="Azure"/>-->
-                        <Label Text="{Binding Player.Power, Mode=OneWay}" FontSize="220" TextColor="#491714" Style="{StaticResource singleGameLabel}"/>
+                        <!--<Label Text="55" FontSize="220" TextColor="#491714" Style="{StaticResource centeredLabel}" BackgroundColor="Azure"/>-->
+                        <Label Text="{Binding MyPlayer.Power, Mode=OneWay}" Style="{StaticResource centeredLabel}" FontSize="220"/>
                     </StackLayout>
                 </StackLayout>
 
                 <FlexLayout Grid.Row="0" Grid.Column="1" Rotation="180" Padding="0" Margin="0" Direction="Column" JustifyContent="Center">
-                    <Label Text="mod" HorizontalTextAlignment="Center" FontFamily="Acme-Regular.ttf#Acme-Regular" FontSize="30" TextColor="Black"></Label>
-                    <Label Text="{Binding Player.Modifiers, Mode=OneWay}" FontSize="80" TextColor="#491714" Style="{StaticResource singleGameLabel}"/>
+                    <Label Text="mod" HorizontalTextAlignment="Center" FontFamily="Acme-Regular.ttf#Acme-Regular" FontSize="30" TextColor="#7E8A48"></Label>
+                    <Label Text="{Binding MyPlayer.Modifiers, Mode=OneWay}" Style="{StaticResource centeredLabel}" FontSize="80"/>
                 </FlexLayout>
 
                 <FlexLayout Grid.Row="1" Grid.Column="1" Rotation="180" Padding="0" Margin="0" Direction="Column" JustifyContent="Center">
-                    <Label Text="lvl" HorizontalTextAlignment="Center" FontFamily="Acme-Regular.ttf#Acme-Regular" FontSize="30" TextColor="Black"></Label>
-                    <Label Text="{Binding Player.Level, Mode=OneWay}" FontSize="80" TextColor="#491714" Style="{StaticResource singleGameLabel}"/>
+                    <Label Text="lvl" HorizontalTextAlignment="Center" FontFamily="Acme-Regular.ttf#Acme-Regular" FontSize="30" TextColor="#7E8A48"></Label>
+                    <Label Text="{Binding MyPlayer.Level, Mode=OneWay}" Style="{StaticResource centeredLabel}" FontSize="80"/>
                 </FlexLayout>
             </Grid>
 
@@ -83,27 +63,27 @@
                     <ColumnDefinition Width="2*" />
                 </Grid.ColumnDefinitions>
                 <StackLayout Grid.Row="0" Grid.Column="0" Spacing="0" Margin="0,0,5,0">
-                    <Label Text="level" Style="{StaticResource singleGameLabel}" FontSize="20" TextColor="#7E8A48" VerticalOptions="End"></Label>
-                    <Button  Text="{x:Static fontawesome:FontAwesomeIcons.ChevronUp}" Clicked="IncreaseLevel" Style="{StaticResource iconButton}" CornerRadius="30" FontSize="36" TextColor="#fccf98" BackgroundColor="#491714"></Button>
-                    <Label Text="{Binding Player.Level}" Style="{StaticResource singleGameLabel}" FontSize="50" TextColor="#491714"></Label>
-                    <Button Text="down" Clicked="DecreaseLevel" BackgroundColor="#491714" Style="{StaticResource singleGameButton}"></Button>    
+                    <Label Text="level" Style="{StaticResource centeredLabel}" FontSize="20" TextColor="#7E8A48" VerticalOptions="End"/>
+                    <Button Clicked="IncreaseLevel" Text="{x:Static fa:FontAwesomeIcons.ChevronUp}" Style="{StaticResource upDownButton}"/>
+                    <Label Text="{Binding MyPlayer.Level}" Style="{StaticResource centeredLabel}" FontSize="50"/>
+                    <Button Clicked="DecreaseLevel" Text="{x:Static fa:FontAwesomeIcons.ChevronDown}" Style="{StaticResource upDownButton}"/>
                 </StackLayout>
                 <StackLayout Grid.Row="0" Grid.Column="1"  Spacing="0" Margin="0,0,5,0">
-                    <Label Text="modifiers" Style="{StaticResource singleGameLabel}" FontSize="20" TextColor="#7E8A48" VerticalOptions="End"></Label>
-                    <Button Text="up" Clicked="IncreaseModifiers" BackgroundColor="#491714" Style="{StaticResource singleGameButton}"></Button>
-                    <Label Text="{Binding Player.Modifiers}" Style="{StaticResource singleGameLabel}" FontSize="50" TextColor="#491714"></Label>
-                    <Button Text="down" Clicked="DecreaseModifiers" BackgroundColor="#491714" Style="{StaticResource singleGameButton}"></Button>
+                    <Label Text="modifiers" Style="{StaticResource centeredLabel}" FontSize="20" TextColor="#7E8A48" VerticalOptions="End"/>
+                    <Button Clicked="IncreaseModifiers" Text="{x:Static fa:FontAwesomeIcons.ChevronUp}" Style="{StaticResource upDownButton}"/>
+                    <Label Text="{Binding MyPlayer.Modifiers}" Style="{StaticResource centeredLabel}" FontSize="50"/>
+                    <Button Clicked="DecreaseModifiers" Text="{x:Static fa:FontAwesomeIcons.ChevronDown}" Style="{StaticResource upDownButton}"/>
                 </StackLayout>
                 <StackLayout Grid.Row="0" Grid.Column="2"  Spacing="0">
-                    <Label Text="power" Style="{StaticResource singleGameLabel}" FontSize="20" TextColor="#7E8A48" VerticalOptions="End"></Label>
-                    <Label Text="{Binding Player.Power}" Style="{StaticResource singleGameLabel}" FontSize="50" TextColor="#491714"></Label>
+                    <Label Text="power" Style="{StaticResource centeredLabel}" FontSize="20" TextColor="#7E8A48" VerticalOptions="End"></Label>
+                    <Label Text="{Binding MyPlayer.Power}" Style="{StaticResource centeredLabel}" FontSize="50"></Label>
                 </StackLayout>
                 <StackLayout Grid.Row="0" Grid.Column="3" Spacing="0" Orientation="Horizontal">
-                    <BoxView WidthRequest="2" HorizontalOptions="StartAndExpand" VerticalOptions="FillAndExpand" Color="#90916f" />
+                    <BoxView WidthRequest="2" HorizontalOptions="StartAndExpand" VerticalOptions="FillAndExpand" Color="#7E8A48" />
                     <FlexLayout Direction="Column" JustifyContent="SpaceAround">
-                        <Button Text="{Binding Player.SexIcon}" Style="{StaticResource iconButton}" WidthRequest="64" HeightRequest="64" FontSize="48" TextColor="#491714" Clicked="ToggleSex" />
-                        <Button Text="{x:Static fontawesome:FontAwesomeIcons.Skull}" Style="{StaticResource iconButton}" WidthRequest="64" HeightRequest="64" FontSize="48" TextColor="#491714" />
-                        <!--<Button Text="{x:Static fontawesome:FontAwesomeIcons.Expand}"  Style="{StaticResource iconButton}" WidthRequest="64" HeightRequest="64" FontSize="48" TextColor="#491714" />-->
+                        <Button Clicked="ResetMunchkin" Text="{x:Static fa:FontAwesomeIcons.Skull}" Style="{StaticResource actionIconButton}"/>
+                        <Button Clicked="ToggleSex" Text="{Binding MyPlayer.SexIcon}" Style="{StaticResource actionIconButton}"/>
+                        <Button Clicked="ThrowDice" Text="{x:Static fa:FontAwesomeIcons.Dice}" Style="{StaticResource actionIconButton}" />
                     </FlexLayout>
                 </StackLayout>
             </Grid>
