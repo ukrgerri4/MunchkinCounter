@@ -11,7 +11,10 @@
                 <Setter.Value>
                     <ControlTemplate>
                         <Grid BackgroundColor="#491714">
-                            <Frame BorderColor="Transparent" Padding="0" CornerRadius="20" BackgroundColor="#fccf98" Margin="5,0,5,0"></Frame>
+                            <!--<Frame BorderColor="Transparent" Padding="0" CornerRadius="20" BackgroundColor="#fccf98" Margin="5,0,5,0">-->
+                            <Frame BorderColor="Transparent" Padding="0" CornerRadius="20" Margin="5,0,5,0">
+                                <Image Source="bgImage.jpg" Aspect="AspectFill"/>
+                            </Frame>
                             <ContentPresenter/>
                         </Grid>
                     </ControlTemplate>
@@ -83,6 +86,22 @@
                 <Setter Property = "TextColor" Value="#FCCF98" />
                 <Setter Property = "BackgroundColor" Value="#491714" />
                 <Setter Property = "CornerRadius"  Value="0" />
+            </Style>
+
+            <Style x:Key="gameLabel" TargetType="Label">
+                <Setter Property = "LineBreakMode"  Value="NoWrap" />
+                <Setter Property = "FontFamily" Value="Acme-Regular.ttf#Acme-Regular" />
+                <Setter Property = "FontSize" Value="20" />
+                <Setter Property = "TextColor" Value="#F9E9C4" />
+                <Setter Property = "FontAttributes" Value="Bold" />
+                <Setter Property = "VerticalOptions"  Value="FillAndExpand" />
+                <Setter Property = "HorizontalOptions"  Value="FillAndExpand" />
+                <Setter Property = "VerticalTextAlignment"  Value="Center" />
+                <Setter Property = "HorizontalTextAlignment"  Value="Center" />
+            </Style>
+            
+            <Style x:Key="gameTitleLabel" TargetType="Label" BasedOn="{StaticResource gameLabel}">
+                <Setter Property = "FontSize" Value="16" />
             </Style>
 
             <Style x:Key="centeredLabel" TargetType="Label">

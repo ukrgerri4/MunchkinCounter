@@ -2,6 +2,7 @@
 using Infrastracture.Interfaces;
 using Infrastracture.Interfaces.GameMunchkin;
 using Infrastracture.Models;
+using Rg.Plugins.Popup.Services;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -9,14 +10,13 @@ using System.ComponentModel;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using TcpMobile.ExtendedComponents;
 using TcpMobile.Views;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
 namespace TcpMobile
 {
-    public class JoinGameViewModel: INotifyPropertyChanged
+    public class JoinGameViewModel : INotifyPropertyChanged
     {
         private readonly IGameClient _gameClient;
 
@@ -29,31 +29,37 @@ namespace TcpMobile
         }
 
         public ObservableCollection<MunchkinHost> Hosts => _gameClient.Hosts;
+        //public ObservableCollection<MunchkinHost> Hosts =>
+        //    new ObservableCollection<MunchkinHost>
+        //    {
+        //        new MunchkinHost {Id = "1", Name= "Igor_game", Capacity = 55, Fullness = 55 },
+        //        new MunchkinHost {Id = "1", Name= "Igor_game", Capacity = 55, Fullness = 55 },
+        //        new MunchkinHost {Id = "1", Name= "Igor_game", Capacity = 55, Fullness = 55 }
+        //    };
         public Player MyPlayer => _gameClient.MyPlayer;
-
-        //public ObservableCollection<Player> ExeptMePlayers =>
-        //    new ObservableCollection<Player>(
-        //        _gameClient.Players
-        //            .Where(p => p.Id != _gameClient.MyPlayer.Id)
-        //            .OrderByDescending(p => p.Id)
-        //            .ThenByDescending(p => p.Modifiers)
-        //            .ThenBy(p => p.Name)
-        //    );
 
         public ObservableCollection<Player> ExeptMePlayers =>
             new ObservableCollection<Player>(
-                new List<Player>
-                {
-                    new Player {Id = "1", Name = "KryvenkoIgorVasilievich", Level = 3, Modifiers = 0, Sex = 1 },
-                    new Player {Id = "2", Name = "Murina", Level = 7, Modifiers = 55, Sex = 0 },
-                    new Player {Id = "3", Name = "Stas", Level = 8, Modifiers = 10, Sex = 1 },
-                    new Player {Id = "4", Name = "Zepsen", Level = 2, Modifiers = 15, Sex = 1 },
-                    new Player {Id = "5", Name = "Yulia", Level = 3, Modifiers = 4, Sex = 0 },
-                    new Player {Id = "6", Name = "Saniz", Level = 10, Modifiers = 55, Sex = 1 },
-                    new Player {Id = "1", Name = "Gleb", Level = 2, Modifiers = 0, Sex = 1 },
-                    new Player {Id = "2", Name = "Vika", Level = 9, Modifiers = 13, Sex = 0 }
-                }.OrderByDescending(p => p.Level).ToList()
+                _gameClient.Players
+                    .Where(p => p.Id != _gameClient.MyPlayer.Id)
+                    .OrderByDescending(p => p.Id)
+                    .ThenByDescending(p => p.Modifiers)
+                    .ThenBy(p => p.Name)
             );
+
+        //public ObservableCollection<Player> ExeptMePlayers =>
+        //    new ObservableCollection<Player>(
+        //        new List<Player>
+        //        {
+        //            new Player {Id = "1", Name = "KryvenkoIgorVasilievich", Level = 3, Modifiers = 0, Sex = 1 },
+        //            new Player {Id = "2", Name = "Murina", Level = 7, Modifiers = 55, Sex = 0 },
+        //            new Player {Id = "3", Name = "Stas", Level = 8, Modifiers = 10, Sex = 1 },
+        //            new Player {Id = "4", Name = "Zepsen", Level = 2, Modifiers = 15, Sex = 1 },
+        //            new Player {Id = "5", Name = "Yulia", Level = 3, Modifiers = 4, Sex = 0 },
+        //            new Player {Id = "6", Name = "Saniz", Level = 10, Modifiers = 55, Sex = 1 },
+        //            new Player {Id = "1", Name = "Gleb", Level = 2, Modifiers = 0, Sex = 1 }
+        //        }.OrderByDescending(p => p.Level).ToList()
+        //    );
 
         private bool _hostSearch = true;
         public bool HostSearch
@@ -97,20 +103,59 @@ namespace TcpMobile
         {
             get => _hostSearch && Hosts.Any();
         }
+
+        public int _loaderPointsCount = 0;
+        public int LoaderPointsCount
+        {
+            get => _loaderPointsCount;
+            set
+            {
+                if (_loaderPointsCount != value)
+                {
+                    _loaderPointsCount = value;
+                    OnPropertyChanged(nameof(LoaderPointsValue));
+                }
+            }
+        }
+
+        public string LoaderPointsValue
+        {
+            get
+            {
+                switch (LoaderPointsCount)
+                {
+                    case 0:
+                        return "";
+                    case 1:
+                        return ".";
+                    case 2:
+                        return "..";
+                    case 3:
+                        return "...";
+                    case 4:
+                        return "....";
+                    default:
+                        return "";
+                }
+            }
+        } 
     }
 
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class JoinGamePage : ContentPage
     {
+        private readonly IServiceProvider _serviceProvider;
         private readonly IGameLogger _gameLogger;
         private readonly IGameClient _gameClient;
 
         private JoinGameViewModel _viewModel;
 
-        private bool _isSearching = false;
+        private bool _searching = false;
+        private bool _appeared = false;
 
-        public JoinGamePage(IGameLogger gameLogger, IGameClient gameClient)
+        public JoinGamePage(IServiceProvider serviceProvider, IGameLogger gameLogger, IGameClient gameClient)
         {
+            _serviceProvider = serviceProvider;
             _gameLogger = gameLogger;
             _gameClient = gameClient;
 
@@ -135,7 +180,7 @@ namespace TcpMobile
                     _viewModel.OnPropertyChanged(nameof(_viewModel.ExeptMePlayers));
                 });
 
-            MessagingCenter.Subscribe<GameMenuPage>(
+            MessagingCenter.Subscribe<MenuPage>(
                 this,
                 "EndGame",
                 async (sender) =>
@@ -145,7 +190,7 @@ namespace TcpMobile
             );
 
             /* FOR TEST */
-            _viewModel.Process = true;
+            //_viewModel.Process = true;
             /* FOR TEST */
         }
 
@@ -156,27 +201,6 @@ namespace TcpMobile
             _gameClient.Hosts.Clear();
 
             _gameLogger.Debug("Listening broadcast stoped");
-        }
-
-
-        private async void Connect(object sender, EventArgs e)
-        {
-            if (hostsView.SelectedItem != null && hostsView.SelectedItem is MunchkinHost munchkinHost && munchkinHost?.IpAddress != null)
-            {
-                _gameClient.Connect(munchkinHost.IpAddress);
-                _gameClient.StartUpdatePlayers();
-                var sendingInfoResult = _gameClient.SendPlayerInfo();
-
-                hostsView.SelectedItem = null;
-
-                if (sendingInfoResult.IsFail)
-                {
-                    await DisplayAlert("Wooops!", "Somethings went wrong:(", "Ok");
-                    return;
-                }
-
-                _viewModel.Process = true;
-            }
         }
 
         private void IncreaseLevel(object sender, EventArgs e)
@@ -234,27 +258,81 @@ namespace TcpMobile
             _gameClient.Stop();
 
             _viewModel.HostSearch = true;
-            _isSearching = false;
+            //_searching = false;
+        }
+
+
+
+        protected override void OnAppearing()
+        {
+            _appeared = true;
+            base.OnAppearing();
+
+            if (!_searching)
+            {
+                _gameClient.StartSearchHosts();
+                _searching = true;
+            }
+
+            Device.StartTimer(TimeSpan.FromMilliseconds(600), () =>
+            {
+                _viewModel.LoaderPointsCount = _viewModel.LoaderPointsCount < 4 ? _viewModel.LoaderPointsCount + 1 : 0;
+                return _appeared && _searching;
+            });
+        }
+
+        protected override void OnDisappearing()
+        {
+            _appeared = false;
+            base.OnDisappearing();
+        }
+
+        private async void HostTapped(object sender, ItemTappedEventArgs e)
+        {
+            if (e.Item != null && e.Item is MunchkinHost munchkinHost && munchkinHost?.IpAddress != null)
+            {
+                _gameClient.Connect(munchkinHost.IpAddress);
+                _gameClient.StartUpdatePlayers();
+                var sendingInfoResult = _gameClient.SendPlayerInfo();
+
+
+                if (sendingInfoResult.IsFail)
+                {
+                    await DisplayAlert("Wooops!", "Somethings went wrong:(", "Ok");
+                    return;
+                }
+
+                _viewModel.Process = true;
+            }
+
+            //hostsView.SelectedItem = null;
         }
 
         private async void ResetMunchkin(object sender, EventArgs e)
         {
-            if (!await DisplayAlert("", "Confirm!", "Yes", "No")) { return; }
+            var confirmPage = new ConfirmPage();
+            confirmPage.OnReset += (s, ev) => {
+                switch (ev)
+                {
+                    case "level":
+                        _viewModel.MyPlayer.Level = 1;
+                        break;
+                    case "modifiers":
+                        _viewModel.MyPlayer.Modifiers = 0;
+                        break;
+                    case "all":
+                        _viewModel.MyPlayer.Level = 1;
+                        _viewModel.MyPlayer.Modifiers = 0;
+                        break;
+                }
+                _gameClient.SendUpdatedPlayerState();
+            };
 
-            _viewModel.MyPlayer.Level = 1;
-            _viewModel.MyPlayer.Modifiers = 0;
-            _gameClient.SendUpdatedPlayerState();
+            await PopupNavigation.Instance.PushAsync(confirmPage);
         }
-
-        protected override void OnAppearing()
+        private async void ThrowDice(object sender, EventArgs e)
         {
-            base.OnAppearing();
-
-            if (!_isSearching)
-            {
-                _gameClient.StartSearchHosts();
-                _isSearching = true;
-            }
+            await PopupNavigation.Instance.PushAsync(_serviceProvider.GetService<DicePage>());
         }
     }
 }

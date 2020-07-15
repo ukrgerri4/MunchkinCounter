@@ -42,6 +42,11 @@ namespace TcpMobile
             MessagingCenter.Send(this, "GoTo", selectedType);
         }
 
+        private void EndGame(object sender, EventArgs e)
+        {
+            MessagingCenter.Send(this, "EndGame");
+        }
+
         private void GoToDebug(object sender, EventArgs e)
         {
             MessagingCenter.Send(this, "GoTo", MenuItemType.Debug);

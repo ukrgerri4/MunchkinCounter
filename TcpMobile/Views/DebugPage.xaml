@@ -9,7 +9,7 @@
              x:Class="TcpMobile.Views.DebugPage"
              BackgroundColor="#CC000000"
              CloseWhenBackgroundIsClicked="False">
-    <StackLayout BackgroundColor="#FCCF98" Padding="10,0,10,0">
+    <StackLayout Margin="10" BackgroundColor="#FFF3E5">
         <ListView x:Name="debugConsoleView"></ListView>
         <StackLayout VerticalOptions="End" HorizontalOptions="Start">
             <Button Clicked="Close" Text="{x:Static fa:FontAwesomeIcons.ChevronCircleLeft}" Style="{StaticResource actionIconButton}"/>

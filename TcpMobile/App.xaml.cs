@@ -4,7 +4,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reactive;
 using System.Reactive.Subjects;
-using TcpMobile.ExtendedComponents;
 using TcpMobile.Views;
 using Xamarin.Essentials;
 using Xamarin.Forms;

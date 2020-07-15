@@ -39,7 +39,7 @@ namespace TcpMobile.Views
                 duplicateMessagesCounterLabel.SetBinding(Label.IsVisibleProperty, "ShowDuplicateMessagesCounter");
                 duplicateMessagesCounterLabel.SetBinding(Label.TextProperty, "DuplicateMessagesCounter");
                 duplicateMessagesCounterLabel.Padding = new Thickness(5, 0, 5, 0);
-                duplicateMessagesCounterLabel.BackgroundColor = Color.FromHex("#AAAAAA");
+                duplicateMessagesCounterLabel.TextColor = Color.FromHex("#491714");
 
                 return new ViewCell
                 {

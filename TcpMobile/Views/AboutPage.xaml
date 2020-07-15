@@ -9,20 +9,20 @@
              x:Class="TcpMobile.Views.AboutPage"
              BackgroundColor="#CC000000"
              CloseWhenBackgroundIsClicked="False">
-    <Grid RowSpacing="0" ColumnSpacing="0" Margin="25" Padding="15" BackgroundColor="#FCCF98">
+    <Grid RowSpacing="0" ColumnSpacing="0" Margin="25" BackgroundColor="#FFF3E5">
         <StackLayout Orientation="Vertical" HorizontalOptions="FillAndExpand" VerticalOptions="CenterAndExpand" Spacing="20">
             <StackLayout Orientation="Vertical" HorizontalOptions="FillAndExpand">
-                <Label Text="Development:" FontAttributes="Bold" FontSize="Subtitle" HorizontalTextAlignment="Center"></Label>
+                <Label Text="Development:" TextColor="#7E8A48" FontAttributes="Bold" FontSize="Subtitle" HorizontalTextAlignment="Center"></Label>
                 <Label Text="Kryvenko Igor" TextColor="#491714" HorizontalTextAlignment="Center"></Label>
             </StackLayout>
             <BoxView HeightRequest="1" HorizontalOptions="FillAndExpand" VerticalOptions="StartAndExpand" Color="#7E8A48" Margin="90,0,90,0"/>
             <StackLayout Orientation="Vertical" HorizontalOptions="FillAndExpand">
-                <Label Text="Design:" FontAttributes="Bold" FontSize="Subtitle" HorizontalTextAlignment="Center"></Label>
+                <Label Text="Design:" TextColor="#7E8A48"  FontAttributes="Bold" FontSize="Subtitle" HorizontalTextAlignment="Center"></Label>
                 <Label Text="Shirochkin Gleb" TextColor="#491714" HorizontalTextAlignment="Center"></Label>
             </StackLayout>
             <BoxView HeightRequest="1" HorizontalOptions="FillAndExpand" VerticalOptions="StartAndExpand" Color="#7E8A48" Margin="90,0,90,0"/>
             <StackLayout Orientation="Vertical" HorizontalOptions="FillAndExpand">
-                <Label Text="Resources:" FontAttributes="Bold" FontSize="Subtitle" HorizontalTextAlignment="Center"></Label>
+                <Label Text="Resources:" TextColor="#7E8A48"  FontAttributes="Bold" FontSize="Subtitle" HorizontalTextAlignment="Center"></Label>
                 <Label HorizontalTextAlignment="Center">
                     <Label.FormattedText>
                         <FormattedString>

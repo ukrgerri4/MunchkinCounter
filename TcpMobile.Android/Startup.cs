@@ -59,24 +59,23 @@ namespace TcpMobile.Droid
         static void ConfigureServices(HostBuilderContext ctx, IServiceCollection services)
         {
             services.AddSingleton<App>();
-            services.AddSingleton<MainPage>();
             services.AddSingleton<MenuPage>();
-            services.AddSingleton<MainShell>();
             services.AddSingleton<MainMDPage>();
-            
 
-            services.AddSingleton<GameMenuPage>();
-
-            services.AddSingleton<DicePage>();
-
-            services.AddSingleton<SettingsPage>();
-            services.AddSingleton<DebugPage>();
-            services.AddSingleton<AboutPage>();
-
+            // default pages
             services.AddSingleton<SingleGamePage>();
             services.AddSingleton<CreateGamePage>();
             services.AddSingleton<JoinGamePage>();
 
+            // modal pages
+            services.AddSingleton<SettingsPage>();
+            services.AddSingleton<DebugPage>();
+            services.AddSingleton<AboutPage>();
+
+            // popups
+            services.AddSingleton<DicePage>();
+
+            // services
             services.AddSingleton<IGameLogger, GameLogger>();
             services.AddSingleton<ILanServer, LanServer>();
             services.AddSingleton<ILanClient, LanClient>();

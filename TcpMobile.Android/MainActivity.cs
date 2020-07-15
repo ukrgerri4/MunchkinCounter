@@ -13,7 +13,7 @@ using TcpMobile.Views;
 
 namespace TcpMobile.Droid
 {
-    [Activity(Label = "Munchkin counter", Icon = "@mipmap/icon", Theme = "@style/MainTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
+    [Activity(Label = "Munchkin counter", Icon = "@mipmap/icon", Theme = "@style/MainTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize, ScreenOrientation = ScreenOrientation.Portrait)]
     public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity
     {
         protected override void OnCreate(Bundle savedInstanceState)
@@ -43,17 +43,11 @@ namespace TcpMobile.Droid
 
         public async override void OnBackPressed()
         {
-            if (Rg.Plugins.Popup.Popup.SendBackPressed(base.OnBackPressed))
+            if (Rg.Plugins.Popup.Popup.SendBackPressed(null))
             {
                 await PopupNavigation.Instance.PopAsync();
                 return;
             }
-
-            //if (App.Current.MainPage.Navigation.ModalStack.Count > 0)
-            //{
-            //    await App.Current.MainPage.Navigation.PopModalAsync();
-            //    return;
-            //}
 
             if (App.Current.MainPage is MainMDPage mainPage && mainPage.IsPresented)
             {
@@ -61,9 +55,10 @@ namespace TcpMobile.Droid
                 return;
             }
 
-            Intent main = new Intent(Intent.ActionMain);
-            main.AddCategory(Intent.CategoryHome);
-            StartActivity(main);
+            //Intent main = new Intent(Intent.ActionMain);
+            //main.AddCategory(Intent.CategoryHome);
+            //StartActivity(main);
+            MoveTaskToBack(false);
         }
 
         void ConfigureServices(HostBuilderContext ctx, IServiceCollection services)

@@ -6,7 +6,6 @@ using System;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using TcpMobile.ExtendedComponents;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
@@ -79,6 +78,8 @@ namespace TcpMobile.Views
                         }
                     });
                 });
+
+            _expandSubject.OnNext(Unit.Default);
         }
 
         private void IncreaseLevel(object sender, EventArgs e)

@@ -9,7 +9,7 @@
              x:Class="TcpMobile.Views.SettingsPage"
              BackgroundColor="#CC000000"
              CloseWhenBackgroundIsClicked="False">
-    <StackLayout BackgroundColor="#FCCF98" Margin="30">
+    <StackLayout Margin="25" BackgroundColor="#FFF3E5">
         <TableView>
             <TableView.Root>
                 <TableRoot>

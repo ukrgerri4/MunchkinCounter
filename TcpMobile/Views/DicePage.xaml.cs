@@ -31,6 +31,7 @@ namespace TcpMobile.Views
 
         protected override void OnAppearing()
         {
+            base.OnAppearing();
             OnPropertyChanged(nameof(DiceValue));
         }
     }

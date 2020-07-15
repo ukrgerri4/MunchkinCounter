@@ -1,13 +1,16 @@
 ﻿using GameMunchkin.Models;
+using Infrastracture.Definitions;
 using Infrastracture.Interfaces;
 using Infrastracture.Interfaces.GameMunchkin;
 using Infrastracture.Models;
 using Microsoft.Extensions.Configuration;
+using Rg.Plugins.Popup.Services;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -97,6 +100,7 @@ namespace TcpMobile.Views
     public partial class CreateGamePage : ContentPage
     {
         private readonly IConfiguration _configuration;
+        private readonly IServiceProvider _serviceProvider;
         private readonly IGameLogger _gameLogger;
         private readonly IGameClient _gameClient;
         private readonly IGameServer _gameServer;
@@ -105,12 +109,14 @@ namespace TcpMobile.Views
 
         public CreateGamePage(
             IConfiguration configuration,
+            IServiceProvider serviceProvider,
             IGameLogger gameLogger,
             IGameServer gameServer,
             IGameClient gameClient
         )
         {
             _configuration = configuration;
+            _serviceProvider = serviceProvider;
             _gameLogger = gameLogger;
             _gameClient = gameClient;
             _gameServer = gameServer;
@@ -118,6 +124,7 @@ namespace TcpMobile.Views
             InitializeComponent();
 
             _viewModel = new CreateGameViewModel(_gameClient, _gameServer);
+            TrySetPlayerDefaults();
 
             BindingContext = _viewModel;
 
@@ -130,7 +137,7 @@ namespace TcpMobile.Views
                 }
             );
 
-            MessagingCenter.Subscribe<GameMenuPage>(
+            MessagingCenter.Subscribe<MenuPage>(
                 this,
                 "EndGame",
                 async (sender) =>
@@ -149,6 +156,8 @@ namespace TcpMobile.Views
                 _gameClient.StartUpdatePlayers();
                 _gameClient.ConnectSelf();
                 _gameClient.SendPlayerInfo();
+
+                SavePlayerDefaults();
 
                 _viewModel.WaitingPlayers = true;
             }
@@ -233,6 +242,68 @@ namespace TcpMobile.Views
                 _gameClient.MyPlayer.Modifiers--;
                 _gameClient.SendUpdatedPlayerState();
             }
+        }
+
+        private void ToggleSex(object sender, EventArgs e)
+        {
+            _gameClient.MyPlayer.Sex = _gameClient.MyPlayer.Sex == 1 ? (byte)0 : (byte)1;
+            _gameClient.SendUpdatedPlayerState();
+        }
+
+        private async void ResetMunchkin(object sender, EventArgs e)
+        {
+            var confirmPage = new ConfirmPage();
+            confirmPage.OnReset += (s, ev) => {
+                switch (ev)
+                {
+                    case "level":
+                        _viewModel.MyPlayer.Level = 1;
+                        break;
+                    case "modifiers":
+                        _viewModel.MyPlayer.Modifiers = 0;
+                        break;
+                    case "all":
+                        _viewModel.MyPlayer.Level = 1;
+                        _viewModel.MyPlayer.Modifiers = 0;
+                        break;
+                }
+                _gameClient.SendUpdatedPlayerState();
+            };
+
+            await PopupNavigation.Instance.PushAsync(confirmPage);
+        }
+
+        private async void ThrowDice(object sender, EventArgs e)
+        {
+            await PopupNavigation.Instance.PushAsync(_serviceProvider.GetService<DicePage>());
+        }
+
+        private void SavePlayerDefaults()
+        {
+            Preferences.Set(PreferencesKey.DefaultGameName, _viewModel.Host.Name);
+            Preferences.Set(PreferencesKey.DefaultPlayerName, _viewModel.MyPlayer.Name);
+            Preferences.Set(PreferencesKey.DefaultPlayerSex, _viewModel.MyPlayer.Sex);
+        }
+
+        private void TrySetPlayerDefaults()
+        {
+            var defGameName = Preferences.Get(PreferencesKey.DefaultGameName, null);
+            if (!string.IsNullOrWhiteSpace(defGameName))
+            {
+                _viewModel.Host.Name = defGameName;
+            }
+            var defPlayerName = Preferences.Get(PreferencesKey.DefaultPlayerName, null);
+            if (!string.IsNullOrWhiteSpace(defGameName))
+            {
+                _viewModel.MyPlayer.Name = defPlayerName;
+            }
+            var defPlayerSex = Preferences.Get(PreferencesKey.DefaultPlayerSex, -1);
+            if (defPlayerSex >= 0)
+            {
+                _viewModel.MyPlayer.Sex = (byte)defPlayerSex;
+            }
+            
+            
         }
     }
 }

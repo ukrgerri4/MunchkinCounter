@@ -77,6 +77,7 @@ namespace TcpMobile.Views
 
         protected override void OnAppearing()
         {
+            base.OnAppearing();
             SetInfo();
         }
         protected override void OnDisappearing()
