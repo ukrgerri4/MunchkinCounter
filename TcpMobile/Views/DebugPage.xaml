@@ -7,9 +7,9 @@
              xmlns:fa="clr-namespace:Core.Utils;assembly=Core"
              mc:Ignorable="d"
              x:Class="TcpMobile.Views.DebugPage"
-             BackgroundColor="#CC000000"
+             BackgroundColor="{StaticResource modalBg}"
              CloseWhenBackgroundIsClicked="False">
-    <StackLayout Margin="10" BackgroundColor="#FFF3E5">
+    <StackLayout Margin="10" BackgroundColor="{StaticResource primaryLight}">
         <ListView x:Name="debugConsoleView"></ListView>
         <StackLayout VerticalOptions="End" HorizontalOptions="Start">
             <Button Clicked="Close" Text="{x:Static fa:FontAwesomeIcons.ChevronCircleLeft}" Style="{StaticResource actionIconButton}"/>

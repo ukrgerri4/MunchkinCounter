@@ -6,22 +6,15 @@
              mc:Ignorable="d"
              x:Class="TcpMobile.App">
     <Application.Resources>
-        <Style x:Key="mainBgView" TargetType="ContentPage">
-            <Setter Property="ControlTemplate">
-                <Setter.Value>
-                    <ControlTemplate>
-                        <Grid BackgroundColor="#491714">
-                            <!--<Frame BorderColor="Transparent" Padding="0" CornerRadius="20" BackgroundColor="#fccf98" Margin="5,0,5,0">-->
-                            <Frame BorderColor="Transparent" Padding="0" CornerRadius="20" Margin="5,0,5,0">
-                                <Image Source="bgImage.jpg" Aspect="AspectFill"/>
-                            </Frame>
-                            <ContentPresenter/>
-                        </Grid>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
         <ResourceDictionary>
+            <Color x:Key="primary">#FCCF98</Color>
+            <Color x:Key="primaryDark">#491714</Color>
+            <Color x:Key="primaryLight">#FFF3E5</Color>
+            <Color x:Key="secondary">#7E8A48</Color>
+            <!-- new from logo-->
+            <Color x:Key="secondaryLight">#858859</Color>
+            <Color x:Key="modalBg">#CC000000</Color>
+
             <OnPlatform x:TypeArguments="x:String" x:Key="FontAwesomeSolid">
                 <On Platform="Android" Value="FontAwesome5Solid.otf#Regular" />
                 <On Platform="iOS" Value="FontAwesome5Free-Solid" />
@@ -36,6 +29,21 @@
                 <On Platform="Android" Value="FontAwesome5Regular.otf#Regular" />
                 <On Platform="iOS" Value="FontAwesome5Free-Regular" />
             </OnPlatform>
+
+            <Style x:Key="mainBgView" TargetType="ContentPage">
+                <Setter Property="ControlTemplate">
+                    <Setter.Value>
+                        <ControlTemplate>
+                            <Grid BackgroundColor="{StaticResource primaryDark}">
+                                <Frame BorderColor="Transparent" Padding="0" CornerRadius="20" Margin="5,0,5,0">
+                                    <Image Source="bgImage.jpg" Aspect="AspectFill"/>
+                                </Frame>
+                                <ContentPresenter/>
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
 
             <Style x:Key="iconButton" TargetType="Button">
                 <Setter Property = "FontFamily" Value="{StaticResource FontAwesomeSolid}" />
@@ -66,7 +74,7 @@
                 <Setter Property = "WidthRequest" Value="64" />
                 <Setter Property = "HeightRequest" Value="64" />
                 <Setter Property = "FontSize" Value="48" />
-                <Setter Property = "TextColor" Value="#491714" />
+                <Setter Property = "TextColor" Value="{StaticResource primaryDark}" />
             </Style>
 
             <Style x:Key="upDownButton" TargetType="Button">
@@ -74,8 +82,8 @@
                 <Setter Property = "FontSize" Value="36" />
                 <Setter Property = "Margin" Value="0" />
                 <Setter Property = "Padding" Value="0" />
-                <Setter Property = "TextColor" Value="#FCCF98" />
-                <Setter Property = "BackgroundColor" Value="#491714" />
+                <Setter Property = "TextColor" Value="{StaticResource primary}" />
+                <Setter Property = "BackgroundColor" Value="{StaticResource primaryDark}" />
                 <Setter Property = "CornerRadius"  Value="30" />
             </Style>
 
@@ -83,8 +91,8 @@
                 <Setter Property = "FontFamily" Value="{StaticResource DefaultFont}" />
                 <Setter Property = "Margin" Value="0" />
                 <Setter Property = "Padding" Value="0" />
-                <Setter Property = "TextColor" Value="#FCCF98" />
-                <Setter Property = "BackgroundColor" Value="#491714" />
+                <Setter Property = "TextColor" Value="{StaticResource primary}" />
+                <Setter Property = "BackgroundColor" Value="{StaticResource primaryDark}" />
                 <Setter Property = "CornerRadius"  Value="0" />
             </Style>
 
@@ -92,7 +100,7 @@
                 <Setter Property = "LineBreakMode"  Value="NoWrap" />
                 <Setter Property = "FontFamily" Value="Acme-Regular.ttf#Acme-Regular" />
                 <Setter Property = "FontSize" Value="20" />
-                <Setter Property = "TextColor" Value="#F9E9C4" />
+                <Setter Property = "TextColor" Value="{StaticResource primaryLight}" />
                 <Setter Property = "FontAttributes" Value="Bold" />
                 <Setter Property = "VerticalOptions"  Value="FillAndExpand" />
                 <Setter Property = "HorizontalOptions"  Value="FillAndExpand" />
@@ -107,7 +115,7 @@
             <Style x:Key="centeredLabel" TargetType="Label">
                 <Setter Property = "LineBreakMode"  Value="NoWrap" />
                 <Setter Property = "FontFamily" Value="Acme-Regular.ttf#Acme-Regular" />
-                <Setter Property = "TextColor" Value="#491714" />
+                <Setter Property = "TextColor" Value="{StaticResource primaryDark}" />
                 <Setter Property = "VerticalOptions"  Value="FillAndExpand" />
                 <Setter Property = "HorizontalOptions"  Value="FillAndExpand" />
                 <Setter Property = "VerticalTextAlignment"  Value="Center" />

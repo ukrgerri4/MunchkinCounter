@@ -4,25 +4,15 @@
              xmlns:d="http://xamarin.com/schemas/2014/forms/design"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:pages="clr-namespace:Rg.Plugins.Popup.Pages;assembly=Rg.Plugins.Popup"
-             xmlns:fa="clr-namespace:Core.Utils;assembly=Core"
              mc:Ignorable="d"
              x:Class="TcpMobile.Views.DicePage"
-             BackgroundColor="#CC000000"
+             BackgroundColor="{StaticResource modalBg}"
              CloseWhenBackgroundIsClicked="True">
-    <StackLayout VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" BackgroundColor="#FFF3E5" Padding="30">
+    <StackLayout VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" BackgroundColor="{StaticResource secondary}" Padding="30">
         <Button Clicked="Throw"
                 Text="{Binding DiceValue}"
                 Style="{StaticResource iconButton}"
                 FontSize="192"
-                TextColor="#7E8A48"/>
+                TextColor="{StaticResource primaryDark}"/>
     </StackLayout>
-    <!--<ContentView VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand" Padding="50" BackgroundColor="Transparent">
-        <ContentView BackgroundColor="White" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand">
-            <StackLayout VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand">
-                <Label x:Name="InfoLabel" TextColor="DarkGray"/>
-                <Button Text="Close Popup" TextColor="Red" Clicked="OnClose"/>
-                <Entry Placeholder="Keyboard Test Entry" PlaceholderColor="DarkGray"/>
-            </StackLayout>
-        </ContentView>
-    </ContentView>-->
 </pages:PopupPage>

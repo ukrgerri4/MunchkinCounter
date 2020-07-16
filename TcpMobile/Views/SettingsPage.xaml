@@ -7,9 +7,9 @@
              xmlns:fa="clr-namespace:Core.Utils;assembly=Core"
              mc:Ignorable="d"
              x:Class="TcpMobile.Views.SettingsPage"
-             BackgroundColor="#CC000000"
+             BackgroundColor="{StaticResource modalBg}"
              CloseWhenBackgroundIsClicked="False">
-    <StackLayout Margin="25" BackgroundColor="#FFF3E5">
+    <StackLayout Margin="25" BackgroundColor="{StaticResource primaryLight}">
         <TableView>
             <TableView.Root>
                 <TableRoot>

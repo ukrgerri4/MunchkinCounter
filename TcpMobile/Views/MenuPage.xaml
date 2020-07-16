@@ -6,18 +6,16 @@
              mc:Ignorable="d"
              x:Class="TcpMobile.MenuPage"
              Title="Menu"
-             BackgroundColor="#fff3e5">
-    
-
+             BackgroundColor="{StaticResource primaryLight}">
     <ContentPage.Resources>
         <ResourceDictionary>
             <Style x:Key="menuLabel" TargetType="Label">
                 <Setter Property = "FontFamily" Value="Acme-Regular.ttf#Acme-Regular" />
                 <Setter Property = "LineBreakMode"  Value="NoWrap" />
-                <Setter Property = "Margin"  Value="10" />
+                <Setter Property = "Margin"  Value="5" />
                 <Setter Property = "Padding"  Value="0,10,0,10" />
                 <Setter Property = "FontSize"  Value="30" />
-                <Setter Property = "TextColor"  Value="#491714" />
+                <Setter Property = "TextColor"  Value="{StaticResource primaryDark}" />
                 <Setter Property = "VerticalOptions"  Value="FillAndExpand" />
                 <Setter Property = "HorizontalOptions"  Value="FillAndExpand" />
                 <Setter Property = "VerticalTextAlignment"  Value="Center" />
@@ -27,7 +25,7 @@
             <Style x:Key="menuButton" TargetType="Button">
                 <Setter Property = "FontSize"  Value="30" />
                 <Setter Property = "Margin"  Value="5" />
-                <Setter Property = "TextColor"  Value="#491714" />
+                <Setter Property = "TextColor"  Value="{StaticResource primaryDark}" />
                 <Setter Property = "FontFamily" Value="Acme-Regular.ttf#Acme-Regular" />
                 <Setter Property = "VerticalOptions"  Value="FillAndExpand" />
                 <Setter Property = "HorizontalOptions"  Value="FillAndExpand" />
@@ -41,7 +39,7 @@
                             </VisualState>
                             <VisualState x:Name="Pressed">
                                 <VisualState.Setters>
-                                    <Setter Property="BackgroundColor" Value="#7E8A48" />
+                                    <Setter Property="BackgroundColor" Value="{StaticResource secondary}" />
                                 </VisualState.Setters>
                             </VisualState>
                         </VisualStateGroup>
@@ -71,12 +69,12 @@
             <StackLayout Orientation="Vertical">
                 <Button Text="END GAME" Clicked="EndGame" Style="{StaticResource menuButton}"/>
             </StackLayout>
-            <BoxView HeightRequest="1" HorizontalOptions="FillAndExpand" VerticalOptions="StartAndExpand" Color="#7E8A48" Margin="20, 0, 20, 0"/>
+            <BoxView HeightRequest="1" HorizontalOptions="FillAndExpand" VerticalOptions="StartAndExpand" Color="{StaticResource primaryDark}" Margin="20, 0, 20, 0"/>
             <StackLayout Orientation="Vertical">
                 <Button Text="Debug" Clicked="GoToDebug" Style="{StaticResource menuButton}"/>
                 <Button Text="Settings" Clicked="GoToSettings" Style="{StaticResource menuButton}"/>
                 <Button Text="About" Clicked="GoToAbout" Style="{StaticResource menuButton}"/>
-                <Label Text="v 1.0" FontFamily="Acme-Regular.ttf#Acme-Regular" FontSize="20" TextColor="#491714" HorizontalTextAlignment="End" Padding="0,0,5,5"/>
+                <Label Text="v 1.0" FontFamily="Acme-Regular.ttf#Acme-Regular" FontSize="20" TextColor="{StaticResource primaryDark}" HorizontalTextAlignment="End" Padding="0,0,5,5"/>
             </StackLayout>
         </StackLayout>
     </ContentPage.Content>

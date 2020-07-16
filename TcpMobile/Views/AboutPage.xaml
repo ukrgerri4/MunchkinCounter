@@ -7,26 +7,26 @@
              xmlns:fa="clr-namespace:Core.Utils;assembly=Core"
              mc:Ignorable="d"
              x:Class="TcpMobile.Views.AboutPage"
-             BackgroundColor="#CC000000"
+             BackgroundColor="{StaticResource modalBg}"
              CloseWhenBackgroundIsClicked="False">
-    <Grid RowSpacing="0" ColumnSpacing="0" Margin="25" BackgroundColor="#FFF3E5">
+    <Grid RowSpacing="0" ColumnSpacing="0" Margin="25" BackgroundColor="{StaticResource primaryLight}">
         <StackLayout Orientation="Vertical" HorizontalOptions="FillAndExpand" VerticalOptions="CenterAndExpand" Spacing="20">
             <StackLayout Orientation="Vertical" HorizontalOptions="FillAndExpand">
-                <Label Text="Development:" TextColor="#7E8A48" FontAttributes="Bold" FontSize="Subtitle" HorizontalTextAlignment="Center"></Label>
-                <Label Text="Kryvenko Igor" TextColor="#491714" HorizontalTextAlignment="Center"></Label>
+                <Label Text="Development:" TextColor="{StaticResource secondary}" FontAttributes="Bold" FontSize="Subtitle" HorizontalTextAlignment="Center"></Label>
+                <Label Text="Kryvenko Igor" TextColor="{StaticResource primaryDark}" HorizontalTextAlignment="Center"></Label>
             </StackLayout>
-            <BoxView HeightRequest="1" HorizontalOptions="FillAndExpand" VerticalOptions="StartAndExpand" Color="#7E8A48" Margin="90,0,90,0"/>
+            <BoxView HeightRequest="1" HorizontalOptions="FillAndExpand" VerticalOptions="StartAndExpand" Color="{StaticResource secondary}" Margin="90,0,90,0"/>
             <StackLayout Orientation="Vertical" HorizontalOptions="FillAndExpand">
-                <Label Text="Design:" TextColor="#7E8A48"  FontAttributes="Bold" FontSize="Subtitle" HorizontalTextAlignment="Center"></Label>
-                <Label Text="Shirochkin Gleb" TextColor="#491714" HorizontalTextAlignment="Center"></Label>
+                <Label Text="Design:" TextColor="{StaticResource secondary}"  FontAttributes="Bold" FontSize="Subtitle" HorizontalTextAlignment="Center"></Label>
+                <Label Text="Shirochkin Gleb" TextColor="{StaticResource primaryDark}" HorizontalTextAlignment="Center"></Label>
             </StackLayout>
-            <BoxView HeightRequest="1" HorizontalOptions="FillAndExpand" VerticalOptions="StartAndExpand" Color="#7E8A48" Margin="90,0,90,0"/>
+            <BoxView HeightRequest="1" HorizontalOptions="FillAndExpand" VerticalOptions="StartAndExpand" Color="{StaticResource secondary}" Margin="90,0,90,0"/>
             <StackLayout Orientation="Vertical" HorizontalOptions="FillAndExpand">
-                <Label Text="Resources:" TextColor="#7E8A48"  FontAttributes="Bold" FontSize="Subtitle" HorizontalTextAlignment="Center"></Label>
+                <Label Text="Resources:" TextColor="{StaticResource secondary}"  FontAttributes="Bold" FontSize="Subtitle" HorizontalTextAlignment="Center"></Label>
                 <Label HorizontalTextAlignment="Center">
                     <Label.FormattedText>
                         <FormattedString>
-                            <Span Text="https://icons8.com" TextColor="#491714" TextDecorations="Underline">
+                            <Span Text="https://icons8.com" TextColor="{StaticResource primaryDark}" TextDecorations="Underline">
                                 <!--<Span.GestureRecognizers>
                                     <TapGestureRecognizer Command="{Binding TapCommand}" CommandParameter="https://docs.microsoft.com/xamarin/" />
                                 </Span.GestureRecognizers>-->

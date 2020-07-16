@@ -29,15 +29,7 @@ namespace TcpMobile
         }
 
         public ObservableCollection<MunchkinHost> Hosts => _gameClient.Hosts;
-        //public ObservableCollection<MunchkinHost> Hosts =>
-        //    new ObservableCollection<MunchkinHost>
-        //    {
-        //        new MunchkinHost {Id = "1", Name= "Igor_game", Capacity = 55, Fullness = 55 },
-        //        new MunchkinHost {Id = "1", Name= "Igor_game", Capacity = 55, Fullness = 55 },
-        //        new MunchkinHost {Id = "1", Name= "Igor_game", Capacity = 55, Fullness = 55 }
-        //    };
         public Player MyPlayer => _gameClient.MyPlayer;
-
         public ObservableCollection<Player> ExeptMePlayers =>
             new ObservableCollection<Player>(
                 _gameClient.Players
@@ -46,20 +38,6 @@ namespace TcpMobile
                     .ThenByDescending(p => p.Modifiers)
                     .ThenBy(p => p.Name)
             );
-
-        //public ObservableCollection<Player> ExeptMePlayers =>
-        //    new ObservableCollection<Player>(
-        //        new List<Player>
-        //        {
-        //            new Player {Id = "1", Name = "KryvenkoIgorVasilievich", Level = 3, Modifiers = 0, Sex = 1 },
-        //            new Player {Id = "2", Name = "Murina", Level = 7, Modifiers = 55, Sex = 0 },
-        //            new Player {Id = "3", Name = "Stas", Level = 8, Modifiers = 10, Sex = 1 },
-        //            new Player {Id = "4", Name = "Zepsen", Level = 2, Modifiers = 15, Sex = 1 },
-        //            new Player {Id = "5", Name = "Yulia", Level = 3, Modifiers = 4, Sex = 0 },
-        //            new Player {Id = "6", Name = "Saniz", Level = 10, Modifiers = 55, Sex = 1 },
-        //            new Player {Id = "1", Name = "Gleb", Level = 2, Modifiers = 0, Sex = 1 }
-        //        }.OrderByDescending(p => p.Level).ToList()
-        //    );
 
         private bool _hostSearch = true;
         public bool HostSearch
@@ -150,7 +128,7 @@ namespace TcpMobile
 
         private JoinGameViewModel _viewModel;
 
-        private bool _searching = false;
+        public bool _searching = false;
         private bool _appeared = false;
 
         public JoinGamePage(IServiceProvider serviceProvider, IGameLogger gameLogger, IGameClient gameClient)
@@ -258,33 +236,7 @@ namespace TcpMobile
             _gameClient.Stop();
 
             _viewModel.HostSearch = true;
-            //_searching = false;
-        }
-
-
-
-        protected override void OnAppearing()
-        {
-            _appeared = true;
-            base.OnAppearing();
-
-            if (!_searching)
-            {
-                _gameClient.StartSearchHosts();
-                _searching = true;
-            }
-
-            Device.StartTimer(TimeSpan.FromMilliseconds(600), () =>
-            {
-                _viewModel.LoaderPointsCount = _viewModel.LoaderPointsCount < 4 ? _viewModel.LoaderPointsCount + 1 : 0;
-                return _appeared && _searching;
-            });
-        }
-
-        protected override void OnDisappearing()
-        {
-            _appeared = false;
-            base.OnDisappearing();
+            _searching = false;
         }
 
         private async void HostTapped(object sender, ItemTappedEventArgs e)
@@ -333,6 +285,35 @@ namespace TcpMobile
         private async void ThrowDice(object sender, EventArgs e)
         {
             await PopupNavigation.Instance.PushAsync(_serviceProvider.GetService<DicePage>());
+        }
+
+        protected override void OnAppearing()
+        {
+            _appeared = true;
+            base.OnAppearing();
+
+            StartSearching(null,null);
+        }
+
+        protected override void OnDisappearing()
+        {
+            _appeared = false;
+            base.OnDisappearing();
+        }
+
+        private void StartSearching(object sender, EventArgs e)
+        {
+            if (!_searching)
+            {
+                _gameClient.StartSearchHosts();
+                _searching = true;
+            }
+
+            Device.StartTimer(TimeSpan.FromMilliseconds(600), () =>
+            {
+                _viewModel.LoaderPointsCount = _viewModel.LoaderPointsCount < 4 ? _viewModel.LoaderPointsCount + 1 : 0;
+                return _appeared && _searching;
+            });
         }
     }
 }
