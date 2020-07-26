@@ -3,7 +3,7 @@ using Rg.Plugins.Popup.Pages;
 using System;
 using Xamarin.Forms.Xaml;
 
-namespace TcpMobile.Views
+namespace MunchkinCounterLan.Views.Popups
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class DicePage : PopupPage

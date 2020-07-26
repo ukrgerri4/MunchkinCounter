@@ -5,7 +5,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:pages="clr-namespace:Rg.Plugins.Popup.Pages;assembly=Rg.Plugins.Popup"
              mc:Ignorable="d"
-             x:Class="TcpMobile.Views.DicePage"
+             x:Class="MunchkinCounterLan.Views.Popups.DicePage"
              BackgroundColor="{StaticResource modalBg}"
              CloseWhenBackgroundIsClicked="True">
     <StackLayout VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" BackgroundColor="{StaticResource secondary}" Padding="30">

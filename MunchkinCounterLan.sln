@@ -5,13 +5,13 @@ VisualStudioVersion = 16.0.30104.148
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastracture", "Infrastracture\Infrastracture.csproj", "{0C747991-86AC-4F47-A4A7-7DF901C4E70B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TcpMobile.Android", "TcpMobile.Android\TcpMobile.Android.csproj", "{B9E105FC-1AC3-4303-95DD-086674965B22}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MunchkinCounterLan.Android", "TcpMobile.Android\MunchkinCounterLan.Android.csproj", "{B9E105FC-1AC3-4303-95DD-086674965B22}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TcpMobile", "TcpMobile\TcpMobile.csproj", "{798D5865-AE5D-4944-B274-D8302E1224DC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MunchkinCounterLan", "TcpMobile\MunchkinCounterLan.csproj", "{798D5865-AE5D-4944-B274-D8302E1224DC}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core", "Core\Core.csproj", "{634F71F2-052E-469B-A40F-7C59A9B65904}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TcpMobile.iOS", "TcpMobile.iOS\TcpMobile.iOS.csproj", "{269110B9-5FF3-4D73-AAD1-E8D1BDB6D2F3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MunchkinCounterLan.iOS", "TcpMobile.iOS\MunchkinCounterLan.iOS.csproj", "{269110B9-5FF3-4D73-AAD1-E8D1BDB6D2F3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

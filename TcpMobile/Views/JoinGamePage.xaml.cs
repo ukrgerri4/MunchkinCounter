@@ -1,7 +1,9 @@
 ﻿using GameMunchkin.Models;
+using Infrastracture.Definitions;
 using Infrastracture.Interfaces;
 using Infrastracture.Interfaces.GameMunchkin;
 using Infrastracture.Models;
+using MunchkinCounterLan.Views.Popups;
 using Rg.Plugins.Popup.Services;
 using System;
 using System.Collections.Generic;
@@ -11,6 +13,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using TcpMobile.Views;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -172,7 +175,7 @@ namespace TcpMobile
             /* FOR TEST */
         }
 
-        private void StopSearching(object sender, EventArgs e)
+        private void StopSearching()
         {
             _gameClient.StopSearchHosts();
 
@@ -228,15 +231,17 @@ namespace TcpMobile
         {
             if (!_viewModel.HostSearch)
             {
-                var confirm = await DisplayAlert("Stop game!", "Are you sure you want disconnect?", "Yes", "No");
-                if (!confirm) { return; }
+                var alert = new AlertPage("Are you sure you want disconnect?", "Yes", "No");
+                alert.OnConfirm += (sender, e) =>
+                {
+                    _gameClient.StopSearchHosts();
+                    _gameClient.Stop();
+
+                    _viewModel.HostSearch = true;
+                    _searching = false;
+                };
+                await PopupNavigation.Instance.PushAsync(alert);
             }
-
-            _gameClient.StopSearchHosts();
-            _gameClient.Stop();
-
-            _viewModel.HostSearch = true;
-            _searching = false;
         }
 
         private async void HostTapped(object sender, ItemTappedEventArgs e)
@@ -250,14 +255,36 @@ namespace TcpMobile
 
                 if (sendingInfoResult.IsFail)
                 {
-                    await DisplayAlert("Wooops!", "Somethings went wrong:(", "Ok");
+                    await PopupNavigation.Instance.PushAsync(new AlertPage("Connect to host failed, try reconnect"));
+                    return;
+                }
+                Preferences.Set(PreferencesKey.LastConnectedHostIp, munchkinHost.IpAddress.ToString());
+
+                StopSearching();
+                _viewModel.Process = true;
+            }
+        }
+
+        private async void TryReconnectToLastHost(object sender, EventArgs e)
+        {
+            var lastHostIp = Preferences.Get(PreferencesKey.LastConnectedHostIp, null);
+            if (lastHostIp != null)
+            {
+                var ipAdress = IPAddress.Parse(lastHostIp);
+
+                var connectResult =  _gameClient.Connect(ipAdress);
+                if (connectResult.IsFail)
+                {
+                    await PopupNavigation.Instance.PushAsync(new AlertPage("Connect to host failed, try reconnect"));
                     return;
                 }
 
+                _gameClient.StartUpdatePlayers();
+                _gameClient.SendPlayerInfo();
+
+                StopSearching();
                 _viewModel.Process = true;
             }
-
-            //hostsView.SelectedItem = null;
         }
 
         private async void ResetMunchkin(object sender, EventArgs e)

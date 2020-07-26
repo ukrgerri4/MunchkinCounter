@@ -18,5 +18,6 @@ namespace Infrastracture.Interfaces.GameMunchkin
         void StopUdpServer();
         Result<int> SendMessage(string id, byte[] message);
         void BroadcastMessage(byte[] message);
+        Result BeginSendMessage(string id, byte[] message);
     }
 }

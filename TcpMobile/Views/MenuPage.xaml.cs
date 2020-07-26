@@ -1,8 +1,10 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Core.Utils;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Linq;
 using TcpMobile.Models;
 using TcpMobile.Views;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -21,45 +23,54 @@ namespace TcpMobile
         {
             _serviceProvider = serviceProvider;
             _configuration = configuration;
+
             InitializeComponent();
 
-            MenuItems = new SideBarMenuItem[]
-            {
-                new SideBarMenuItem { Type = MenuItemType.SingleGame, Name = "SINGLE GAME" },
-                new SideBarMenuItem { Type = MenuItemType.JoinGame, Name = "JOIN GAME" },
-                new SideBarMenuItem { Type = MenuItemType.CreateGame, Name = "CREATE GAME" }
-            };
+            MenuItems = InitMenuItems();
 
             BindingContext = this;
         }
 
-        private void ItemTapped(object sender, ItemTappedEventArgs e)
+        private async void ItemTapped(object sender, ItemTappedEventArgs e)
         {
             if (((SideBarMenuItem)(e?.Item))?.Type == null)
                 return;
 
             var selectedType = ((SideBarMenuItem)e.Item).Type;
-            MessagingCenter.Send(this, "GoTo", selectedType);
+            switch (selectedType)
+            {
+                case MenuItemType.ShareApp:
+                    await Share.RequestAsync(new ShareTextRequest
+                    {
+                        Uri = "https://play.google.com/store/apps/details?id=com.kivgroupua.munchkincounterlan",
+                        Title = "Share Text"
+                    });
+                    break;
+                case MenuItemType.Debug:
+                case MenuItemType.Settings:
+                case MenuItemType.About:
+                    menuItemsListView.SelectedItem = null;
+                    MessagingCenter.Send(this, "GoTo", selectedType);
+                    break;
+                default:
+                    MessagingCenter.Send(this, "GoTo", selectedType);
+                    break;
+            }
         }
 
-        private void EndGame(object sender, EventArgs e)
+        private SideBarMenuItem[] InitMenuItems()
         {
-            MessagingCenter.Send(this, "EndGame");
-        }
+            return new SideBarMenuItem[]
+            {
+                new SideBarMenuItem { Type = MenuItemType.SingleGame, Name = "SINGLE GAME", Icon = FontAwesomeIcons.User },
+                new SideBarMenuItem { Type = MenuItemType.CreateGame, Name = "CREATE GAME", Icon = FontAwesomeIcons.Users },
+                new SideBarMenuItem { Type = MenuItemType.JoinGame, Name = "JOIN GAME", Icon = FontAwesomeIcons.UserAstronaut, Divider = true },
+                new SideBarMenuItem { Type = MenuItemType.Debug, Name = "Debug", Icon = FontAwesomeIcons.Code },
+                new SideBarMenuItem { Type = MenuItemType.Settings, Name = "Settings", Icon = FontAwesomeIcons.Cogs },
+                new SideBarMenuItem { Type = MenuItemType.ShareApp, Name = "Share", Icon = FontAwesomeIcons.ShareAlt },
+                new SideBarMenuItem { Type = MenuItemType.About, Name = "About", Icon = FontAwesomeIcons.InfoCircle },
 
-        private void GoToDebug(object sender, EventArgs e)
-        {
-            MessagingCenter.Send(this, "GoTo", MenuItemType.Debug);
-        }
-
-        private void GoToSettings(object sender, EventArgs e)
-        {
-            MessagingCenter.Send(this, "GoTo", MenuItemType.Settings);
-        }
-
-        private void GoToAbout(object sender, EventArgs e)
-        {
-            MessagingCenter.Send(this, "GoTo", MenuItemType.About);
+            };
         }
     }
 }

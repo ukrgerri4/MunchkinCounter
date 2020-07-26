@@ -14,7 +14,7 @@ namespace Infrastracture.Interfaces.GameMunchkin
         List<Player> Players { get; set; }
         ObservableCollection<MunchkinHost> Hosts { get; set; }
 
-        void Connect(IPAddress ip);
+        Result Connect(IPAddress ip);
         void ConnectSelf();
         Result SendPlayerInfo();
         Result SendUpdatedPlayerName();

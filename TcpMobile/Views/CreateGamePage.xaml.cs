@@ -4,6 +4,7 @@ using Infrastracture.Interfaces;
 using Infrastracture.Interfaces.GameMunchkin;
 using Infrastracture.Models;
 using Microsoft.Extensions.Configuration;
+using MunchkinCounterLan.Views.Popups;
 using Rg.Plugins.Popup.Services;
 using System;
 using System.Collections.ObjectModel;
@@ -163,7 +164,7 @@ namespace TcpMobile.Views
             }
             catch (Exception e)
             {
-                await DisplayAlert("Create game error:", "Please check your lan connection.", "Ok");
+                await PopupNavigation.Instance.PushAsync(new AlertPage("Create game error, please check your lan connection."));
                 
                 var serverStopResult = _gameServer.Stop();
                 var clientStopResult = _gameClient.Stop();
@@ -172,17 +173,13 @@ namespace TcpMobile.Views
             }
         }
 
-        private async void TryStart(object sender, EventArgs args)
+        private void TryStart(object sender, EventArgs args)
         {
-            var confirm = await DisplayAlert("Create new game", "Are you shure want to start new game?", "Yes", "No");
-            if (confirm)
-            {
-                var stopResult = _gameServer.StopBroadcast();
+            var stopResult = _gameServer.StopBroadcast();
 
-                if (stopResult.IsFail) { _gameLogger.Error(stopResult.Error); }
+            if (stopResult.IsFail) { _gameLogger.Error(stopResult.Error); }
 
-                _viewModel.Process = true;
-            }
+            _viewModel.Process = true;
         }
 
         private async void TryStop(object sender, EventArgs args)
@@ -194,8 +191,8 @@ namespace TcpMobile.Views
         {
             if (_viewModel.CreatingGame) { return; }
 
-            var confirm = await DisplayAlert("Stop game!", "stopping the game will entail disconnecting players", "Yes", "No");
-            if (confirm)
+            var alert = new AlertPage("Stopping the game will entail disconnecting players.", "Ok", "Cansel");
+            alert.OnConfirm += (sender, e) =>
             {
                 var stopResult = _gameServer.Stop();
 
@@ -204,7 +201,8 @@ namespace TcpMobile.Views
                 _gameClient.Players.Clear();
 
                 _viewModel.CreatingGame = true;
-            }
+            };
+            await PopupNavigation.Instance.PushAsync(alert);
         }
 
         private void IncreaseLevel(object sender, EventArgs e)

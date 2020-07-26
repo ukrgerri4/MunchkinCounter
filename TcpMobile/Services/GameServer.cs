@@ -315,7 +315,7 @@ namespace TcpMobile.Services
 
                             foreach (var player in players)
                             {
-                                _lanServer.SendMessage(player.Key, message);
+                                _lanServer.BeginSendMessage(player.Key, message);
                             }
                         }
                     },

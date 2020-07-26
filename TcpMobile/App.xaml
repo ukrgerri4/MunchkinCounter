@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:d="http://xamarin.com/schemas/2014/forms/design"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:fa="clr-namespace:Core.Utils;assembly=Core"
              mc:Ignorable="d"
              x:Class="TcpMobile.App">
     <Application.Resources>
@@ -15,14 +16,14 @@
             <Color x:Key="secondaryLight">#858859</Color>
             <Color x:Key="modalBg">#CC000000</Color>
 
-            <OnPlatform x:TypeArguments="x:String" x:Key="FontAwesomeSolid">
-                <On Platform="Android" Value="FontAwesome5Solid.otf#Regular" />
-                <On Platform="iOS" Value="FontAwesome5Free-Solid" />
-            </OnPlatform>
-
             <OnPlatform x:TypeArguments="x:String" x:Key="DefaultFont">
                 <On Platform="Android" Value="Acme-Regular.ttf#Acme-Regular" />
                 <On Platform="iOS" Value="Acme-Regular.ttf#Acme-Regular" />
+            </OnPlatform>
+
+            <OnPlatform x:TypeArguments="x:String" x:Key="FontAwesomeSolid">
+                <On Platform="Android" Value="FontAwesome5Solid.otf#Regular" />
+                <On Platform="iOS" Value="FontAwesome5Free-Solid" />
             </OnPlatform>
 
             <OnPlatform x:TypeArguments="x:String" x:Key="FontAwesomeRegular">
@@ -38,6 +39,14 @@
                                 <Frame BorderColor="Transparent" Padding="0" CornerRadius="20" Margin="5,0,5,0">
                                     <Image Source="bgImage.jpg" Aspect="AspectFill"/>
                                 </Frame>
+                                <AbsoluteLayout BackgroundColor="Transparent" VerticalOptions="Center">
+                                    <Label Text="{x:Static fa:FontAwesomeIcons.CaretRight}"
+                                           FontFamily="{StaticResource FontAwesomeSolid}"
+                                           FontSize="24"
+                                           BackgroundColor="Transparent"
+                                           TextColor="#99858859"
+                                           Padding="7,0,0,0"/>
+                                </AbsoluteLayout>
                                 <ContentPresenter/>
                             </Grid>
                         </ControlTemplate>

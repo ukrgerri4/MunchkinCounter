@@ -126,9 +126,9 @@
     <Folder Include="Resources\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\TcpMobile\TcpMobile.csproj">
+    <ProjectReference Include="..\TcpMobile\MunchkinCounterLan.csproj">
       <Project>{798d5865-ae5d-4944-b274-d8302e1224dc}</Project>
-      <Name>TcpMobile</Name>
+      <Name>MunchkinCounterLan</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />

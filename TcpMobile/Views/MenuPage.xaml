@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:d="http://xamarin.com/schemas/2014/forms/design"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:fa="clr-namespace:Core.Utils;assembly=Core"
              mc:Ignorable="d"
              x:Class="TcpMobile.MenuPage"
              Title="Menu"
@@ -46,6 +47,18 @@
                     </VisualStateGroupList>
                 </Setter>
             </Style>
+
+            <Style x:Key="menuIconLabel" TargetType="Label">
+                <Setter Property = "FontFamily" Value="{StaticResource FontAwesomeSolid}" />
+                <Setter Property = "WidthRequest" Value="70" />
+                <Setter Property = "Margin"  Value="0" />
+                <Setter Property = "Padding"  Value="0" />
+                <Setter Property = "FontSize"  Value="36" />
+                <Setter Property = "TextColor"  Value="{StaticResource primaryDark}" />
+                <Setter Property = "VerticalOptions"  Value="CenterAndExpand" />
+                <Setter Property = "HorizontalOptions"  Value="Start" />
+                <Setter Property = "HorizontalTextAlignment"  Value="Center" />
+            </Style>
         </ResourceDictionary>
     </ContentPage.Resources>
     <ContentPage.ControlTemplate>
@@ -55,27 +68,28 @@
     </ContentPage.ControlTemplate>
     <ContentPage.Content>
         <StackLayout Orientation="Vertical" Spacing="0" Padding="0" Margin="0">
-            <ListView HasUnevenRows="True" ItemsSource="{Binding MenuItems}" ItemTapped="ItemTapped" SeparatorVisibility="None">
+            <ListView x:Name="menuItemsListView" HasUnevenRows="True" ItemsSource="{Binding MenuItems}" ItemTapped="ItemTapped" SeparatorVisibility="None">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <ViewCell>
                             <ViewCell.View>
-                                <Label Text="{Binding Name}" Style="{StaticResource menuLabel}"/>
+                                <StackLayout Spacing="0" Orientation="Vertical" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand">
+                                    <StackLayout Spacing="0" Orientation="Horizontal" HorizontalOptions="FillAndExpand">
+                                        <Label Text="{Binding Icon}" Style="{StaticResource menuIconLabel}"/>
+                                        <Label Text="{Binding Name}" Style="{StaticResource menuLabel}"/>
+                                    </StackLayout>
+                                    <BoxView IsVisible="{Binding Divider}"
+                                             HeightRequest="1"
+                                             HorizontalOptions="FillAndExpand"
+                                             VerticalOptions="StartAndExpand"
+                                             Color="{StaticResource primaryDark}"
+                                             Margin="20, 0, 20, 0"/>
+                                </StackLayout>
                             </ViewCell.View>
                         </ViewCell>
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
-            <StackLayout Orientation="Vertical">
-                <Button Text="END GAME" Clicked="EndGame" Style="{StaticResource menuButton}"/>
-            </StackLayout>
-            <BoxView HeightRequest="1" HorizontalOptions="FillAndExpand" VerticalOptions="StartAndExpand" Color="{StaticResource primaryDark}" Margin="20, 0, 20, 0"/>
-            <StackLayout Orientation="Vertical">
-                <Button Text="Debug" Clicked="GoToDebug" Style="{StaticResource menuButton}"/>
-                <Button Text="Settings" Clicked="GoToSettings" Style="{StaticResource menuButton}"/>
-                <Button Text="About" Clicked="GoToAbout" Style="{StaticResource menuButton}"/>
-                <Label Text="v 1.0" FontFamily="Acme-Regular.ttf#Acme-Regular" FontSize="20" TextColor="{StaticResource primaryDark}" HorizontalTextAlignment="End" Padding="0,0,5,5"/>
-            </StackLayout>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

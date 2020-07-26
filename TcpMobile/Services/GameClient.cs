@@ -57,9 +57,9 @@ namespace TcpMobile.Services
             Players = new List<Player>();
         }
 
-        public void Connect(IPAddress ip)
+        public Result Connect(IPAddress ip)
         {
-            _lanClient.Connect(ip);
+            return _lanClient.Connect(ip);
         }
 
         public Result Stop()
@@ -127,7 +127,7 @@ namespace TcpMobile.Services
                 memoryStream.Write(BitConverter.GetBytes((ushort)memoryStream.Length), 0, 2);
                 memoryStream.Seek(0, SeekOrigin.End);
                 
-                var initMessageResult = _lanClient.SendMessage(memoryStream.ToArray());
+                var initMessageResult = _lanClient.BeginSendMessage(memoryStream.ToArray());
                 
                 if (initMessageResult.IsFail)
                 {
@@ -155,7 +155,7 @@ namespace TcpMobile.Services
                 memoryStream.Write(BitConverter.GetBytes((ushort)memoryStream.Length), 0, 2);
                 memoryStream.Seek(0, SeekOrigin.End);
                 
-                var initMessageResult = _lanClient.SendMessage(memoryStream.ToArray());
+                var initMessageResult = _lanClient.BeginSendMessage(memoryStream.ToArray());
 
                 if (initMessageResult.IsFail)
                 {
@@ -184,7 +184,7 @@ namespace TcpMobile.Services
                 memoryStream.Write(BitConverter.GetBytes((ushort)memoryStream.Length), 0, 2);
                 memoryStream.Seek(0, SeekOrigin.End);
 
-                var initMessageResult = _lanClient.SendMessage(memoryStream.ToArray());
+                var initMessageResult = _lanClient.BeginSendMessage(memoryStream.ToArray());
 
                 if (initMessageResult.IsFail)
                 {

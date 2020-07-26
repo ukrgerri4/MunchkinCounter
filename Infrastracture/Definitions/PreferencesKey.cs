@@ -6,5 +6,6 @@
         public const string DefaultPlayerName = "def_player_name";
         public const string DefaultGameName = "def_game_name";
         public const string DefaultPlayerSex = "def_player_sex";
+        public const string LastConnectedHostIp = "last_host_ip";
     }
 }

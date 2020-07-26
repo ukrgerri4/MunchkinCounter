@@ -6,7 +6,7 @@
              xmlns:pages="clr-namespace:Rg.Plugins.Popup.Pages;assembly=Rg.Plugins.Popup"
              xmlns:fa="clr-namespace:Core.Utils;assembly=Core"
              mc:Ignorable="d"
-             x:Class="TcpMobile.Views.ConfirmPage"
+             x:Class="MunchkinCounterLan.Views.Popups.ConfirmPage"
              BackgroundColor="{StaticResource modalBg}"
              CloseWhenBackgroundIsClicked="False">
     <pages:PopupPage.Resources>

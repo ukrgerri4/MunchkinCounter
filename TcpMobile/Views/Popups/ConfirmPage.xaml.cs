@@ -3,7 +3,7 @@ using Rg.Plugins.Popup.Services;
 using System;
 using Xamarin.Forms.Xaml;
 
-namespace TcpMobile.Views
+namespace MunchkinCounterLan.Views.Popups
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class ConfirmPage : PopupPage

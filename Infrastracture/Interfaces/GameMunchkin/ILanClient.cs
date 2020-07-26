@@ -12,6 +12,8 @@ namespace Infrastracture.Interfaces.GameMunchkin
     public interface ILanClient
     {
         Subject<TcpEvent> PacketSubject { get; }
+
+        Result BeginSendMessage(byte[] message);
         Result Connect(IPAddress address, int port = 42420);
         void Disconnect();
         Result<int> SendMessage(byte[] message);

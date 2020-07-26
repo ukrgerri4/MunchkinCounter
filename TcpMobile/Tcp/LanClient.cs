@@ -7,6 +7,7 @@ using System;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Text;
 using TcpMobile.Tcp.Models;
@@ -16,6 +17,7 @@ namespace TcpMobile.Tcp
     public class LanClient: ILanClient
     {
         public Subject<TcpEvent> PacketSubject { get; set; } = new Subject<TcpEvent>();
+        private IDisposable _connectionChecker;
 
         private Socket _mainTcpSocket;
         private Socket _mainUdpSocket;
@@ -26,6 +28,13 @@ namespace TcpMobile.Tcp
         {
             _gameLogger = gameLogger;
             _configuration = configuration;
+        }
+
+        private bool IsConnected(Socket socket)
+        {
+            if (!socket.Poll(100, SelectMode.SelectRead) || socket.Available != 0)
+                return true;
+            return false;
         }
 
         public Result Connect(IPAddress address, int port = 42420)
@@ -43,6 +52,8 @@ namespace TcpMobile.Tcp
                 stateObj.Id = _configuration["DeviceId"];
                 _mainTcpSocket.BeginReceive(stateObj.buffer, 0, StateObject.BufferSize, 0, new AsyncCallback(OnDataReceived), stateObj);
 
+                StartConnectionCheck();
+
                 return Result.Ok();
             }
 
@@ -52,9 +63,35 @@ namespace TcpMobile.Tcp
             }
         }
 
+        private void StartConnectionCheck()
+        {
+            _connectionChecker = Observable.Interval(TimeSpan.FromSeconds(1))
+                .Subscribe(
+                    _ =>
+                    {
+                        try
+                        {
+                            if (_mainTcpSocket != null && IsConnected(_mainTcpSocket)) { return; }
+
+                            Disconnect();
+                            _gameLogger.Debug($"Client connection check: disconnected and removed");
+                        }
+                        catch (Exception e)
+                        {
+                            try { Disconnect(); }
+                            catch { }
+
+                            _gameLogger.Error($"Client connection check error: {e.Message}");
+                        }
+                    },
+                    error => _gameLogger.Error($"Client connection check subscribe error: {error.Message}")
+                );
+        }
+
         public void Disconnect()
         {
             _mainTcpSocket?.Close();
+            _connectionChecker?.Dispose();
         }
 
         public Result<int> SendMessage(byte[] message)
@@ -73,11 +110,51 @@ namespace TcpMobile.Tcp
             return Result.Ok(bytesSent);
         }
 
-        private void OnDataReceived(IAsyncResult asyncResult)
+        public Result BeginSendMessage(byte[] message)
+        {
+            if (_mainTcpSocket == null)
+            {
+                return Result.Fail("Soket is null.");
+            }
+
+            if (!_mainTcpSocket.Connected)
+            {
+                return Result.Fail("Soket is not connected.");
+            }
+
+            _mainTcpSocket.BeginSend(message, 0, message.Length, SocketFlags.None, new AsyncCallback(SendCallback), _mainTcpSocket);
+            return Result.Ok();
+        }
+
+        private void SendCallback(IAsyncResult ar)
+        {
+            Socket socket = (Socket)ar.AsyncState;
+            try
+            {
+                int bytesSent = socket.EndSend(ar);
+            }
+            catch (ObjectDisposedException)
+            {
+                Disconnect();
+                _gameLogger.Error("Client SendCallback: Socket has been closed");
+            }
+            catch (SocketException se)
+            {
+                Disconnect();
+                _gameLogger.Error($"Client SendCallback: [{se.SocketErrorCode}] - {se.Message}");
+            }
+            catch (Exception e)
+            {
+                Disconnect();
+                _gameLogger.Error($"Client SendCallback UNEXPECTED: {e.Message}");
+            }
+        }
+
+        private void OnDataReceived(IAsyncResult ar)
         {
             try
             {
-                var stateObj = (StateObject)asyncResult.AsyncState;
+                var stateObj = (StateObject)ar.AsyncState;
                 var handler = stateObj.workSocket;
 
                 if (handler == null || !handler.Connected)
@@ -85,7 +162,7 @@ namespace TcpMobile.Tcp
                     return;
                 }
 
-                int bytesRead = handler.EndReceive(asyncResult);
+                int bytesRead = handler.EndReceive(ar);
 
                 if (bytesRead > 0)
                 {
@@ -96,11 +173,18 @@ namespace TcpMobile.Tcp
             }
             catch (ObjectDisposedException)
             {
+                Disconnect();
                 _gameLogger.Error("Client OnDataReceived: Socket has been closed");
             }
             catch (SocketException se)
             {
-                _gameLogger.Error($"Client OnDataReceived: {se.Message}");
+                Disconnect();
+                _gameLogger.Error($"Client OnDataReceived: [{se.SocketErrorCode}] - {se.Message}");
+            }
+            catch (Exception e)
+            {
+                Disconnect();
+                _gameLogger.Error($"Client OnDataReceived UNEXPECTED: {e.Message}");
             }
         }
 
@@ -125,16 +209,16 @@ namespace TcpMobile.Tcp
             }
         }
 
-        private void ReceiveBroadcastCallback(IAsyncResult asyncResult)
+        private void ReceiveBroadcastCallback(IAsyncResult ar)
         {
             try
             {
-                var stateObj = (StateObject)asyncResult.AsyncState;
+                var stateObj = (StateObject)ar.AsyncState;
 
                 if (stateObj == null || stateObj.workSocket == null) { return; }
 
                 EndPoint clientEp = new IPEndPoint(IPAddress.Any, 0);
-                int bytesRead = stateObj.workSocket.EndReceiveFrom(asyncResult, ref clientEp);
+                int bytesRead = stateObj.workSocket.EndReceiveFrom(ar, ref clientEp);
 
                 _gameLogger.Debug($"{clientEp} - [{bytesRead}]b");
                 var packet = new Packet(stateObj.buffer.Take(bytesRead).ToArray());

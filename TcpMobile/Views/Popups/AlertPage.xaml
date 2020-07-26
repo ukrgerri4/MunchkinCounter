@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<pages:PopupPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:pages="clr-namespace:Rg.Plugins.Popup.Pages;assembly=Rg.Plugins.Popup"
+             xmlns:fa="clr-namespace:Core.Utils;assembly=Core"
+             mc:Ignorable="d"
+             x:Class="MunchkinCounterLan.Views.Popups.AlertPage"
+             BackgroundColor="{StaticResource modalBg}"
+             CloseWhenBackgroundIsClicked="False">
+    <StackLayout VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" BackgroundColor="{StaticResource secondary}" Margin="20" Padding="10" Spacing="20">
+        <Label Text="{Binding AlertText}"
+               FontFamily="{StaticResource DefaultFont}"
+               TextColor="{StaticResource primaryDark}"
+               VerticalOptions="CenterAndExpand"
+               HorizontalOptions="FillAndExpand"
+               FontSize="20"/>
+        <StackLayout Orientation="Horizontal">
+            <Button Text="{Binding ConfirmText}"
+                    Clicked="ConfirmClicked"
+                    Style="{StaticResource textButton}"
+                    FontSize="20"
+                    HorizontalOptions="CenterAndExpand"/>
+            <Button Text="{Binding RejectText}"
+                    IsVisible="{Binding IsRejectButtonVisible}"
+                    Clicked="RejectClicked" 
+                    Style="{StaticResource textButton}" 
+                    FontSize="20" 
+                    HorizontalOptions="CenterAndExpand"/>
+        </StackLayout>
+    </StackLayout>
+</pages:PopupPage>

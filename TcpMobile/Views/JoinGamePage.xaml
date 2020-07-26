@@ -63,7 +63,7 @@
                 <BoxView Grid.Row="3" Grid.Column="0" HorizontalOptions="FillAndExpand" VerticalOptions="StartAndExpand" Color="{StaticResource secondary}" Margin="5,0,5,0"/>
 
                 <StackLayout Grid.Row="4" Grid.Column="0" Orientation="Horizontal" Spacing="0" VerticalOptions="CenterAndExpand" HorizontalOptions="FillAndExpand">
-                    <!--<Button Clicked="StartSearching" Text="{x:Static fa:FontAwesomeIcons.Redo}" Style="{StaticResource actionIconButton}" VerticalOptions="Center" HorizontalOptions="Start"/>-->
+                    <Button Clicked="TryReconnectToLastHost" Text="{x:Static fa:FontAwesomeIcons.Redo}" Style="{StaticResource actionIconButton}" FontSize="24"/>
                     <Label Text="Searching hosts" FontFamily="{StaticResource DefaultFont}" TextColor="{StaticResource primaryDark}" FontSize="24"/>
                     <Label Text="{Binding LoaderPointsValue}" FontFamily="{StaticResource DefaultFont}" TextColor="{StaticResource primaryDark}" FontSize="24"/>
                     <!--<ActivityIndicator IsRunning="{Binding HostSearch}" Color="{StaticResource primaryDark}" />-->

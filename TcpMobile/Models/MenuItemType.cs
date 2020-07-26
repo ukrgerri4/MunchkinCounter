@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Core.Utils;
+using System;
 
 namespace TcpMobile.Models
 {
@@ -8,8 +9,9 @@ namespace TcpMobile.Models
         CreateGame,
         JoinGame,
         SingleGame,
-        Settings,
         Debug,
+        Settings,
+        ShareApp,
         About
     }
 
@@ -17,5 +19,7 @@ namespace TcpMobile.Models
     {
         public MenuItemType Type { get; set; }
         public string Name { get; set; }
+        public string Icon { get; set; }
+        public bool Divider { get; set; } = false;
     }
 }

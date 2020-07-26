@@ -30,6 +30,7 @@ namespace TcpMobile.Services
 
         private void WriteToHistory(string message, LogType type)
         {
+#if DEBUG
             if (IsDuplicateMessages(message))
             {
                 _lastLogUnit.DuplicateMessagesCounter++;
@@ -40,6 +41,9 @@ namespace TcpMobile.Services
             var logUnit = new LogUnit { Message = message, Type = type };
             _lastLogUnit = logUnit;
             _history.Add(logUnit);
+#else
+// write to file etc.
+#endif
         }
 
         private bool IsDuplicateMessages(string message)
