@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<pages:PopupPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:pages="clr-namespace:Rg.Plugins.Popup.Pages;assembly=Rg.Plugins.Popup"
+             xmlns:fa="clr-namespace:Core.Utils;assembly=Core"
+             mc:Ignorable="d"
+             x:Class="MunchkinCounterLan.Views.Popups.EnterPlayerDataPage"
+             BackgroundColor="{StaticResource modalBg}">
+    <pages:PopupPage.Resources>
+        <ResourceDictionary>
+            <Style x:Key="createGameEntry" TargetType="Entry">
+                <Setter Property = "FontSize" Value="20" />
+                <Setter Property = "TextColor" Value="{StaticResource primaryDark}" />
+                <Setter Property = "BackgroundColor" Value="{StaticResource primary}" />
+                <Setter Property = "VerticalOptions"  Value="FillAndExpand" />
+                <Setter Property = "HorizontalOptions"  Value="FillAndExpand" />
+            </Style>
+
+            <Style x:Key="inlineCreateGameEntry" TargetType="Entry" BasedOn="{StaticResource createGameEntry}">
+                <Setter Property = "HorizontalTextAlignment"  Value="Center" />
+                <Setter Property = "HorizontalOptions"  Value="EndAndExpand" />
+                <Setter Property = "WidthRequest"  Value="150" />
+            </Style>
+
+            <Style x:Key="createGameLabel" TargetType="Label" BasedOn="{StaticResource gameLabel}">
+                <Setter Property = "FontSize" Value="24" />
+                <Setter Property = "TextColor" Value="{StaticResource primaryLight}" />
+                <Setter Property = "HorizontalTextAlignment"  Value="Start" />
+                <Setter Property = "VerticalOptions"  Value="FillAndExpand" />
+                <Setter Property = "HorizontalOptions"  Value="Start" />
+            </Style>
+        </ResourceDictionary>
+    </pages:PopupPage.Resources>
+    <StackLayout VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" BackgroundColor="{StaticResource secondary}" Padding="15">
+        <StackLayout Spacing="0">
+            <Label Text="Munchkin name:" Style="{StaticResource createGameLabel}"/>
+            <Entry Text="{Binding Player.Name}" Style="{StaticResource createGameEntry}" Placeholder="enter player name"/>
+        </StackLayout>
+        <StackLayout Spacing="0" Orientation="Horizontal">
+            <Label Text="Munchkin sex:" Style="{StaticResource createGameLabel}"/>
+            <Entry Text="{Binding Player.Sex}" Style="{StaticResource inlineCreateGameEntry}"/>
+        </StackLayout>
+        <StackLayout Spacing="0" Orientation="Horizontal" HorizontalOptions="FillAndExpand" VerticalOptions="End">
+            <Button Text="Cancel" Clicked="Cancel" Style="{StaticResource textButton}" FontSize="24" HorizontalOptions="StartAndExpand" Margin="0,10,0,5" Padding="5,0,5,0" CornerRadius="20"/>
+            <Button Text="Next" Clicked="Next" Style="{StaticResource textButton}" FontSize="24" HorizontalOptions="EndAndExpand" Margin="0,10,0,5" Padding="5,0,5,0" CornerRadius="20"/>
+        </StackLayout>
+    </StackLayout>
+</pages:PopupPage>

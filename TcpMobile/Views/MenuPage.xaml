@@ -20,7 +20,7 @@
                 <Setter Property = "VerticalOptions"  Value="FillAndExpand" />
                 <Setter Property = "HorizontalOptions"  Value="FillAndExpand" />
                 <Setter Property = "VerticalTextAlignment"  Value="Center" />
-                <Setter Property = "HorizontalTextAlignment"  Value="Center" />
+                <Setter Property = "HorizontalTextAlignment"  Value="Start" />
             </Style>
 
             <Style x:Key="menuButton" TargetType="Button">

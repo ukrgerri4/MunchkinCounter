@@ -79,7 +79,7 @@
                     <Label Text="{Binding MyPlayer.Power}" Style="{StaticResource centeredLabel}" FontSize="50"></Label>
                 </StackLayout>
                 <StackLayout Grid.Row="0" Grid.Column="3" Spacing="0" Orientation="Horizontal">
-                    <BoxView WidthRequest="2" HorizontalOptions="StartAndExpand" VerticalOptions="FillAndExpand" Color="{StaticResource secondary}" />
+                    <!--<BoxView WidthRequest="2" HorizontalOptions="StartAndExpand" VerticalOptions="FillAndExpand" Color="{StaticResource secondary}" />-->
                     <FlexLayout Direction="Column" JustifyContent="SpaceAround">
                         <Button Clicked="ResetMunchkin" Text="{x:Static fa:FontAwesomeIcons.Skull}" Style="{StaticResource actionIconButton}"/>
                         <Button Clicked="ToggleSex" Text="{Binding MyPlayer.SexIcon}" Style="{StaticResource actionIconButton}"/>

@@ -1,11 +1,8 @@
 ﻿using Rg.Plugins.Popup.Pages;
 using Rg.Plugins.Popup.Services;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+using System.Windows.Input;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -14,9 +11,14 @@ namespace TcpMobile.Views
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class AboutPage : PopupPage
     {
+        public ICommand RedirectCommand => 
+            new Command<string>(async url => await Launcher.OpenAsync(new Uri(url)));
+
         public AboutPage()
         {
             InitializeComponent();
+
+            BindingContext = this;
         }
 
         private async void Close(object sender, EventArgs e)

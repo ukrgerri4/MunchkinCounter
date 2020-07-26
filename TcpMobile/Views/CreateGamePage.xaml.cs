@@ -187,22 +187,30 @@ namespace TcpMobile.Views
             await Stop();
         }
 
-        private async Task Stop()
+        public async Task Stop()
         {
             if (_viewModel.CreatingGame) { return; }
 
-            var alert = new AlertPage("Stopping the game will entail disconnecting players.", "Ok", "Cansel");
-            alert.OnConfirm += (sender, e) =>
-            {
-                var stopResult = _gameServer.Stop();
+            //var alert = new AlertPage("Stopping the game will entail disconnecting players.", "Ok", "Cancel");
+            //alert.OnConfirm += (sender, e) =>
+            //{
+            //    var stopResult = _gameServer.Stop();
 
-                if (stopResult.IsFail) { _gameLogger.Error(stopResult.Error); }
+            //    if (stopResult.IsFail) { _gameLogger.Error(stopResult.Error); }
 
-                _gameClient.Players.Clear();
+            //    _gameClient.Players.Clear();
 
-                _viewModel.CreatingGame = true;
-            };
-            await PopupNavigation.Instance.PushAsync(alert);
+            //    _viewModel.CreatingGame = true;
+            //};
+            //await PopupNavigation.Instance.PushAsync(alert);
+
+            var stopResult = _gameServer.Stop();
+
+            if (stopResult.IsFail) { _gameLogger.Error(stopResult.Error); }
+
+            _gameClient.Players.Clear();
+
+            _viewModel.CreatingGame = true;
         }
 
         private void IncreaseLevel(object sender, EventArgs e)

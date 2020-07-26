@@ -26,10 +26,10 @@
                 <Label HorizontalTextAlignment="Center">
                     <Label.FormattedText>
                         <FormattedString>
-                            <Span Text="https://icons8.com" TextColor="{StaticResource primaryDark}" TextDecorations="Underline">
-                                <!--<Span.GestureRecognizers>
-                                    <TapGestureRecognizer Command="{Binding TapCommand}" CommandParameter="https://docs.microsoft.com/xamarin/" />
-                                </Span.GestureRecognizers>-->
+                            <Span Text="https://fontawesome.com" TextColor="{StaticResource primaryDark}" TextDecorations="Underline">
+                                <Span.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding RedirectCommand}" CommandParameter="https://fontawesome.com" />
+                                </Span.GestureRecognizers>
                             </Span>
                         </FormattedString>
                     </Label.FormattedText>

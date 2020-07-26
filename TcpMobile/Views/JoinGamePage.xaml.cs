@@ -132,7 +132,6 @@ namespace TcpMobile
         private JoinGameViewModel _viewModel;
 
         public bool _searching = false;
-        private bool _appeared = false;
 
         public JoinGamePage(IServiceProvider serviceProvider, IGameLogger gameLogger, IGameClient gameClient)
         {
@@ -227,41 +226,61 @@ namespace TcpMobile
             _gameClient.SendUpdatedPlayerState();
         }
 
-        private async Task Stop()
+        public async Task Stop()
         {
-            if (!_viewModel.HostSearch)
-            {
-                var alert = new AlertPage("Are you sure you want disconnect?", "Yes", "No");
-                alert.OnConfirm += (sender, e) =>
-                {
-                    _gameClient.StopSearchHosts();
-                    _gameClient.Stop();
+            if (_viewModel.HostSearch) { return; }
 
-                    _viewModel.HostSearch = true;
-                    _searching = false;
-                };
-                await PopupNavigation.Instance.PushAsync(alert);
-            }
+            //var alert = new AlertPage("Are you sure you want disconnect?", "Yes", "No");
+            //alert.OnConfirm += (sender, e) =>
+            //{
+            //    _gameClient.StopSearchHosts();
+            //    _gameClient.Stop();
+
+            //    _viewModel.HostSearch = true;
+            //    _searching = false;
+            //};
+            //await PopupNavigation.Instance.PushAsync(alert);
+            _gameClient.StopSearchHosts();
+            _gameClient.Stop();
+
+            _viewModel.HostSearch = true;
+            _searching = false;
         }
 
         private async void HostTapped(object sender, ItemTappedEventArgs e)
         {
             if (e.Item != null && e.Item is MunchkinHost munchkinHost && munchkinHost?.IpAddress != null)
             {
-                _gameClient.Connect(munchkinHost.IpAddress);
-                _gameClient.StartUpdatePlayers();
-                var sendingInfoResult = _gameClient.SendPlayerInfo();
-
-
-                if (sendingInfoResult.IsFail)
+                var enterPlayerDataPage = new EnterPlayerDataPage();
+                enterPlayerDataPage.OnNextPressed += (se, ev) =>
                 {
-                    await PopupNavigation.Instance.PushAsync(new AlertPage("Connect to host failed, try reconnect"));
-                    return;
-                }
-                Preferences.Set(PreferencesKey.LastConnectedHostIp, munchkinHost.IpAddress.ToString());
+                    _viewModel.MyPlayer.Name = ev.Name;
+                    _viewModel.MyPlayer.Sex = ev.Sex;
 
-                StopSearching();
-                _viewModel.Process = true;
+                    _gameClient.Connect(munchkinHost.IpAddress);
+                    _gameClient.StartUpdatePlayers();
+                    var sendingInfoResult = _gameClient.SendPlayerInfo();
+                                        
+                    Preferences.Set(PreferencesKey.LastConnectedHostIp, munchkinHost.IpAddress.ToString());
+
+                    StopSearching();
+                    _viewModel.Process = true;
+                };
+                await PopupNavigation.Instance.PushAsync(enterPlayerDataPage);
+
+                //_gameClient.Connect(munchkinHost.IpAddress);
+                //_gameClient.StartUpdatePlayers();
+                //var sendingInfoResult = _gameClient.SendPlayerInfo();
+
+                //if (sendingInfoResult.IsFail)
+                //{
+                //    await PopupNavigation.Instance.PushAsync(new AlertPage("Connect to host failed, try reconnect"));
+                //    return;
+                //}
+                //Preferences.Set(PreferencesKey.LastConnectedHostIp, munchkinHost.IpAddress.ToString());
+
+                //StopSearching();
+                //_viewModel.Process = true;
             }
         }
 
@@ -316,7 +335,6 @@ namespace TcpMobile
 
         protected override void OnAppearing()
         {
-            _appeared = true;
             base.OnAppearing();
 
             StartSearching(null,null);
@@ -324,7 +342,8 @@ namespace TcpMobile
 
         protected override void OnDisappearing()
         {
-            _appeared = false;
+            _gameClient.StopSearchHosts();
+            _searching = false;
             base.OnDisappearing();
         }
 
@@ -339,7 +358,7 @@ namespace TcpMobile
             Device.StartTimer(TimeSpan.FromMilliseconds(600), () =>
             {
                 _viewModel.LoaderPointsCount = _viewModel.LoaderPointsCount < 4 ? _viewModel.LoaderPointsCount + 1 : 0;
-                return _appeared && _searching;
+                return _searching;
             });
         }
     }
