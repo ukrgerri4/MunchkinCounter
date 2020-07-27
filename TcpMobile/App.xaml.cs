@@ -30,15 +30,15 @@ namespace TcpMobile
             InitializeComponent();
 
             MainPage = _serviceProvider.GetService<MainMDPage>();
-
-            if (Preferences.Get(PreferencesKey.KeepScreenOn, false))
-            {
-                _brightnessService.KeepScreenOn();
-            }
         }
 
         protected override void OnStart()
         {
+            if (Preferences.Get(PreferencesKey.KeepScreenOn, false))
+            {
+                _brightnessService.KeepScreenOn();
+            }
+
             _gameLogger.Debug("Game started");
         }
 

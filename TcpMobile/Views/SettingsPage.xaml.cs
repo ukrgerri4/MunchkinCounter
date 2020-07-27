@@ -14,6 +14,12 @@ namespace TcpMobile.Views
 {
     public class SettingsViewModel : INotifyPropertyChanged
     {
+        private readonly IBrightnessService _brightnessService;
+        public SettingsViewModel(IBrightnessService brightnessService)
+        {
+            _brightnessService = brightnessService;
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged(string prop = "") => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
 
@@ -23,6 +29,16 @@ namespace TcpMobile.Views
             set
             {
                 Preferences.Set(PreferencesKey.KeepScreenOn, value);
+
+                if (value)
+                {
+                    _brightnessService.KeepScreenOn();
+                }
+                else
+                {
+                    _brightnessService.KeepScreenOff();
+                }
+
                 OnPropertyChanged(nameof(SleepModeSwitchValue));
             }
         }
@@ -34,7 +50,7 @@ namespace TcpMobile.Views
         private readonly IGameLogger _gameLogger;
         private readonly IBrightnessService _brightnessService;
 
-        private SettingsViewModel viewModel = new SettingsViewModel();
+        public SettingsViewModel viewModel { get; set; }
 
         public SettingsPage(IGameLogger gameLogger,
             IBrightnessService brightnessService)
@@ -44,21 +60,9 @@ namespace TcpMobile.Views
 
             InitializeComponent();
 
+            viewModel = new SettingsViewModel(_brightnessService);
+
             BindingContext = viewModel;
-        }
-
-        private void ToggleSleepMode(object sender, EventArgs e)
-        {
-            if (!(sender is Switch sw)) { return; }
-
-            if (sw.IsToggled)
-            {
-                _brightnessService.KeepScreenOn();
-            }
-            else
-            {
-                _brightnessService.KeepScreenOff();
-            }
         }
 
         private async void Close(object sender, EventArgs e)
