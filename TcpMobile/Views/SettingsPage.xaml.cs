@@ -42,6 +42,16 @@ namespace TcpMobile.Views
                 OnPropertyChanged(nameof(SleepModeSwitchValue));
             }
         }
+
+        public bool IsViewExpandable
+        {
+            get { return Preferences.Get(PreferencesKey.IsViewExpandable, true); }
+            set
+            {
+                Preferences.Set(PreferencesKey.IsViewExpandable, value);
+                OnPropertyChanged(nameof(IsViewExpandable));
+            }
+        }
     }
 
     [XamlCompilation(XamlCompilationOptions.Compile)]

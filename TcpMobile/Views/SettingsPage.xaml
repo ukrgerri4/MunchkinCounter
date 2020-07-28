@@ -13,9 +13,12 @@
         <TableView>
             <TableView.Root>
                 <TableRoot>
-                    <TableSection x:Name="ipAddressSection" Title="Ip address:" TextColor="Black"></TableSection>
+                    <TableSection x:Name="ipAddressSection" Title="Ip address:" TextColor="Black"/>
                     <TableSection Title="Screen:" TextColor="Black">
-                        <SwitchCell Text="Screen sleep mode off" On="{Binding SleepModeSwitchValue}"/>
+                        <SwitchCell Text=" Keep screen on" On="{Binding SleepModeSwitchValue}"/>
+                    </TableSection>
+                    <TableSection Title="Single game:" TextColor="Black">
+                        <SwitchCell Text="Expand view while idle" On="{Binding IsViewExpandable}"/>
                     </TableSection>
                 </TableRoot>
             </TableView.Root>

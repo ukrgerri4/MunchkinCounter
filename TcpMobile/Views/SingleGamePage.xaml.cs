@@ -1,4 +1,5 @@
 ﻿using GameMunchkin.Models;
+using Infrastracture.Definitions;
 using Infrastracture.Interfaces;
 using Microsoft.Extensions.Configuration;
 using MunchkinCounterLan.Views.Popups;
@@ -18,7 +19,6 @@ namespace TcpMobile.Views
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly IConfiguration _configuration;
-        private readonly IBrightnessService _brightnessService;
 
         public Player MyPlayer { get; set; } = new Player();
 
@@ -38,26 +38,17 @@ namespace TcpMobile.Views
         }
 
         private Subject<Unit> _expandSubject = new Subject<Unit>();
+        private IDisposable _expandSubscription;
 
         public SingleGamePage(IServiceProvider serviceProvider,
-            IConfiguration configuration,
-            IBrightnessService brightnessService)
+            IConfiguration configuration)
         {
             _serviceProvider = serviceProvider;
             _configuration = configuration;
-            _brightnessService = brightnessService;
 
             InitializeComponent();
 
             BindingContext = this;
-
-            MessagingCenter.Subscribe<SingleGamePage>(
-                this,
-                "ExpandView",
-                (sender) => {
-                    IsControlsVisible = !IsControlsVisible;
-                }
-            );
 
             var tapGestureRecognizer = new TapGestureRecognizer();
             tapGestureRecognizer.Tapped += (s, e) => {
@@ -65,22 +56,9 @@ namespace TcpMobile.Views
                 {
                     IsControlsVisible = true;
                 }
+                _expandSubject.OnNext(Unit.Default);
             };
             gameViewGrid.GestureRecognizers.Add(tapGestureRecognizer);
-
-            _expandSubject.AsObservable()
-                .Throttle(TimeSpan.FromSeconds(15))
-                .Subscribe(_ => {
-                    MainThread.BeginInvokeOnMainThread(() =>
-                    {
-                        if (IsControlsVisible)
-                        {
-                            IsControlsVisible = false;
-                        }
-                    });
-                });
-
-            _expandSubject.OnNext(Unit.Default);
         }
 
         private void IncreaseLevel(object sender, EventArgs e)
@@ -153,9 +131,31 @@ namespace TcpMobile.Views
             await PopupNavigation.Instance.PushAsync(_serviceProvider.GetService<DicePage>());
         }
 
-        private void Expand(object sender, EventArgs e)
+        protected override void OnAppearing()
         {
-            MessagingCenter.Send(this, "ExpandView");
+            _expandSubscription?.Dispose();
+            _expandSubscription = _expandSubject.AsObservable()
+                .Throttle(TimeSpan.FromSeconds(Preferences.Get(PreferencesKey.ViewExpandTimeoutSeconds, 15)))
+                .Where(_ => Preferences.Get(PreferencesKey.IsViewExpandable, true))
+                .Subscribe(_ => {
+                    MainThread.BeginInvokeOnMainThread(() =>
+                    {
+                        if (IsControlsVisible)
+                        {
+                            IsControlsVisible = false;
+                        }
+                    });
+                });
+
+            _expandSubject.OnNext(Unit.Default);
+
+            base.OnAppearing();
+        }
+
+        protected override void OnDisappearing()
+        {
+            _expandSubscription?.Dispose();
+            base.OnDisappearing();
         }
     }
 }

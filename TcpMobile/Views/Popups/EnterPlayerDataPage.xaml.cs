@@ -1,7 +1,9 @@
 ﻿using GameMunchkin.Models;
+using Infrastracture.Definitions;
 using Rg.Plugins.Popup.Pages;
 using Rg.Plugins.Popup.Services;
 using System;
+using Xamarin.Essentials;
 using Xamarin.Forms.Xaml;
 
 namespace MunchkinCounterLan.Views.Popups
@@ -17,6 +19,8 @@ namespace MunchkinCounterLan.Views.Popups
             InitializeComponent();
 
             Player = new Player();
+            Player.Name = Preferences.Get(PreferencesKey.DefaultPlayerName, string.Empty);
+            Player.Sex = (byte)Preferences.Get(PreferencesKey.DefaultPlayerSex, 0);
 
             BindingContext = this;
         }
@@ -28,6 +32,9 @@ namespace MunchkinCounterLan.Views.Popups
 
         private async void Next(object sender, EventArgs e)
         {
+            Preferences.Set(PreferencesKey.DefaultPlayerName, Player.Name);
+            Preferences.Set(PreferencesKey.DefaultPlayerSex, Player.Sex);
+
             OnNextPressed?.Invoke(this, Player);
             await PopupNavigation.Instance.PopAsync();
         }
