@@ -14,14 +14,15 @@ namespace TcpMobile.Views
 {
     public class SettingsViewModel : INotifyPropertyChanged
     {
+        public event PropertyChangedEventHandler PropertyChanged;
+        public void OnPropertyChanged(string prop = "") => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
+
+        
         private readonly IBrightnessService _brightnessService;
         public SettingsViewModel(IBrightnessService brightnessService)
         {
             _brightnessService = brightnessService;
         }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-        public void OnPropertyChanged(string prop = "") => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
 
         public bool SleepModeSwitchValue
         {
@@ -75,11 +76,6 @@ namespace TcpMobile.Views
             BindingContext = viewModel;
         }
 
-        private async void Close(object sender, EventArgs e)
-        {
-            await PopupNavigation.Instance.PopAsync();
-        }
-
         private void SetInfo()
         {
             ipAddressSection.Clear();
@@ -87,6 +83,11 @@ namespace TcpMobile.Views
             var dnsName = Dns.GetHostName();
             var ips = Dns.GetHostAddresses(dnsName);
             ips.ForEach(ip => ipAddressSection.Add(new TextCell { Text = ip.ToString() }));
+        }
+
+        private async void Close(object sender, EventArgs e)
+        {
+            await PopupNavigation.Instance.PopAsync();
         }
 
         protected override void OnAppearing()

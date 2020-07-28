@@ -6,6 +6,7 @@
              xmlns:fa="clr-namespace:Core.Utils;assembly=Core"
              mc:Ignorable="d"
              x:Class="TcpMobile.Views.SingleGamePage"
+             x:Name="ThisPage"
              Style="{StaticResource mainBgView}">
     <ContentPage.Content>
         <Grid RowSpacing="0" ColumnSpacing="0" Margin="0" Padding="10,5,10,5">
@@ -52,7 +53,7 @@
             </Grid>
 
 
-            <Grid Grid.Row="1" Grid.Column="0" RowSpacing="0" ColumnSpacing="0" Padding="0" Margin="0" IsVisible="{Binding IsControlsVisible}">
+            <Grid Grid.Row="1" Grid.Column="0" RowSpacing="0" ColumnSpacing="0" Padding="0" Margin="0" IsVisible="{Binding Source={x:Reference ThisPage}, Path=IsControlsVisible}">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
@@ -64,15 +65,15 @@
                 </Grid.ColumnDefinitions>
                 <StackLayout Grid.Row="0" Grid.Column="0" Spacing="0" Margin="0,0,5,0">
                     <Label Text="level" Style="{StaticResource centeredLabel}" FontSize="20" TextColor="{StaticResource secondary}" VerticalOptions="End"/>
-                    <Button Clicked="IncreaseLevel" Text="{x:Static fa:FontAwesomeIcons.ChevronUp}" Style="{StaticResource upDownButton}"/>
+                    <Button Command="{Binding IncreaseLevel}" Text="{x:Static fa:FontAwesomeIcons.ChevronUp}" Style="{StaticResource upDownButton}"/>
                     <Label Text="{Binding MyPlayer.Level}" Style="{StaticResource centeredLabel}" FontSize="50"/>
-                    <Button Clicked="DecreaseLevel" Text="{x:Static fa:FontAwesomeIcons.ChevronDown}" Style="{StaticResource upDownButton}"/>
+                    <Button Command="{Binding DecreaseLevel}" Text="{x:Static fa:FontAwesomeIcons.ChevronDown}" Style="{StaticResource upDownButton}"/>
                 </StackLayout>
                 <StackLayout Grid.Row="0" Grid.Column="1"  Spacing="0" Margin="0,0,5,0">
                     <Label Text="modifiers" Style="{StaticResource centeredLabel}" FontSize="20" TextColor="{StaticResource secondary}" VerticalOptions="End"/>
-                    <Button Clicked="IncreaseModifiers" Text="{x:Static fa:FontAwesomeIcons.ChevronUp}" Style="{StaticResource upDownButton}"/>
+                    <Button Command="{Binding IncreaseModifiers}" Text="{x:Static fa:FontAwesomeIcons.ChevronUp}" Style="{StaticResource upDownButton}"/>
                     <Label Text="{Binding MyPlayer.Modifiers}" Style="{StaticResource centeredLabel}" FontSize="50"/>
-                    <Button Clicked="DecreaseModifiers" Text="{x:Static fa:FontAwesomeIcons.ChevronDown}" Style="{StaticResource upDownButton}"/>
+                    <Button Command="{Binding DecreaseModifiers}" Text="{x:Static fa:FontAwesomeIcons.ChevronDown}" Style="{StaticResource upDownButton}"/>
                 </StackLayout>
                 <StackLayout Grid.Row="0" Grid.Column="2"  Spacing="0">
                     <Label Text="power" Style="{StaticResource centeredLabel}" FontSize="20" TextColor="{StaticResource secondary}" VerticalOptions="End"></Label>
@@ -82,7 +83,7 @@
                     <!--<BoxView WidthRequest="2" HorizontalOptions="StartAndExpand" VerticalOptions="FillAndExpand" Color="{StaticResource secondary}" />-->
                     <FlexLayout Direction="Column" JustifyContent="SpaceAround">
                         <Button Clicked="ResetMunchkin" Text="{x:Static fa:FontAwesomeIcons.Skull}" Style="{StaticResource actionIconButton}"/>
-                        <Button Clicked="ToggleSex" Text="{Binding MyPlayer.SexIcon}" Style="{StaticResource actionIconButton}"/>
+                        <Button Command="{Binding ToggleSex}" Text="{Binding MyPlayer.SexIcon}" Style="{StaticResource actionIconButton}"/>
                         <Button Clicked="ThrowDice" Text="{x:Static fa:FontAwesomeIcons.Dice}" Style="{StaticResource actionIconButton}" />
                     </FlexLayout>
                 </StackLayout>

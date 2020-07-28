@@ -83,7 +83,7 @@ namespace TcpMobile.Views
                                     var alert = new AlertPage("If you leave join game page, you will be disconnected.", "Ok", "Cancel");
                                     alert.OnConfirm += async (s, e) =>
                                     {
-                                        await jgp.Stop();
+                                        jgp.Stop();
                                         GoToPage(type);
                                     };
                                     await PopupNavigation.Instance.PushAsync(alert);

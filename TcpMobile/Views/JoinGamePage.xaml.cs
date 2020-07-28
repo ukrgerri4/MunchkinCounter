@@ -6,13 +6,10 @@ using Infrastracture.Models;
 using MunchkinCounterLan.Views.Popups;
 using Rg.Plugins.Popup.Services;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Net;
-using System.Threading.Tasks;
-using TcpMobile.Views;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
@@ -163,15 +160,8 @@ namespace TcpMobile
             MessagingCenter.Subscribe<MenuPage>(
                 this,
                 "EndGame",
-                async (sender) =>
-                {
-                    await Stop();
-                }
+                (sender) => Stop()
             );
-
-            /* FOR TEST */
-            //_viewModel.Process = true;
-            /* FOR TEST */
         }
 
         private void StopSearching()
@@ -226,20 +216,10 @@ namespace TcpMobile
             _gameClient.SendUpdatedPlayerState();
         }
 
-        public async Task Stop()
+        public void Stop()
         {
             if (_viewModel.HostSearch) { return; }
 
-            //var alert = new AlertPage("Are you sure you want disconnect?", "Yes", "No");
-            //alert.OnConfirm += (sender, e) =>
-            //{
-            //    _gameClient.StopSearchHosts();
-            //    _gameClient.Stop();
-
-            //    _viewModel.HostSearch = true;
-            //    _searching = false;
-            //};
-            //await PopupNavigation.Instance.PushAsync(alert);
             _gameClient.StopSearchHosts();
             _gameClient.Stop();
 
