@@ -204,10 +204,10 @@ namespace TcpMobile.Views
             //};
             //await PopupNavigation.Instance.PushAsync(alert);
 
-            var stopResult = _gameServer.Stop();
-
-            if (stopResult.IsFail) { _gameLogger.Error(stopResult.Error); }
-
+            _gameServer.Stop();
+            
+            _gameClient.StopSearchHosts();
+            _gameClient.Stop();
             _gameClient.Players.Clear();
 
             _viewModel.CreatingGame = true;

@@ -134,6 +134,20 @@ namespace TcpMobile.Views
             }
         }
 
+        private int _rotateValue = 180;
+        public int RotateValue
+        {
+            get => _rotateValue;
+            set
+            {
+                if (value != _rotateValue)
+                {
+                    _rotateValue = value;
+                    OnPropertyChanged(nameof(RotateValue));
+                }
+            }
+        }
+
         private Subject<Unit> _expandSubject = new Subject<Unit>();
         private IDisposable _expandSubscription;
 
@@ -158,6 +172,13 @@ namespace TcpMobile.Views
                 _expandSubject.OnNext(Unit.Default);
             };
             gameViewGrid.GestureRecognizers.Add(tapGestureRecognizer);
+        }
+
+        
+        private void RotateView(object sender, EventArgs e)
+        {
+            RotateValue = RotateValue == 180 ? 0 : 180;
+            _expandSubject.OnNext(Unit.Default);
         }
 
         private async void ResetMunchkin(object sender, EventArgs e)

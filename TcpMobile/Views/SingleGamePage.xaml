@@ -28,7 +28,7 @@
                     <ColumnDefinition Width="1*" />
                 </Grid.ColumnDefinitions>
 
-                <StackLayout Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" Rotation="180" Padding="0" Margin="0" Spacing="0" Orientation="Vertical">
+                <StackLayout Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" Rotation="{Binding Source={x:Reference ThisPage}, Path=RotateValue}" Padding="0" Margin="0" Spacing="0" Orientation="Vertical">
                     <StackLayout Orientation="Vertical" HorizontalOptions="FillAndExpand" VerticalOptions="End" Padding="0" Margin="0" Spacing="0">
                         <StackLayout Orientation="Horizontal" Padding="0" Margin="0" Spacing="0">
                             <Button Text="{Binding MyPlayer.SexIcon, Mode=OneWay}" Style="{StaticResource iconButton}" WidthRequest="64" HeightRequest="64" FontSize="48" TextColor="{StaticResource primaryDark}" />
@@ -41,15 +41,18 @@
                     </StackLayout>
                 </StackLayout>
 
-                <FlexLayout Grid.Row="0" Grid.Column="1" Rotation="180" Padding="0" Margin="0" Direction="Column" JustifyContent="Center">
+                <FlexLayout Grid.Row="0" Grid.Column="1" Rotation="{Binding Source={x:Reference ThisPage}, Path=RotateValue}" Padding="0" Margin="0" Direction="Column" JustifyContent="Center">
                     <Label Text="mod" HorizontalTextAlignment="Center" FontFamily="Acme-Regular.ttf#Acme-Regular" FontSize="30" TextColor="{StaticResource secondary}"></Label>
                     <Label Text="{Binding MyPlayer.Modifiers, Mode=OneWay}" Style="{StaticResource centeredLabel}" FontSize="80"/>
                 </FlexLayout>
 
-                <FlexLayout Grid.Row="1" Grid.Column="1" Rotation="180" Padding="0" Margin="0" Direction="Column" JustifyContent="Center">
+                <FlexLayout Grid.Row="1" Grid.Column="1" Rotation="{Binding Source={x:Reference ThisPage}, Path=RotateValue}" Padding="0" Margin="0" Direction="Column" JustifyContent="Center">
                     <Label Text="lvl" HorizontalTextAlignment="Center" FontFamily="Acme-Regular.ttf#Acme-Regular" FontSize="30" TextColor="{StaticResource secondary}"></Label>
                     <Label Text="{Binding MyPlayer.Level, Mode=OneWay}" Style="{StaticResource centeredLabel}" FontSize="80"/>
                 </FlexLayout>
+                <!--<AbsoluteLayout>
+                    <Button Clicked="RotateView" Text="{x:Static fa:FontAwesomeIcons.Sync}" Style="{StaticResource actionIconButton}" TextColor="#99858859"/>
+                </AbsoluteLayout>-->
             </Grid>
 
 

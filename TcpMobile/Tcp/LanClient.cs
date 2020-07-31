@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.Linq;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
@@ -32,9 +33,37 @@ namespace TcpMobile.Tcp
 
         private bool IsConnected(Socket socket)
         {
-            if (!socket.Poll(100, SelectMode.SelectRead) || socket.Available != 0)
+            if (!socket.Poll(100, SelectMode.SelectRead))
+            {
                 return true;
-            return false;
+            }
+            else if (socket.Available != 0)
+            {
+                return true;
+            }
+            else
+            {
+                try
+                {
+                    socket.Send(new byte[] { }, 0, SocketFlags.None);
+                    return true;
+                }
+                catch (SocketException e)
+                {
+                    if (e.NativeErrorCode.Equals(10035))
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+                catch (Exception e)
+                {
+                    return false;
+                }
+            }
         }
 
         public Result Connect(IPAddress address, int port = 42420)

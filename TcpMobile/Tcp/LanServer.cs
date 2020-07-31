@@ -13,6 +13,7 @@ using System.Net.Sockets;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using TcpMobile.Tcp.Models;
+using Xamarin.Forms.Internals;
 
 namespace TcpMobile.Tcp
 {
@@ -76,9 +77,15 @@ namespace TcpMobile.Tcp
 
         public void StopTcpServer()
         {
-            _mainTcpSocket?.Close();
             _connectionChecker?.Dispose();
+            
+            ConfirmedConnections.ToArray()
+                .Select(c => c.Value)
+                .ForEach(stateObj => stateObj.workSocket?.Close());
+            
             ConfirmedConnections.Clear();
+            
+            _mainTcpSocket?.Close();
         }
 
         private void OnReceiveConnection(IAsyncResult asyncResult)
