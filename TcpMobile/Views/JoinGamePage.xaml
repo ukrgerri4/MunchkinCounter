@@ -4,6 +4,7 @@
              xmlns:d="http://xamarin.com/schemas/2014/forms/design"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:fa="clr-namespace:Core.Utils;assembly=Core"
+             xmlns:local="clr-namespace:MunchkinCounterLan.Models"
              mc:Ignorable="d"
              x:Class="TcpMobile.JoinGamePage"
              x:Name="ThisPage"
@@ -176,9 +177,20 @@
                     <StackLayout Grid.Row="1" Grid.Column="3" Spacing="0" Orientation="Horizontal">
                         <BoxView WidthRequest="1" HorizontalOptions="StartAndExpand" VerticalOptions="FillAndExpand" Color="{StaticResource secondary}" Margin="0,5,0,0" />
                         <FlexLayout Direction="Column" JustifyContent="SpaceAround">
-                            <Button Clicked="ResetMunchkin" Text="{x:Static fa:FontAwesomeIcons.Skull}" Style="{StaticResource actionIconButton}"/>
-                            <Button Command="{Binding MyPlayer.ToggleSex}" Text="{Binding MyPlayer.SexIcon}" Style="{StaticResource actionIconButton}"/>
-                            <Button Clicked="ThrowDice" Text="{x:Static fa:FontAwesomeIcons.Dice}" Style="{StaticResource actionIconButton}" />
+                            <Button
+                                Command="{Binding Source={x:Reference ThisPage}, Path=ToolsClick}"
+                                CommandParameter="{x:Static local:PageEventType.ResetMunchkin}"
+                                Text="{x:Static fa:FontAwesomeIcons.Skull}"
+                                Style="{StaticResource actionIconButton}"/>
+                            <Button
+                                Command="{Binding MyPlayer.ToggleSex}"
+                                Text="{Binding MyPlayer.SexIcon}"
+                                Style="{StaticResource actionIconButton}"/>
+                            <Button
+                                Command="{Binding Source={x:Reference ThisPage}, Path=ToolsClick}"
+                                CommandParameter="{x:Static local:PageEventType.ThrowDice}"
+                                Text="{x:Static fa:FontAwesomeIcons.Dice}"
+                                Style="{StaticResource actionIconButton}" />
                         </FlexLayout>
                     </StackLayout>
                 </Grid>

@@ -1,24 +1,28 @@
 ﻿using Infrastracture.Definitions;
 using Infrastracture.Models;
-using Microsoft.Extensions.Configuration;
+using MunchkinCounterLan.Models;
 using MunchkinCounterLan.Views.Popups;
 using Rg.Plugins.Popup.Services;
 using System;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Threading.Tasks;
+using System.Windows.Input;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
-namespace TcpMobile.Views
+namespace MunchkinCounterLan.Views
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class SingleGamePage : ContentPage
     {
-        private readonly IServiceProvider _serviceProvider;
-        private readonly IConfiguration _configuration;
-
+        private Subject<PageEventType> _innerSubject;
+        private Subject<Unit> _destroy = new Subject<Unit>();
+        private bool _toolsClickHandling = false;
+        public ICommand ToolsClick { get; set; }
+        
         public Player MyPlayer { get; set; }
 
         private bool _isControlsVisible = true;
@@ -49,25 +53,22 @@ namespace TcpMobile.Views
             }
         }
 
-        private Subject<Unit> _expandSubject = new Subject<Unit>();
-        private IDisposable _expandSubscription;
 
-        public SingleGamePage(IServiceProvider serviceProvider,
-            IConfiguration configuration)
+        public SingleGamePage()
         {
-            _serviceProvider = serviceProvider;
-            _configuration = configuration;
-
-            MyPlayer = new Player();
-            MyPlayer.PropertyChanged += (s,e) => _expandSubject?.OnNext(Unit.Default);
-
             InitializeComponent();
+
+            _innerSubject = new Subject<PageEventType>();
+            ToolsClick = new Command<PageEventType>((eventType) => _innerSubject.OnNext(eventType));
+            MyPlayer = new Player();
+            MyPlayer.PropertyChanged += (s, e) => _innerSubject?.OnNext(PageEventType.ExpandView);
 
             Appearing += (s, e) =>
             {
-                _expandSubscription?.Dispose();
-                _expandSubscription = _expandSubject.AsObservable()
+                _innerSubject.AsObservable()
+                    .TakeUntil(_destroy)
                     .Throttle(TimeSpan.FromSeconds(Preferences.Get(PreferencesKey.ViewExpandTimeoutSeconds, 15)))
+                    .Where(eventType => eventType == PageEventType.ExpandView)
                     .Where(_ => Preferences.Get(PreferencesKey.IsViewExpandable, true))
                     .Subscribe(_ => {
                         MainThread.BeginInvokeOnMainThread(() =>
@@ -79,12 +80,31 @@ namespace TcpMobile.Views
                         });
                     });
 
-                _expandSubject.OnNext(Unit.Default);
+                _innerSubject.AsObservable()
+                    .TakeUntil(_destroy)
+                    .Where(_ => !_toolsClickHandling)
+                    .Where(eventType => eventType == PageEventType.ResetMunchkin || eventType == PageEventType.ThrowDice)
+                    .Do(_ => _toolsClickHandling = true)
+                    .Subscribe(async eventType => {
+                        switch (eventType)
+                        {
+                            case PageEventType.ResetMunchkin:
+                                await ResetMunchkinHandler();
+                                break;
+                            case PageEventType.ThrowDice:
+                                await PopupNavigation.Instance.PushAsync(new DicePage());
+                                break;
+                        }
+
+                        _toolsClickHandling = false;
+                    });
+
+                _innerSubject.OnNext(PageEventType.ExpandView);
             };
 
             Disappearing += (s, e) =>
             {
-                _expandSubscription?.Dispose();
+                _destroy.OnNext(Unit.Default);
                 IsControlsVisible = true;
             };
 
@@ -94,24 +114,23 @@ namespace TcpMobile.Views
                 {
                     IsControlsVisible = true;
                 }
-                _expandSubject.OnNext(Unit.Default);
+                _innerSubject.OnNext(PageEventType.ExpandView);
             };
             gameViewGrid.GestureRecognizers.Add(tapGestureRecognizer);
 
             BindingContext = this;
         }
 
-
         private void RotateView(object sender, EventArgs e)
         {
             RotateValue = RotateValue == 180 ? 0 : 180;
-            _expandSubject.OnNext(Unit.Default);
+            _innerSubject.OnNext(PageEventType.ExpandView);
         }
 
-        private async void ResetMunchkin(object sender, EventArgs e)
+        private async Task ResetMunchkinHandler()
         {
             var confirmPage = new ConfirmPage();
-            confirmPage.OnReset += (s, ev) => {
+            confirmPage.OnReset += (sender, ev) => {
                 switch (ev)
                 {
                     case "level":
@@ -128,11 +147,6 @@ namespace TcpMobile.Views
             };
 
             await PopupNavigation.Instance.PushAsync(confirmPage);
-        }
-
-        private async void ThrowDice(object sender, EventArgs e)
-        {
-            await PopupNavigation.Instance.PushAsync(_serviceProvider.GetService<DicePage>());
         }
     }
 }

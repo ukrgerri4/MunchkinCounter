@@ -36,7 +36,7 @@
                     <Setter.Value>
                         <ControlTemplate>
                             <Grid BackgroundColor="{StaticResource primaryDark}">
-                                <Frame BorderColor="Transparent" Padding="0" CornerRadius="20" Margin="5,0,5,0">
+                                <Frame BorderColor="Transparent" Padding="0" Margin="5,0,5,0">
                                     <Image Source="bgImage.jpg" Aspect="AspectFill"/>
                                 </Frame>
                                 <AbsoluteLayout BackgroundColor="Transparent" VerticalOptions="Center">

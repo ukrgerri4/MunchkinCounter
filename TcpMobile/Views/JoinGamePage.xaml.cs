@@ -2,6 +2,8 @@
 using Infrastracture.Interfaces;
 using Infrastracture.Interfaces.GameMunchkin;
 using Infrastracture.Models;
+using MunchkinCounterLan.Models;
+using MunchkinCounterLan.Views;
 using MunchkinCounterLan.Views.Popups;
 using Rg.Plugins.Popup.Services;
 using System;
@@ -10,7 +12,11 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Net;
+using System.Reactive;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using TcpMobile.Views;
 using Xamarin.Essentials;
 using Xamarin.Forms;
@@ -144,7 +150,12 @@ namespace TcpMobile
         private readonly IGameLogger _gameLogger;
         private readonly IGameClient _gameClient;
 
-        private JoinGameViewModel _viewModel;
+        private Subject<PageEventType> _innerSubject;
+        private Subject<Unit> _destroy = new Subject<Unit>();
+        public ICommand ToolsClick { get; set; }
+        private bool _toolsClickHandling = false;
+
+        public JoinGameViewModel ViewModel { get; set; }
 
         public bool _searching = false;
 
@@ -156,30 +167,62 @@ namespace TcpMobile
 
             InitializeComponent();
 
-            Appearing += (s, e) => StartSearching();
-            Disappearing += (s, e) => StopSearching();
+            _innerSubject = new Subject<PageEventType>();
+            ToolsClick = new Command<PageEventType>((eventType) => _innerSubject.OnNext(eventType));
 
-            _viewModel = new JoinGameViewModel(_gameClient);
-            _viewModel.MyPlayer.PropertyChanged += (s,e) => _gameClient.SendUpdatedPlayerState();
+            Appearing += (s, e) =>
+            {
+                StartSearching();
 
-            BindingContext = _viewModel;
+                _innerSubject.AsObservable()
+                    .TakeUntil(_destroy)
+                    .Where(_ => !_toolsClickHandling)
+                    .Where(eventType => eventType == PageEventType.ResetMunchkin || eventType == PageEventType.ThrowDice)
+                    .Do(_ => _toolsClickHandling = true)
+                    .Subscribe(async eventType => {
+                        switch (eventType)
+                        {
+                            case PageEventType.ResetMunchkin:
+                                await ResetMunchkinHandler();
+                                break;
+                            case PageEventType.ThrowDice:
+                                await PopupNavigation.Instance.PushAsync(new DicePage());
+                                break;
+                        }
+
+                        _toolsClickHandling = false;
+                    });
+            };
+
+            Disappearing += (s, e) =>
+            {
+                StopSearching();
+                _destroy.OnNext(Unit.Default);
+            };
+
+            ViewModel = new JoinGameViewModel(_gameClient);
+            ViewModel.MyPlayer.PropertyChanged += (s,e) => _gameClient.SendUpdatedPlayerState();
+
+            BindingContext = ViewModel;
 
             MessagingCenter.Subscribe<IGameClient>(this, "HostsUpdated", (sender) => {
-                _viewModel.OnPropertyChanged(nameof(_viewModel.ConnectionsExists));
+                ViewModel.OnPropertyChanged(nameof(ViewModel.ConnectionsExists));
             });
 
             MessagingCenter.Subscribe<IGameClient>(this, "PlayersUpdated", (sender) => {
-                _viewModel.OnPropertyChanged(nameof(_viewModel.LanPlayers));
+                ViewModel.OnPropertyChanged(nameof(ViewModel.LanPlayers));
             });
 
             MessagingCenter.Subscribe<SettingsViewModel>(this, "SettingsChanged", (sender) =>
             {
-                _viewModel.OnPropertyChanged(nameof(_viewModel.LanPlayers));
+                ViewModel.OnPropertyChanged(nameof(ViewModel.LanPlayers));
             });
 
             MessagingCenter.Subscribe<IGameClient>(this, "LostServerConnection", async (sender) => {
-                _viewModel.OnPropertyChanged(nameof(_viewModel.LanPlayers));
-                StopProcess();
+                if (ViewModel.HostSearch) { return; }
+
+                ViewModel.OnPropertyChanged(nameof(ViewModel.LanPlayers));
+                ExitGame();
 
                 var alert = new AlertPage("Connection to server lost.", "TryReconnect", "Exit");
                 alert.Confirmed += async (s, e) =>
@@ -195,7 +238,7 @@ namespace TcpMobile
             });
             
 
-            MessagingCenter.Subscribe<MenuPage>(this, "EndGame",(sender) => StopProcess());
+            MessagingCenter.Subscribe<MenuPage>(this, "EndGame",(sender) => ExitGame());
         }
 
         private async void Connect(object sender, ItemTappedEventArgs e)
@@ -207,8 +250,8 @@ namespace TcpMobile
                 enterPlayerDataPage.Sex = (byte)Preferences.Get(PreferencesKey.DefaultPlayerSex, 0);
                 enterPlayerDataPage.OnNextPressed += (se, ev) =>
                 {
-                    _viewModel.MyPlayer.Name = ev.Name;
-                    _viewModel.MyPlayer.Sex = ev.Sex;
+                    ViewModel.MyPlayer.Name = ev.Name;
+                    ViewModel.MyPlayer.Sex = ev.Sex;
 
                     Preferences.Set(PreferencesKey.DefaultPlayerName, ev.Name);
                     Preferences.Set(PreferencesKey.DefaultPlayerSex, ev.Sex);
@@ -221,7 +264,7 @@ namespace TcpMobile
                     Preferences.Set(PreferencesKey.LastConnectedHostIp, munchkinHost.IpAddress.ToString());
 
                     StopSearching();
-                    _viewModel.Process = true;
+                    ViewModel.Process = true;
                 };
                 await PopupNavigation.Instance.PushAsync(enterPlayerDataPage);
             }
@@ -252,27 +295,27 @@ namespace TcpMobile
                 _gameClient.StartListeningServerDisconnection();
 
                 StopSearching();
-                _viewModel.Process = true;
+                ViewModel.Process = true;
                 return true;
             }
             return false;
         }
 
-        private async void ResetMunchkin(object sender, EventArgs e)
+        private async Task ResetMunchkinHandler()
         {
             var confirmPage = new ConfirmPage();
             confirmPage.OnReset += (s, ev) => {
                 switch (ev)
                 {
                     case "level":
-                        _viewModel.MyPlayer.ResetLevel();
+                        ViewModel.MyPlayer.ResetLevel();
                         break;
                     case "modifiers":
-                        _viewModel.MyPlayer.ResetModifyers();
+                        ViewModel.MyPlayer.ResetModifyers();
                         break;
                     case "all":
-                        _viewModel.MyPlayer.ResetLevel();
-                        _viewModel.MyPlayer.ResetModifyers();
+                        ViewModel.MyPlayer.ResetLevel();
+                        ViewModel.MyPlayer.ResetModifyers();
                         break;
                 }
                 _gameClient.SendUpdatedPlayerState();
@@ -280,21 +323,17 @@ namespace TcpMobile
 
             await PopupNavigation.Instance.PushAsync(confirmPage);
         }
-        private async void ThrowDice(object sender, EventArgs e)
-        {
-            await PopupNavigation.Instance.PushAsync(_serviceProvider.GetService<DicePage>());
-        }
 
         private void StartSearching()
         {
-            if (!_searching && _viewModel.HostSearch)
+            if (!_searching && ViewModel.HostSearch)
             {
                 _gameClient.StartSearchHosts();
                 _searching = true;
 
                 Device.StartTimer(TimeSpan.FromMilliseconds(600), () =>
                 {
-                    _viewModel.LoaderPointsCount = _viewModel.LoaderPointsCount < 4 ? _viewModel.LoaderPointsCount + 1 : 0;
+                    ViewModel.LoaderPointsCount = ViewModel.LoaderPointsCount < 4 ? ViewModel.LoaderPointsCount + 1 : 0;
                     return _searching;
                 });
             }
@@ -309,13 +348,13 @@ namespace TcpMobile
             _searching = false;
         }
 
-        public void StopProcess()
+        public void ExitGame()
         {
-            if (_viewModel.HostSearch) { return; }
+            if (ViewModel.HostSearch) { return; }
 
             _gameClient.CloseConnection();
 
-            _viewModel.HostSearch = true;
+            ViewModel.HostSearch = true;
         }
     }
 }

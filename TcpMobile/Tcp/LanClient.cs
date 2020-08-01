@@ -128,8 +128,15 @@ namespace TcpMobile.Tcp
 
         public void Disconnect()
         {
-            _connectionChecker?.Dispose();
-            _mainTcpSocket?.Close();
+            try
+            {
+                _connectionChecker?.Dispose();
+                _mainTcpSocket?.Close();
+            }
+            catch (Exception e)
+            {
+                _gameLogger.Error($"CLIENT TCP SOKET disconnect error: {e.Message}");
+            }
         }
 
         public Result<int> SendMessage(byte[] message)

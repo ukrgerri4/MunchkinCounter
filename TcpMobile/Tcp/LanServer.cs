@@ -78,15 +78,22 @@ namespace TcpMobile.Tcp
 
         public void StopTcpServer()
         {
-            _connectionChecker?.Dispose();
-            
-            ConfirmedConnections.ToArray()
-                .Select(c => c.Value)
-                .ForEach(stateObj => stateObj.workSocket?.Close());
-            
-            ConfirmedConnections.Clear();
-            
-            _mainTcpSocket?.Close();
+            try
+            {
+                _connectionChecker?.Dispose();
+
+                ConfirmedConnections.ToArray()
+                    .Select(c => c.Value)
+                    .ForEach(stateObj => stateObj.workSocket?.Close());
+
+                ConfirmedConnections.Clear();
+
+                _mainTcpSocket?.Close();
+            }
+            catch (Exception e)
+            {
+                _gameLogger.Error($"SERVER TCP SOCKET close error: {e.Message}");
+            }
         }
 
         private void OnReceiveConnection(IAsyncResult asyncResult)

@@ -89,7 +89,7 @@ namespace TcpMobile.Views
         private readonly IGameClient _gameClient;
         private readonly IGameServer _gameServer;
 
-        private CreateGameViewModel _viewModel;
+        public CreateGameViewModel ViewModel { get; set; }
 
         public CreateGamePage(
             IConfiguration configuration,
@@ -107,17 +107,17 @@ namespace TcpMobile.Views
 
             InitializeComponent();
 
-            _viewModel = new CreateGameViewModel(_gameClient, _gameServer);
+            ViewModel = new CreateGameViewModel(_gameClient, _gameServer);
 
             TrySetPlayerDefaults();
 
-            BindingContext = _viewModel;
+            BindingContext = ViewModel;
 
             MessagingCenter.Subscribe<IGameClient>(this, "PlayersUpdated", (sender) => {
-                _viewModel.OnPropertyChanged(nameof(_viewModel.AllPlayers));
+                ViewModel.OnPropertyChanged(nameof(ViewModel.AllPlayers));
             });
 
-            MessagingCenter.Subscribe<MenuPage>(this, "EndGame", (sender) => Stop());
+            MessagingCenter.Subscribe<MenuPage>(this, "EndGame", (sender) => StopGame());
         }
 
         private async void TryCreate(object sender, EventArgs args)
@@ -133,7 +133,7 @@ namespace TcpMobile.Views
 
                 SavePlayerDefaults();
 
-                _viewModel.WaitingPlayers = true;
+                ViewModel.WaitingPlayers = true;
             }
             catch (Exception e)
             {
@@ -154,23 +154,23 @@ namespace TcpMobile.Views
 
         private void TryStop(object sender, EventArgs args)
         {
-            if (!_viewModel.WaitingPlayers) { return; }
+            if (!ViewModel.WaitingPlayers) { return; }
 
-            Stop();
+            StopGame();
         }
 
-        public void Stop()
+        public void StopGame()
         {
             _gameServer.Stop();
 
-            _viewModel.CreatingGame = true;
+            ViewModel.CreatingGame = true;
         }
 
         private void SavePlayerDefaults()
         {
-            Preferences.Set(PreferencesKey.DefaultGameName, _viewModel.Host.Name);
-            Preferences.Set(PreferencesKey.DefaultPlayerName, _viewModel.MyPlayer.Name);
-            Preferences.Set(PreferencesKey.DefaultPlayerSex, _viewModel.MyPlayer.Sex);
+            Preferences.Set(PreferencesKey.DefaultGameName, ViewModel.Host.Name);
+            Preferences.Set(PreferencesKey.DefaultPlayerName, ViewModel.MyPlayer.Name);
+            Preferences.Set(PreferencesKey.DefaultPlayerSex, ViewModel.MyPlayer.Sex);
         }
 
         private void TrySetPlayerDefaults()
@@ -178,17 +178,17 @@ namespace TcpMobile.Views
             var defGameName = Preferences.Get(PreferencesKey.DefaultGameName, null);
             if (!string.IsNullOrWhiteSpace(defGameName))
             {
-                _viewModel.Host.Name = defGameName;
+                ViewModel.Host.Name = defGameName;
             }
             var defPlayerName = Preferences.Get(PreferencesKey.DefaultPlayerName, null);
             if (!string.IsNullOrWhiteSpace(defGameName))
             {
-                _viewModel.MyPlayer.Name = defPlayerName;
+                ViewModel.MyPlayer.Name = defPlayerName;
             }
             var defPlayerSex = Preferences.Get(PreferencesKey.DefaultPlayerSex, -1);
             if (defPlayerSex >= 0)
             {
-                _viewModel.MyPlayer.Sex = (byte)defPlayerSex;
+                ViewModel.MyPlayer.Sex = (byte)defPlayerSex;
             }
             
             

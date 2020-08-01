@@ -42,7 +42,7 @@
             </Style>
         </ResourceDictionary>
     </pages:PopupPage.Resources>
-    <Frame Padding="20" Margin="0" CornerRadius="30" BackgroundColor="{StaticResource secondary}" VerticalOptions="Center" HorizontalOptions="Center">
+    <Frame Padding="20" Margin="0" BackgroundColor="{StaticResource secondary}" VerticalOptions="Center" HorizontalOptions="Center">
         <StackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="30">
             <StackLayout Orientation="Vertical" HorizontalOptions="Center" VerticalOptions="CenterAndExpand" Spacing="20">
                 <Button Clicked="OnResetLevel" Text="RESET LEVEL" Style="{StaticResource confirmTextButton}"/>

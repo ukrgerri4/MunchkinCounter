@@ -1,10 +1,9 @@
-﻿using MunchkinCounterLan.Views.Popups;
+﻿using MunchkinCounterLan.Views;
+using MunchkinCounterLan.Views.Popups;
 using Rg.Plugins.Popup.Pages;
 using Rg.Plugins.Popup.Services;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using TcpMobile.Models;
 using Xamarin.Essentials;
@@ -37,6 +36,7 @@ namespace TcpMobile.Views
                 { MenuItemType.SingleGame, typeof(SingleGamePage) },
                 { MenuItemType.CreateGame, typeof(CreateGamePage) },
                 { MenuItemType.JoinGame, typeof(JoinGamePage) },
+                { MenuItemType.EndGame, typeof(SingleGamePage) },
                 { MenuItemType.Debug, typeof(DebugPage) },
                 { MenuItemType.Settings, typeof(SettingsPage) },
                 { MenuItemType.About, typeof(AboutPage) },
@@ -65,27 +65,18 @@ namespace TcpMobile.Views
                             });
                             break;
                         default:
-                            if (Detail.GetType() != MenuPages[type].GetType())
+                            if (Detail.GetType() != MenuPages[type])
                             {
+                                var joinGamePage = _serviceProvider.GetService<JoinGamePage>();
+                                var createGamePage = _serviceProvider.GetService<CreateGamePage>();
 
-                                if (Detail is CreateGamePage cgp && cgp.BindingContext is CreateGameViewModel cgpvm && cgpvm.WaitingPlayers)
+                                if (joinGamePage?.ViewModel?.Process == true || createGamePage?.ViewModel?.WaitingPlayers == true)
                                 {
-                                    var alert = new AlertPage("If you leave create game page, game will be ended and players disconnected.", "Ok", "Cancel");
+                                    var alert = new AlertPage("If you leave this page, you will be disconnected.", "Ok", "Cancel");
                                     alert.Confirmed += (s, e) =>
                                     {
-                                        cgp.Stop();
-                                        GoToPage(type);
-                                    };
-                                    await PopupNavigation.Instance.PushAsync(alert);
-                                    return;
-                                }
-
-                                if (Detail is JoinGamePage jgp && jgp.BindingContext is JoinGameViewModel jgpvm && jgpvm.Process)
-                                {
-                                    var alert = new AlertPage("If you leave join game page, you will be disconnected.", "Ok", "Cancel");
-                                    alert.Confirmed += (s, e) =>
-                                    {
-                                        jgp.StopProcess();
+                                        createGamePage.StopGame();
+                                        joinGamePage.ExitGame();
                                         GoToPage(type);
                                     };
                                     await PopupNavigation.Instance.PushAsync(alert);

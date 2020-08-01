@@ -36,11 +36,11 @@
     <StackLayout VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" BackgroundColor="{StaticResource secondary}" Padding="15">
         <StackLayout Spacing="0">
             <Label Text="Munchkin name:" Style="{StaticResource createGameLabel}"/>
-            <Entry Text="{Binding Player.Name}" Style="{StaticResource createGameEntry}" Placeholder="enter player name"/>
+            <Entry Text="{Binding Name}" Style="{StaticResource createGameEntry}" Placeholder="enter player name"/>
         </StackLayout>
         <StackLayout Spacing="0" Orientation="Horizontal">
             <Label Text="Munchkin sex:" Style="{StaticResource createGameLabel}"/>
-            <Entry Text="{Binding Player.Sex}" Style="{StaticResource inlineCreateGameEntry}"/>
+            <Button Command="{Binding ToggleSex}" Text="{Binding SexIcon}" Style="{StaticResource actionIconButton}"/>
         </StackLayout>
         <StackLayout Spacing="0" Orientation="Horizontal" HorizontalOptions="FillAndExpand" VerticalOptions="End">
             <Button Text="Cancel" Clicked="Cancel" Style="{StaticResource textButton}" FontSize="24" HorizontalOptions="StartAndExpand" Margin="0,10,0,5" Padding="5,0,5,0" CornerRadius="20"/>

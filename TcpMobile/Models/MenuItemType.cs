@@ -9,6 +9,7 @@ namespace TcpMobile.Models
         CreateGame,
         JoinGame,
         SingleGame,
+        EndGame,
         Debug,
         Settings,
         ShareApp,

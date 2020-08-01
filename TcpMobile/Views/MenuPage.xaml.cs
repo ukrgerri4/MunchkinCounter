@@ -1,6 +1,8 @@
 ﻿using Core.Utils;
 using Microsoft.Extensions.Configuration;
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using TcpMobile.Models;
 using TcpMobile.Views;
@@ -15,7 +17,11 @@ namespace TcpMobile
         private readonly IServiceProvider _serviceProvider;
         private readonly IConfiguration _configuration;
 
-        public SideBarMenuItem[] MenuItems { get; set; }
+        private JoinGamePage _joinGamePage => _serviceProvider.GetService<JoinGamePage>();
+        private CreateGamePage _createGamePage => _serviceProvider.GetService<CreateGamePage>();
+
+
+        public ObservableCollection<SideBarMenuItem> MenuItems { get; set; }
 
         public MenuPage(IServiceProvider serviceProvider,
             IConfiguration configuration)
@@ -32,6 +38,7 @@ namespace TcpMobile
             MessagingCenter.Subscribe<MainMDPage, bool>(this, "SideMenuOpend", (s, isPresented) => {
                 if (isPresented)
                 {
+                    ReinitMenuItems();
                     SetCurrentPage();
                 }
             });
@@ -59,23 +66,42 @@ namespace TcpMobile
             SetCurrentPage();
         }
 
+        private void ReinitMenuItems()
+        {
+            var endGameMenuItem = MenuItems.FirstOrDefault(m => m.Type == MenuItemType.EndGame);
+            if (_joinGamePage?.ViewModel?.Process == true || _createGamePage?.ViewModel?.WaitingPlayers == true)
+            {
+                if (endGameMenuItem == null)
+                {
+                    MenuItems.Insert(3, new SideBarMenuItem { Type = MenuItemType.EndGame, Name = "END GAME", Icon = FontAwesomeIcons.SignOutAlt, Divider = true });
+                }
+            }
+            else
+            {
+                if (endGameMenuItem != null)
+                {
+                    MenuItems.RemoveAt(MenuItems.IndexOf(endGameMenuItem));
+                }
+            }
+        }
+
         private void SetCurrentPage()
         {
             var masterDetailPage = _serviceProvider.GetService<MainMDPage>();
             menuItemsListView.SelectedItem = MenuItems.FirstOrDefault(i => i.Type == masterDetailPage.CurrentPage);
         }
 
-        private SideBarMenuItem[] InitMenuItems()
+        private ObservableCollection<SideBarMenuItem> InitMenuItems()
         {
-            return new SideBarMenuItem[]
+            return new ObservableCollection<SideBarMenuItem>
             {
-                new SideBarMenuItem { Type = MenuItemType.SingleGame, Name = "SINGLE GAME", Icon = FontAwesomeIcons.User },
-                new SideBarMenuItem { Type = MenuItemType.CreateGame, Name = "CREATE GAME", Icon = FontAwesomeIcons.Users },
-                new SideBarMenuItem { Type = MenuItemType.JoinGame, Name = "FIND GAME", Icon = FontAwesomeIcons.BroadcastTower, Divider = true },
-                new SideBarMenuItem { Type = MenuItemType.Debug, Name = "Debug", Icon = FontAwesomeIcons.Code },
-                new SideBarMenuItem { Type = MenuItemType.Settings, Name = "Settings", Icon = FontAwesomeIcons.Cogs },
-                new SideBarMenuItem { Type = MenuItemType.ShareApp, Name = "Share", Icon = FontAwesomeIcons.ShareAlt },
-                new SideBarMenuItem { Type = MenuItemType.About, Name = "About", Icon = FontAwesomeIcons.InfoCircle },
+                new SideBarMenuItem {Type = MenuItemType.SingleGame, Name = "SINGLE GAME", Icon = FontAwesomeIcons.User },
+                new SideBarMenuItem {Type = MenuItemType.CreateGame, Name = "CREATE GAME", Icon = FontAwesomeIcons.Users },
+                new SideBarMenuItem {Type = MenuItemType.JoinGame, Name = "FIND GAME", Icon = FontAwesomeIcons.BroadcastTower, Divider = true },
+                new SideBarMenuItem {Type = MenuItemType.Debug, Name = "Debug", Icon = FontAwesomeIcons.Code },
+                new SideBarMenuItem {Type = MenuItemType.Settings, Name = "Settings", Icon = FontAwesomeIcons.Cogs },
+                new SideBarMenuItem {Type = MenuItemType.ShareApp, Name = "Share", Icon = FontAwesomeIcons.ShareAlt },
+                new SideBarMenuItem {Type = MenuItemType.About, Name = "About", Icon = FontAwesomeIcons.InfoCircle },
 
             };
         }

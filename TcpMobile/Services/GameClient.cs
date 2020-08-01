@@ -327,7 +327,7 @@ namespace TcpMobile.Services
         public void StartListeningServerDisconnection()
         {
             _lanClient.TcpClientEventSubject.AsObservable()
-                //.TakeUntil(_destroy)
+                .TakeUntil(_destroy)
                 .Where(tcpEvent => tcpEvent.Type == TcpEventType.StopServerConnection)
                 .Do(tcpEvent => _gameLogger.Debug($"Server disconnected handler"))
                 .Subscribe(

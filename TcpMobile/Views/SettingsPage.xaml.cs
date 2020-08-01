@@ -10,7 +10,7 @@ using Xamarin.Forms;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Xaml;
 
-namespace TcpMobile.Views
+namespace MunchkinCounterLan.Views
 {
     public class SettingsViewModel : INotifyPropertyChanged
     {
