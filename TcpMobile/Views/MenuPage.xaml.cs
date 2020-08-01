@@ -9,7 +9,7 @@ using TcpMobile.Views;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
-namespace TcpMobile
+namespace MunchkinCounterLan.Views
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class MenuPage : ContentPage

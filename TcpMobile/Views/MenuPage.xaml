@@ -5,7 +5,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:fa="clr-namespace:Core.Utils;assembly=Core"
              mc:Ignorable="d"
-             x:Class="TcpMobile.MenuPage"
+             x:Class="MunchkinCounterLan.Views.MenuPage"
              Title="Menu"
              BackgroundColor="{StaticResource primaryLight}">
     <ContentPage.Resources>

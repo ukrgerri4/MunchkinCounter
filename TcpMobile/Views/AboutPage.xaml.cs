@@ -6,7 +6,7 @@ using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
-namespace TcpMobile.Views
+namespace MunchkinCounterLan.Views
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class AboutPage : PopupPage

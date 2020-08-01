@@ -3,7 +3,6 @@ using Infrastracture.Interfaces;
 using Infrastracture.Interfaces.GameMunchkin;
 using Infrastracture.Models;
 using MunchkinCounterLan.Models;
-using MunchkinCounterLan.Views;
 using MunchkinCounterLan.Views.Popups;
 using Rg.Plugins.Popup.Services;
 using System;
@@ -17,12 +16,11 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using TcpMobile.Views;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
-namespace TcpMobile
+namespace MunchkinCounterLan.Views
 {
     public class JoinGameViewModel : INotifyPropertyChanged
     {
@@ -62,6 +60,8 @@ namespace TcpMobile
                 }
             }
         }
+
+        public ICommand ToolsClick { get; set; }
 
         private bool _hostSearch = true;
         public bool HostSearch
@@ -152,7 +152,7 @@ namespace TcpMobile
 
         private Subject<PageEventType> _innerSubject;
         private Subject<Unit> _destroy = new Subject<Unit>();
-        public ICommand ToolsClick { get; set; }
+        
         private bool _toolsClickHandling = false;
 
         public JoinGameViewModel ViewModel { get; set; }
@@ -168,7 +168,10 @@ namespace TcpMobile
             InitializeComponent();
 
             _innerSubject = new Subject<PageEventType>();
-            ToolsClick = new Command<PageEventType>((eventType) => _innerSubject.OnNext(eventType));
+
+            ViewModel = new JoinGameViewModel(_gameClient);
+            ViewModel.ToolsClick = new Command<PageEventType>((eventType) => _innerSubject.OnNext(eventType));
+            ViewModel.MyPlayer.PropertyChanged += (s, e) => _gameClient.SendUpdatedPlayerState();
 
             Appearing += (s, e) =>
             {
@@ -199,9 +202,6 @@ namespace TcpMobile
                 StopSearching();
                 _destroy.OnNext(Unit.Default);
             };
-
-            ViewModel = new JoinGameViewModel(_gameClient);
-            ViewModel.MyPlayer.PropertyChanged += (s,e) => _gameClient.SendUpdatedPlayerState();
 
             BindingContext = ViewModel;
 

@@ -3,6 +3,7 @@ using Infrastracture.Interfaces;
 using Infrastracture.Interfaces.GameMunchkin;
 using Infrastracture.Models;
 using Microsoft.Extensions.Configuration;
+using MunchkinCounterLan.Views;
 using MunchkinCounterLan.Views.Popups;
 using Rg.Plugins.Popup.Services;
 using System;

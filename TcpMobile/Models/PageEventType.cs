@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace MunchkinCounterLan.Models
+﻿namespace MunchkinCounterLan.Models
 {
     public enum PageEventType
     {

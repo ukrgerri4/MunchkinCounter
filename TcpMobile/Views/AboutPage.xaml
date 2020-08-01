@@ -6,7 +6,7 @@
              xmlns:pages="clr-namespace:Rg.Plugins.Popup.Pages;assembly=Rg.Plugins.Popup"
              xmlns:fa="clr-namespace:Core.Utils;assembly=Core"
              mc:Ignorable="d"
-             x:Class="TcpMobile.Views.AboutPage"
+             x:Class="MunchkinCounterLan.Views.AboutPage"
              BackgroundColor="{StaticResource modalBg}"
              CloseWhenBackgroundIsClicked="False">
     <Grid RowSpacing="0" ColumnSpacing="0" Margin="25" BackgroundColor="{StaticResource primaryLight}">
