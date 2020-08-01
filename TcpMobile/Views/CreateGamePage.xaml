@@ -39,7 +39,6 @@
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="1"/>
                     <RowDefinition Height="auto"/>
-                    <!--<RowDefinition Height="auto"/>-->
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
@@ -53,7 +52,11 @@
                     <BoxView HeightRequest="1" HorizontalOptions="FillAndExpand" VerticalOptions="Start" Color="{StaticResource secondary}" Margin="5,10,5,10"/>
                     <StackLayout Spacing="0" Orientation="Horizontal">
                         <Label Text="Max players:" Style="{StaticResource createGameLabel}"/>
-                        <Entry Text="{Binding Host.Capacity}" Style="{StaticResource inlineCreateGameEntry}"/>
+                        <StackLayout Orientation="Horizontal" Spacing="0" HorizontalOptions="FillAndExpand" Margin="10,0,10,0">
+                            <Button Command="{Binding Host.DecreaseCapacity}" Text="{x:Static fa:FontAwesomeIcons.ArrowCircleLeft}" Style="{StaticResource actionIconButton}" TextColor="{StaticResource primary}"/>
+                            <Label Text="{Binding Host.Capacity}" Style="{StaticResource createGameLabel}" HorizontalOptions="CenterAndExpand"/>
+                            <Button Command="{Binding Host.IncreaseCapacity}" Text="{x:Static fa:FontAwesomeIcons.ArrowCircleRight}" Style="{StaticResource actionIconButton}" TextColor="{StaticResource primary}"/>
+                        </StackLayout>
                     </StackLayout>
                     <BoxView HeightRequest="1" HorizontalOptions="FillAndExpand" VerticalOptions="Start" Color="{StaticResource secondary}" Margin="5,10,5,10"/>
                     <StackLayout Spacing="0">

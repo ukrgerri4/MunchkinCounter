@@ -1,5 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Net;
+using System.Windows.Input;
+using Xamarin.Forms;
 
 namespace Infrastracture.Models
 {
@@ -8,6 +10,8 @@ namespace Infrastracture.Models
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged(string prop = "") => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
 
+        public ICommand IncreaseCapacity { get; set; }
+        public ICommand DecreaseCapacity { get; set; }
 
         private string _id;
         public string Id
@@ -78,6 +82,39 @@ namespace Infrastracture.Models
                     OnPropertyChanged(nameof(Fullness));
                 }
             }
+        }
+
+        public MunchkinHost()
+        {
+            IncreaseCapacity = new Command(
+                () =>
+                {
+                    if (Capacity < 20)
+                    {
+                        Capacity++;
+                        RefreshCapacityCanExecutes();
+                    }
+                },
+                () => { return Capacity < 20; }
+            );
+
+            DecreaseCapacity = new Command(
+                () =>
+                {
+                    if (Capacity > 2)
+                    {
+                        Capacity--;
+                        RefreshCapacityCanExecutes();
+                    }
+                },
+                () => { return Capacity > 2; }
+            );
+        }
+
+        private void RefreshCapacityCanExecutes()
+        {
+            (IncreaseCapacity as Command).ChangeCanExecute();
+            (DecreaseCapacity as Command).ChangeCanExecute();
         }
     }
 }

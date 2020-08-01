@@ -84,8 +84,6 @@ namespace TcpMobile.Views
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class CreateGamePage : ContentPage
     {
-        private readonly IConfiguration _configuration;
-        private readonly IServiceProvider _serviceProvider;
         private readonly IGameLogger _gameLogger;
         private readonly IGameClient _gameClient;
         private readonly IGameServer _gameServer;
@@ -93,15 +91,11 @@ namespace TcpMobile.Views
         public CreateGameViewModel ViewModel { get; set; }
 
         public CreateGamePage(
-            IConfiguration configuration,
-            IServiceProvider serviceProvider,
             IGameLogger gameLogger,
             IGameServer gameServer,
             IGameClient gameClient
         )
         {
-            _configuration = configuration;
-            _serviceProvider = serviceProvider;
             _gameLogger = gameLogger;
             _gameClient = gameClient;
             _gameServer = gameServer;

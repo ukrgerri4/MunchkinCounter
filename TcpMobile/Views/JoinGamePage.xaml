@@ -70,10 +70,8 @@
                         <Label Text="Searching hosts" FontFamily="{StaticResource DefaultFont}" TextColor="{StaticResource primaryDark}" FontSize="24"/>
                         <Label Text="{Binding LoaderPointsValue}" FontFamily="{StaticResource DefaultFont}" TextColor="{StaticResource primaryDark}" FontSize="24"/>
                     </StackLayout>
-                    <!--<ActivityIndicator IsRunning="{Binding HostSearch}" Color="{StaticResource primaryDark}" />-->
                 </StackLayout>
 
-                <!--<Button Grid.Row="5" Grid.Column="0" Text="Connect" Clicked="Connect" IsVisible="{Binding ConnectionsExists}"></Button>-->
             </Grid>
 
             <Grid IsVisible="{Binding Process}" RowSpacing="0" ColumnSpacing="0" Padding="0" Margin="0">
