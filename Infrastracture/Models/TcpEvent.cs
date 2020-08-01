@@ -7,7 +7,9 @@ namespace Infrastracture.Models
         ServerStarted,
         ClientConnected,
         ClientDisconnect,
-        ReceiveData
+        ReceiveData,
+        StartServerConnection,
+        StopServerConnection
     }
 
     public class TcpEvent

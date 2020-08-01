@@ -3,7 +3,9 @@
     public enum MunchkinMessageType : byte
     {
         Undefined,
-        HostFound,
+        Ping,
+
+        HostFound = 10,
         GetId,
         InitInfo,
         UpdatePlayerState,

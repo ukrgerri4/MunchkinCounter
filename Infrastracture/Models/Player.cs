@@ -1,18 +1,23 @@
 ﻿using Core.Utils;
-using System.Collections.Generic;
 using System.ComponentModel;
+using System.Windows.Input;
+using Xamarin.Forms;
 
-namespace GameMunchkin.Models
+namespace Infrastracture.Models
 {
     public class Player : INotifyPropertyChanged
     {
-        private readonly Dictionary<byte, string> _colors;
-
         private string _id;
         private string _name;
         private byte _sex; // 0 - female, 1 - male
         private byte _level;
         private byte _modifiers;
+
+        public ICommand IncreaseLevel { get; set; }
+        public ICommand DecreaseLevel { get; set; }
+        public ICommand IncreaseModifiers { get; set; }
+        public ICommand DecreaseModifiers { get; set; }
+        public ICommand ToggleSex { get; set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged(string prop = "") => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
@@ -65,12 +70,11 @@ namespace GameMunchkin.Models
                     _level = value;
                     OnPropertyChanged(nameof(Level));
                     OnPropertyChanged(nameof(Power));
-                    OnPropertyChanged(nameof(Color));
                 }
             }
         }
         public byte Modifiers
-        { 
+        {
             get => _modifiers;
             set
             {
@@ -88,15 +92,9 @@ namespace GameMunchkin.Models
             get => Level + Modifiers;
         }
 
-        public string Color
-        {
-            get => _colors[Level];
-        }
-
         public string SexIcon
         {
             get => _sex == 1 ? FontAwesomeIcons.Mars : FontAwesomeIcons.Venus;
-            //get => _sex == 1 ? "male64.png" : "female64.png";
         }
 
         public Player()
@@ -104,20 +102,84 @@ namespace GameMunchkin.Models
             Level = 1;
             Modifiers = 0;
 
-            _colors = new Dictionary<byte, string>
-            {
-                { 1, "#57bb8a"},
-                { 2, "#73b87e"},
-                { 3, "#94bd77"},
-                { 4, "#b0be6e"},
-                { 5, "#d4c86a"},
-                { 6, "#f5ce62"},
-                { 7, "#e9b861"},
-                { 8, "#ecac67"},
-                { 9, "#e5926b"},
-                { 10, "#dd776e"}
-            };
+            IncreaseLevel = new Command(
+                () =>
+                {
+                    if (Level < 10)
+                    {
+                        Level++;
+                        RefreshLevelCanExecutes();
+                    }
+                },
+                () => { return Level < 10; }
+            );
+
+            DecreaseLevel = new Command(
+                () =>
+                {
+                    if (Level > 1)
+                    {
+                        Level--;
+                        RefreshLevelCanExecutes();
+                    }
+                },
+                () => { return Level > 1; }
+            );
+
+            IncreaseModifiers = new Command(
+                () =>
+                {
+                    if (Modifiers < 255)
+                    {
+                        Modifiers++;
+                        RefreshModifiersCanExecutes();
+                    }
+                },
+                () => { return Modifiers < 255; }
+            );
+
+            DecreaseModifiers = new Command(
+                () =>
+                {
+                    if (Modifiers > 0)
+                    {
+                        Modifiers--;
+                        RefreshModifiersCanExecutes();
+                    }
+                },
+                () => { return Modifiers > 0; }
+            );
+
+            ToggleSex = new Command(
+                () =>
+                {
+                    Sex = Sex == 1 ? (byte)0 : (byte)1;
+                }
+            );
         }
 
+        private void RefreshLevelCanExecutes()
+        {
+            (IncreaseLevel as Command).ChangeCanExecute();
+            (DecreaseLevel as Command).ChangeCanExecute();
+        }
+
+        private void RefreshModifiersCanExecutes()
+        {
+            (IncreaseModifiers as Command).ChangeCanExecute();
+            (DecreaseModifiers as Command).ChangeCanExecute();
+        }
+
+        public void ResetLevel()
+        {
+            Level = 1;
+            RefreshLevelCanExecutes();
+        }
+
+        public void ResetModifyers()
+        {
+            Modifiers = 0;
+            RefreshModifiersCanExecutes();
+        }
     }
 }

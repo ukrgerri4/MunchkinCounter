@@ -11,19 +11,22 @@ using System.Net.Sockets;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Text;
+using TcpMobile.Tcp.Enums;
 using TcpMobile.Tcp.Models;
 
 namespace TcpMobile.Tcp
 {
     public class LanClient: ILanClient
     {
-        public Subject<TcpEvent> PacketSubject { get; set; } = new Subject<TcpEvent>();
+        public Subject<TcpEvent> TcpClientEventSubject { get; set; } = new Subject<TcpEvent>();
         private IDisposable _connectionChecker;
 
         private Socket _mainTcpSocket;
         private Socket _mainUdpSocket;
         private readonly IGameLogger _gameLogger;
         private readonly IConfiguration _configuration;
+
+        private byte[] DEFAULT_PING_MESSAGE = new byte[] { 5, 0, (byte)MunchkinMessageType.Ping, 10, 4 };
 
         public LanClient(IGameLogger gameLogger, IConfiguration configuration)
         {
@@ -45,7 +48,7 @@ namespace TcpMobile.Tcp
             {
                 try
                 {
-                    socket.Send(new byte[] { }, 0, SocketFlags.None);
+                    socket.Send(DEFAULT_PING_MESSAGE, 5, SocketFlags.None);
                     return true;
                 }
                 catch (SocketException e)
@@ -59,7 +62,7 @@ namespace TcpMobile.Tcp
                         return false;
                     }
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     return false;
                 }
@@ -74,6 +77,7 @@ namespace TcpMobile.Tcp
 
                 _mainTcpSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                 _mainTcpSocket.Connect(new IPEndPoint(address, port));
+                _mainTcpSocket.LingerState = new LingerOption(true, 1);
 
                 if (!_mainTcpSocket.Connected) { return Result.Fail("Soket is not connected."); }
                 
@@ -103,24 +107,29 @@ namespace TcpMobile.Tcp
                             if (_mainTcpSocket != null && IsConnected(_mainTcpSocket)) { return; }
 
                             Disconnect();
-                            _gameLogger.Debug($"Client connection check: disconnected and removed");
+                            TcpClientEventSubject.OnNext(new TcpEvent { Type = TcpEventType.StopServerConnection });
+                            _gameLogger.Debug($"Server connection check: disconnected");
                         }
                         catch (Exception e)
                         {
-                            try { Disconnect(); }
+                            try
+                            {
+                                Disconnect();
+                                TcpClientEventSubject.OnNext(new TcpEvent { Type = TcpEventType.StopServerConnection });
+                            }
                             catch { }
 
-                            _gameLogger.Error($"Client connection check error: {e.Message}");
+                            _gameLogger.Error($"Server connection check error: {e.Message}");
                         }
                     },
-                    error => _gameLogger.Error($"Client connection check subscribe error: {error.Message}")
+                    error => _gameLogger.Error($"Server connection check SUBSCRIPTION error: {error.Message}")
                 );
         }
 
         public void Disconnect()
         {
-            _mainTcpSocket?.Close();
             _connectionChecker?.Dispose();
+            _mainTcpSocket?.Close();
         }
 
         public Result<int> SendMessage(byte[] message)
@@ -196,23 +205,26 @@ namespace TcpMobile.Tcp
                 if (bytesRead > 0)
                 {
                     var packet = new Packet(stateObj.buffer.Take(bytesRead).ToArray());
-                    PacketSubject?.OnNext(new TcpEvent { Type = TcpEventType.ReceiveData, Data = packet } );
+                    TcpClientEventSubject?.OnNext(new TcpEvent { Type = TcpEventType.ReceiveData, Data = packet } );
                     handler.BeginReceive(stateObj.buffer, 0, StateObject.BufferSize, 0, new AsyncCallback(OnDataReceived), stateObj);
                 }
             }
             catch (ObjectDisposedException)
             {
                 Disconnect();
+                TcpClientEventSubject.OnNext(new TcpEvent { Type = TcpEventType.StopServerConnection });
                 _gameLogger.Error("Client OnDataReceived: Socket has been closed");
             }
             catch (SocketException se)
             {
                 Disconnect();
+                TcpClientEventSubject.OnNext(new TcpEvent { Type = TcpEventType.StopServerConnection });
                 _gameLogger.Error($"Client OnDataReceived: [{se.SocketErrorCode}] - {se.Message}");
             }
             catch (Exception e)
             {
                 Disconnect();
+                TcpClientEventSubject.OnNext(new TcpEvent { Type = TcpEventType.StopServerConnection });
                 _gameLogger.Error($"Client OnDataReceived UNEXPECTED: {e.Message}");
             }
         }
@@ -253,7 +265,7 @@ namespace TcpMobile.Tcp
                 var packet = new Packet(stateObj.buffer.Take(bytesRead).ToArray());
                 packet.SenderId = stateObj.Id;
                 packet.SenderIpAdress = ((IPEndPoint)clientEp).Address;
-                PacketSubject?.OnNext(new TcpEvent { Type = TcpEventType.ReceiveData, Data = packet });
+                TcpClientEventSubject?.OnNext(new TcpEvent { Type = TcpEventType.ReceiveData, Data = packet });
 
                 _gameLogger.Debug($"Client begin recieve broadcast messages");
                 stateObj.workSocket.BeginReceiveFrom(stateObj.buffer, 0, stateObj.buffer.Length, SocketFlags.None, ref clientEp, new AsyncCallback(ReceiveBroadcastCallback), stateObj);

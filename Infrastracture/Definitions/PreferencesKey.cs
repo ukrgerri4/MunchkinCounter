@@ -9,5 +9,6 @@
         public const string LastConnectedHostIp = "last_host_ip";
         public const string IsViewExpandable = "is_view_exp";
         public const string ViewExpandTimeoutSeconds = "exp_timeout";
+        public const string ShowSelfMunchkinInLanGame = "show_self_lan";
     }
 }

@@ -1,5 +1,4 @@
-﻿using GameMunchkin.Models;
-using Infrastracture.Interfaces;
+﻿using Infrastracture.Interfaces;
 using Infrastracture.Interfaces.GameMunchkin;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

@@ -28,6 +28,13 @@ namespace TcpMobile
             MenuItems = InitMenuItems();
 
             BindingContext = this;
+
+            MessagingCenter.Subscribe<MainMDPage, bool>(this, "SideMenuOpend", (s, isPresented) => {
+                if (isPresented)
+                {
+                    SetCurrentPage();
+                }
+            });
         }
 
         private void ItemTapped(object sender, ItemTappedEventArgs e)
@@ -42,19 +49,14 @@ namespace TcpMobile
                 case MenuItemType.Settings:
                 case MenuItemType.ShareApp:
                 case MenuItemType.About:
-                    SetCurrentPage();
                     MessagingCenter.Send(this, "GoTo", selectedType);
                     break;
                 default:
                     MessagingCenter.Send(this, "GoTo", selectedType);
                     break;
             }
-        }
 
-        protected override void OnAppearing()
-        {
             SetCurrentPage();
-            base.OnAppearing();
         }
 
         private void SetCurrentPage()

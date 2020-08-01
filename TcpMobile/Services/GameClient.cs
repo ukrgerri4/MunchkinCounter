@@ -1,5 +1,5 @@
 ﻿using Core.Models;
-using GameMunchkin.Models;
+using Infrastracture.Definitions;
 using Infrastracture.Interfaces;
 using Infrastracture.Interfaces.GameMunchkin;
 using Infrastracture.Models;
@@ -18,6 +18,7 @@ using System.Text;
 using TcpMobile.Game.Models;
 using TcpMobile.Tcp.Enums;
 using TcpMobile.Tcp.Models;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 
 namespace TcpMobile.Services
@@ -33,7 +34,7 @@ namespace TcpMobile.Services
         public List<Player> Players { get; set; }
 
         
-        private IDisposable _hostsSearchSubscribe;
+        private IDisposable _hostsSearchSubscription;
 
         private Subject<Unit> _destroy = new Subject<Unit>();
 
@@ -52,8 +53,9 @@ namespace TcpMobile.Services
             MyPlayer = new Player
             {
                 Id = _configuration["DeviceId"],
-                Name = "Player_1"
-            };
+                Name = Preferences.Get(PreferencesKey.DefaultPlayerName, "Player-1"),
+                Sex = (byte)Preferences.Get(PreferencesKey.DefaultPlayerSex, 0)
+        };
             Players = new List<Player>();
         }
 
@@ -62,13 +64,11 @@ namespace TcpMobile.Services
             return _lanClient.Connect(ip);
         }
 
-        public Result Stop()
+        public Result CloseConnection()
         {
             try
             {
-                _hostsSearchSubscribe?.Dispose();
                 _destroy.OnNext(Unit.Default);
-                _lanClient.StopListeningBroadcast();
                 _lanClient.Disconnect();
 
                 Hosts.Clear();
@@ -197,7 +197,7 @@ namespace TcpMobile.Services
 
         public void StartUpdatePlayers()
         {
-            _lanClient.PacketSubject.AsObservable()
+            _lanClient.TcpClientEventSubject.AsObservable()
                 .TakeUntil(_destroy)
                 .Where(tcpEvent => tcpEvent.Type == TcpEventType.ReceiveData)
                 .Where(tcpEvent => tcpEvent.Data != null)
@@ -206,7 +206,7 @@ namespace TcpMobile.Services
                 .Select(MapToPlayerInfo)
                 .Subscribe(
                     UpdatePlayers,
-                    error => _gameLogger.Error($"Error during broadcast host: {error.Message}")
+                    error => _gameLogger.Error($"Error during StartUpdatePlayers SUBSCRIPTION: {error.Message}")
                 );
         }
 
@@ -278,7 +278,7 @@ namespace TcpMobile.Services
         {
             _lanClient.StartListeningBroadcast();
 
-            _hostsSearchSubscribe = _lanClient.PacketSubject.AsObservable()
+            _hostsSearchSubscription = _lanClient.TcpClientEventSubject.AsObservable()
                 .TakeUntil(_destroy)
                 .Where(tcpEvent => tcpEvent.Type == TcpEventType.ReceiveData)
                 .Where(tcpEvent => tcpEvent.Data != null)
@@ -324,9 +324,29 @@ namespace TcpMobile.Services
                 });
         }
 
+        public void StartListeningServerDisconnection()
+        {
+            _lanClient.TcpClientEventSubject.AsObservable()
+                //.TakeUntil(_destroy)
+                .Where(tcpEvent => tcpEvent.Type == TcpEventType.StopServerConnection)
+                .Do(tcpEvent => _gameLogger.Debug($"Server disconnected handler"))
+                .Subscribe(
+                    tcpEvent =>
+                    {
+                        Hosts.Clear();
+                        Players.Clear();
+                        MessagingCenter.Send<IGameClient>(this, "LostServerConnection");
+                    },
+                    error =>
+                    {
+                        _gameLogger.Error($"Error during listening for server disconnection: {error.Message}");
+                    }
+                );
+        }
+
         public void StopSearchHosts()
         {
-            _hostsSearchSubscribe?.Dispose();
+            _hostsSearchSubscription?.Dispose();
             _lanClient.StopListeningBroadcast();
         }
     }

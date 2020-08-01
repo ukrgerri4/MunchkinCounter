@@ -35,7 +35,7 @@
                 
                 <BoxView Grid.Row="1" Grid.Column="0" HorizontalOptions="FillAndExpand" VerticalOptions="StartAndExpand" Color="{StaticResource secondary}" Margin="5,0,5,0"/>
 
-                <ListView Grid.Row="2" Grid.Column="0" x:Name="hostsView" BackgroundColor="Transparent" ItemsSource="{Binding Hosts}" SeparatorVisibility="None" RowHeight="50" Margin="10" ItemTapped="HostTapped">
+                <ListView Grid.Row="2" Grid.Column="0" x:Name="hostsView" BackgroundColor="Transparent" ItemsSource="{Binding Hosts}" SeparatorVisibility="None" RowHeight="50" Margin="10" ItemTapped="Connect">
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <ViewCell>
@@ -65,7 +65,7 @@
                 <BoxView Grid.Row="3" Grid.Column="0" HorizontalOptions="FillAndExpand" VerticalOptions="StartAndExpand" Color="{StaticResource secondary}" Margin="5,0,5,0"/>
 
                 <StackLayout Grid.Row="4" Grid.Column="0" Orientation="Horizontal" Spacing="20" VerticalOptions="CenterAndExpand" HorizontalOptions="FillAndExpand">
-                    <Button Clicked="TryReconnectToLastHost" Text="Reconnect" Style="{StaticResource textButton}" FontSize="24" BackgroundColor="{StaticResource secondary}" Margin="0,10,0,5" Padding="5,0,5,0"/>
+                    <Button Clicked="Reconnect" Text="Reconnect" Style="{StaticResource textButton}" FontSize="24" BackgroundColor="{StaticResource secondary}" Margin="0,10,0,5" Padding="5,0,5,0"/>
                     <StackLayout Orientation="Horizontal" Spacing="0" VerticalOptions="CenterAndExpand" HorizontalOptions="FillAndExpand">
                         <Label Text="Searching hosts" FontFamily="{StaticResource DefaultFont}" TextColor="{StaticResource primaryDark}" FontSize="24"/>
                         <Label Text="{Binding LoaderPointsValue}" FontFamily="{StaticResource DefaultFont}" TextColor="{StaticResource primaryDark}" FontSize="24"/>
@@ -113,7 +113,7 @@
                         <Label Grid.Row="0" Grid.Column="4" Text="Mod" Style="{StaticResource gameTitleLabel}"/>
                         <Label Grid.Row="0" Grid.Column="5" Text="Pwr" Style="{StaticResource gameTitleLabel}"/>
                     </Grid>
-                    <ListView Grid.Row="1" Grid.Column="0" x:Name="gameListView" ItemsSource="{Binding ExeptMePlayers}" Margin="0" SelectionMode="None" IsPullToRefreshEnabled="False">
+                    <ListView Grid.Row="1" Grid.Column="0" x:Name="gameListView" ItemsSource="{Binding LanPlayers}" Margin="0" SelectionMode="None" IsPullToRefreshEnabled="False">
                         <ListView.ItemTemplate>
                             <DataTemplate>
                                 <ViewCell>
@@ -159,15 +159,15 @@
                     <BoxView Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="4" HorizontalOptions="FillAndExpand" VerticalOptions="StartAndExpand" Color="{StaticResource secondary}" Margin="5,0,5,0"/>
                     <StackLayout Grid.Row="1" Grid.Column="0" Spacing="0" Margin="0,0,5,0">
                         <Label Text="level" Style="{StaticResource centeredLabel}" FontSize="20" TextColor="{StaticResource secondary}" VerticalOptions="End"/>
-                        <Button Clicked="IncreaseLevel" Text="{x:Static fa:FontAwesomeIcons.ChevronUp}" Style="{StaticResource upDownButton}"/>
+                        <Button Command="{Binding MyPlayer.IncreaseLevel}" Text="{x:Static fa:FontAwesomeIcons.ChevronUp}" Style="{StaticResource upDownButton}"/>
                         <Label Text="{Binding MyPlayer.Level}" Style="{StaticResource centeredLabel}" FontSize="50"/>
-                        <Button Clicked="DecreaseLevel" Text="{x:Static fa:FontAwesomeIcons.ChevronDown}" Style="{StaticResource upDownButton}"/>
+                        <Button Command="{Binding MyPlayer.DecreaseLevel}" Text="{x:Static fa:FontAwesomeIcons.ChevronDown}" Style="{StaticResource upDownButton}"/>
                     </StackLayout>
                     <StackLayout Grid.Row="1" Grid.Column="1"  Spacing="0" Margin="0,0,5,0">
                         <Label Text="modifiers" Style="{StaticResource centeredLabel}" FontSize="20" TextColor="{StaticResource secondary}" VerticalOptions="End"/>
-                        <Button Clicked="IncreaseModifiers" Text="{x:Static fa:FontAwesomeIcons.ChevronUp}" Style="{StaticResource upDownButton}"/>
+                        <Button Command="{Binding MyPlayer.IncreaseModifiers}" Text="{x:Static fa:FontAwesomeIcons.ChevronUp}" Style="{StaticResource upDownButton}"/>
                         <Label Text="{Binding MyPlayer.Modifiers}" Style="{StaticResource centeredLabel}" FontSize="50"/>
-                        <Button Clicked="DecreaseModifiers" Text="{x:Static fa:FontAwesomeIcons.ChevronDown}" Style="{StaticResource upDownButton}"/>
+                        <Button Command="{Binding MyPlayer.DecreaseModifiers}" Text="{x:Static fa:FontAwesomeIcons.ChevronDown}" Style="{StaticResource upDownButton}"/>
                     </StackLayout>
                     <StackLayout Grid.Row="1" Grid.Column="2"  Spacing="0">
                         <Label Text="power" Style="{StaticResource centeredLabel}" FontSize="20" TextColor="{StaticResource secondary}" VerticalOptions="End"></Label>
@@ -177,7 +177,7 @@
                         <BoxView WidthRequest="1" HorizontalOptions="StartAndExpand" VerticalOptions="FillAndExpand" Color="{StaticResource secondary}" Margin="0,5,0,0" />
                         <FlexLayout Direction="Column" JustifyContent="SpaceAround">
                             <Button Clicked="ResetMunchkin" Text="{x:Static fa:FontAwesomeIcons.Skull}" Style="{StaticResource actionIconButton}"/>
-                            <Button Clicked="ToggleSex" Text="{Binding MyPlayer.SexIcon}" Style="{StaticResource actionIconButton}"/>
+                            <Button Command="{Binding MyPlayer.ToggleSex}" Text="{Binding MyPlayer.SexIcon}" Style="{StaticResource actionIconButton}"/>
                             <Button Clicked="ThrowDice" Text="{x:Static fa:FontAwesomeIcons.Dice}" Style="{StaticResource actionIconButton}" />
                         </FlexLayout>
                     </StackLayout>

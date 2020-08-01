@@ -1,5 +1,4 @@
-﻿using GameMunchkin.Models;
-using Infrastracture.Definitions;
+﻿using Infrastracture.Definitions;
 using Infrastracture.Interfaces;
 using Infrastracture.Interfaces.GameMunchkin;
 using Infrastracture.Models;
@@ -7,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using MunchkinCounterLan.Views.Popups;
 using Rg.Plugins.Popup.Services;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
@@ -32,12 +32,16 @@ namespace TcpMobile.Views
 
         public MunchkinHost Host => _gameServer.Host;
         public Player MyPlayer => _gameClient.MyPlayer;
-        public ObservableCollection<Player> AllPlayers => new ObservableCollection<Player>(_gameClient.Players);
-        public ObservableCollection<Player> ExeptMePlayers => new ObservableCollection<Player>(_gameClient.Players.Where(p => p.Id != _gameClient.MyPlayer.Id));
+
+        public List<Player> AllPlayers =>
+                _gameClient.Players
+                    .OrderByDescending(p => p.Level)
+                    .ThenByDescending(p => p.Modifiers)
+                    .ThenBy(p => p.Name)
+                    .ToList();
 
         private bool _creatingGame = true;
         private bool _waitingPlayers = false;
-        private bool _process = false;
 
         public bool CreatingGame
         {
@@ -50,7 +54,6 @@ namespace TcpMobile.Views
                     if (_creatingGame)
                     {
                         WaitingPlayers = false;
-                        Process = false;
                     }
 
                     OnPropertyChanged(nameof(CreatingGame));
@@ -69,29 +72,9 @@ namespace TcpMobile.Views
                     if (_waitingPlayers)
                     {
                         CreatingGame = false;
-                        Process = false;
                     }
 
                     OnPropertyChanged(nameof(WaitingPlayers));
-                }
-            }
-        }
-
-        public bool Process
-        {
-            get => _process;
-            set
-            {
-                if (_process != value)
-                {
-                    _process = value;
-                    if (_process)
-                    {
-                        CreatingGame = false;
-                        WaitingPlayers = false;
-                    }
-                    
-                    OnPropertyChanged(nameof(Process));
                 }
             }
         }
@@ -125,27 +108,16 @@ namespace TcpMobile.Views
             InitializeComponent();
 
             _viewModel = new CreateGameViewModel(_gameClient, _gameServer);
+
             TrySetPlayerDefaults();
 
             BindingContext = _viewModel;
 
-            MessagingCenter.Subscribe<IGameClient>(
-                this,
-                "PlayersUpdated",
-                (sender) => {
-                    _viewModel.OnPropertyChanged(nameof(_viewModel.AllPlayers));
-                    _viewModel.OnPropertyChanged(nameof(_viewModel.ExeptMePlayers));
-                }
-            );
+            MessagingCenter.Subscribe<IGameClient>(this, "PlayersUpdated", (sender) => {
+                _viewModel.OnPropertyChanged(nameof(_viewModel.AllPlayers));
+            });
 
-            MessagingCenter.Subscribe<MenuPage>(
-                this,
-                "EndGame",
-                async (sender) =>
-                {
-                    await Stop();
-                }
-            );
+            MessagingCenter.Subscribe<MenuPage>(this, "EndGame", (sender) => Stop());
         }
 
         private async void TryCreate(object sender, EventArgs args)
@@ -157,6 +129,7 @@ namespace TcpMobile.Views
                 _gameClient.StartUpdatePlayers();
                 _gameClient.ConnectSelf();
                 _gameClient.SendPlayerInfo();
+                _gameClient.StartListeningServerDisconnection();
 
                 SavePlayerDefaults();
 
@@ -166,8 +139,8 @@ namespace TcpMobile.Views
             {
                 await PopupNavigation.Instance.PushAsync(new AlertPage("Create game error, please check your lan connection."));
                 
-                var serverStopResult = _gameServer.Stop();
-                var clientStopResult = _gameClient.Stop();
+                _ = _gameServer.Stop();
+                _ = _gameClient.CloseConnection();
                 
                 _gameLogger.Error($"Create game error: {e.Message}");
             }
@@ -175,113 +148,22 @@ namespace TcpMobile.Views
 
         private void TryStart(object sender, EventArgs args)
         {
-            var stopResult = _gameServer.StopBroadcast();
-
-            if (stopResult.IsFail) { _gameLogger.Error(stopResult.Error); }
-
-            _viewModel.Process = true;
+            _gameServer.StopBroadcast();
+            MessagingCenter.Send(this, "StartGame");
         }
 
-        private async void TryStop(object sender, EventArgs args)
+        private void TryStop(object sender, EventArgs args)
         {
-            await Stop();
+            if (!_viewModel.WaitingPlayers) { return; }
+
+            Stop();
         }
 
-        public async Task Stop()
+        public void Stop()
         {
-            if (_viewModel.CreatingGame) { return; }
-
-            //var alert = new AlertPage("Stopping the game will entail disconnecting players.", "Ok", "Cancel");
-            //alert.OnConfirm += (sender, e) =>
-            //{
-            //    var stopResult = _gameServer.Stop();
-
-            //    if (stopResult.IsFail) { _gameLogger.Error(stopResult.Error); }
-
-            //    _gameClient.Players.Clear();
-
-            //    _viewModel.CreatingGame = true;
-            //};
-            //await PopupNavigation.Instance.PushAsync(alert);
-
             _gameServer.Stop();
-            
-            _gameClient.StopSearchHosts();
-            _gameClient.Stop();
-            _gameClient.Players.Clear();
 
             _viewModel.CreatingGame = true;
-        }
-
-        private void IncreaseLevel(object sender, EventArgs e)
-        {
-            if (_gameClient.MyPlayer.Level < 10)
-            {
-                _gameClient.MyPlayer.Level++;
-                _gameClient.SendUpdatedPlayerState();
-            }
-
-        }
-
-        private void DecreaseLevel(object sender, EventArgs e)
-        {
-            if (_gameClient.MyPlayer.Level > 1)
-            {
-                _gameClient.MyPlayer.Level--;
-                _gameClient.SendUpdatedPlayerState();
-            }
-        }
-
-        private void IncreaseModifiers(object sender, EventArgs e)
-        {
-            if (_gameClient.MyPlayer.Modifiers < 255)
-            {
-                _gameClient.MyPlayer.Modifiers++;
-                _gameClient.SendUpdatedPlayerState();
-            }
-        }
-
-        private void DecreaseModifiers(object sender, EventArgs e)
-        {
-            if (_gameClient.MyPlayer.Modifiers > 0)
-            {
-                _gameClient.MyPlayer.Modifiers--;
-                _gameClient.SendUpdatedPlayerState();
-            }
-        }
-
-        private void ToggleSex(object sender, EventArgs e)
-        {
-            _gameClient.MyPlayer.Sex = _gameClient.MyPlayer.Sex == 1 ? (byte)0 : (byte)1;
-            _gameClient.SendUpdatedPlayerState();
-        }
-
-        private async void ResetMunchkin(object sender, EventArgs e)
-        {
-            var confirmPage = new ConfirmPage();
-            confirmPage.OnReset += (s, ev) => {
-                switch (ev)
-                {
-                    case "level":
-                        _viewModel.MyPlayer.Level = 1;
-                        break;
-                    case "modifiers":
-                        _viewModel.MyPlayer.Modifiers = 0;
-                        break;
-                    case "all":
-                        _viewModel.MyPlayer.Level = 1;
-                        _viewModel.MyPlayer.Modifiers = 0;
-                        break;
-                }
-                _gameClient.SendUpdatedPlayerState();
-            };
-
-            await PopupNavigation.Instance.PushAsync(confirmPage);
-        }
-
-        private async void ThrowDice(object sender, EventArgs e)
-        {
-            await PopupNavigation.Instance.PushAsync(_serviceProvider.GetService<DicePage>());
         }
 
         private void SavePlayerDefaults()

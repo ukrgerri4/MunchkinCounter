@@ -1,8 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Text;
-
-namespace TcpMobile.Game.Models
+﻿namespace TcpMobile.Game.Models
 {
     public class PlayerInfo
     {

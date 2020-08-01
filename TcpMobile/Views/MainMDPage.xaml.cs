@@ -16,17 +16,19 @@ namespace TcpMobile.Views
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class MainMDPage : MasterDetailPage
     {
-        private readonly System.IServiceProvider _serviceProvider;
+        private readonly IServiceProvider _serviceProvider;
 
         Dictionary<MenuItemType, Type> MenuPages;
 
         public MenuItemType CurrentPage { get; set; }
 
-        public MainMDPage(System.IServiceProvider serviceProvider)
+        public MainMDPage(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
 
             InitializeComponent();
+
+            IsPresentedChanged += (s, e) => MessagingCenter.Send(this, "SideMenuOpend", IsPresented);
 
             MasterBehavior = MasterBehavior.Popover;
 
@@ -45,8 +47,8 @@ namespace TcpMobile.Views
             CurrentPage = MenuItemType.SingleGame;
 
             MessagingCenter.Subscribe<MenuPage, MenuItemType>(
-                this, 
-                "GoTo", 
+                this,
+                "GoTo",
                 async (sender, type) => {
                     switch (type)
                     {
@@ -66,12 +68,12 @@ namespace TcpMobile.Views
                             if (Detail.GetType() != MenuPages[type].GetType())
                             {
 
-                                if (Detail is CreateGamePage cgp && cgp.BindingContext is CreateGameViewModel cgpvm && (cgpvm.WaitingPlayers || cgpvm.Process))
+                                if (Detail is CreateGamePage cgp && cgp.BindingContext is CreateGameViewModel cgpvm && cgpvm.WaitingPlayers)
                                 {
                                     var alert = new AlertPage("If you leave create game page, game will be ended and players disconnected.", "Ok", "Cancel");
-                                    alert.OnConfirm += async (s, e) =>
+                                    alert.Confirmed += (s, e) =>
                                     {
-                                        await cgp.Stop();
+                                        cgp.Stop();
                                         GoToPage(type);
                                     };
                                     await PopupNavigation.Instance.PushAsync(alert);
@@ -81,9 +83,9 @@ namespace TcpMobile.Views
                                 if (Detail is JoinGamePage jgp && jgp.BindingContext is JoinGameViewModel jgpvm && jgpvm.Process)
                                 {
                                     var alert = new AlertPage("If you leave join game page, you will be disconnected.", "Ok", "Cancel");
-                                    alert.OnConfirm += async (s, e) =>
+                                    alert.Confirmed += (s, e) =>
                                     {
-                                        jgp.Stop();
+                                        jgp.StopProcess();
                                         GoToPage(type);
                                     };
                                     await PopupNavigation.Instance.PushAsync(alert);
@@ -96,6 +98,13 @@ namespace TcpMobile.Views
                     }
                 }
             );
+
+            MessagingCenter.Subscribe<CreateGamePage>(this, "StartGame", (s) => {
+                var joinPage = _serviceProvider.GetService<JoinGamePage>();
+                (joinPage.BindingContext as JoinGameViewModel).Process = true;
+                GoToPage(MenuItemType.JoinGame);
+            });
+
         }
 
         private void GoToPage(MenuItemType type)

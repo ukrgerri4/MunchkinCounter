@@ -165,7 +165,7 @@ namespace TcpMobile.Services
 
         private void StartListeningNewPlayersConnections()
         {
-            _lanServer.TcpEventSubject.AsObservable()
+            _lanServer.TcpServerEventSubject.AsObservable()
                 .TakeUntil(_destroy)
                 .Where(tcpEvent => tcpEvent.Type == TcpEventType.ReceiveData)
                 .Where(tcpEvent => tcpEvent.Data != null)
@@ -249,7 +249,7 @@ namespace TcpMobile.Services
 
         private void StartListeningPlayersDisconnections()
         {
-            _lanServer.TcpEventSubject.AsObservable()
+            _lanServer.TcpServerEventSubject.AsObservable()
                 .TakeUntil(_destroy)
                 .Where(tcpEvent => tcpEvent.Type == TcpEventType.ClientDisconnect)
                 .Where(tcpEvent => (string)tcpEvent.Data != null)
@@ -269,7 +269,7 @@ namespace TcpMobile.Services
                     },
                     error =>
                     {
-                        _gameLogger.Error($"Error during listening for new players: {error.Message}");
+                        _gameLogger.Error($"Error during listening for players disconnections: {error.Message}");
                     }
                 );
         }

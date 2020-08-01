@@ -1,5 +1,4 @@
 ﻿using Core.Models;
-using GameMunchkin.Models;
 using Infrastracture.Models;
 using System;
 using System.Collections.Generic;
@@ -19,9 +18,10 @@ namespace Infrastracture.Interfaces.GameMunchkin
         Result SendPlayerInfo();
         Result SendUpdatedPlayerName();
         Result SendUpdatedPlayerState();
+        void StartListeningServerDisconnection();
         void StartSearchHosts();
         void StartUpdatePlayers();
-        Result Stop();
+        Result CloseConnection();
         void StopSearchHosts();
     }
 }
