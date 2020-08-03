@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using TcpMobile.Models;
 using TcpMobile.Views;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -20,8 +21,9 @@ namespace MunchkinCounterLan.Views
         private JoinGamePage _joinGamePage => _serviceProvider.GetService<JoinGamePage>();
         private CreateGamePage _createGamePage => _serviceProvider.GetService<CreateGamePage>();
 
-
         public ObservableCollection<SideBarMenuItem> MenuItems { get; set; }
+
+        public string CurrentVersion => VersionTracking.CurrentVersion;
 
         public MenuPage(IServiceProvider serviceProvider,
             IConfiguration configuration)
@@ -93,17 +95,19 @@ namespace MunchkinCounterLan.Views
 
         private ObservableCollection<SideBarMenuItem> InitMenuItems()
         {
-            return new ObservableCollection<SideBarMenuItem>
-            {
-                new SideBarMenuItem {Type = MenuItemType.SingleGame, Name = "SINGLE GAME", Icon = FontAwesomeIcons.User },
-                new SideBarMenuItem {Type = MenuItemType.CreateGame, Name = "CREATE GAME", Icon = FontAwesomeIcons.Users },
-                new SideBarMenuItem {Type = MenuItemType.JoinGame, Name = "FIND GAME", Icon = FontAwesomeIcons.BroadcastTower, Divider = true },
-                new SideBarMenuItem {Type = MenuItemType.Debug, Name = "Debug", Icon = FontAwesomeIcons.Code },
-                new SideBarMenuItem {Type = MenuItemType.Settings, Name = "Settings", Icon = FontAwesomeIcons.Cogs },
-                new SideBarMenuItem {Type = MenuItemType.ShareApp, Name = "Share", Icon = FontAwesomeIcons.ShareAlt },
-                new SideBarMenuItem {Type = MenuItemType.About, Name = "About", Icon = FontAwesomeIcons.InfoCircle },
+            var items = new ObservableCollection<SideBarMenuItem>();
+            
+            items.Add(new SideBarMenuItem { Type = MenuItemType.SingleGame, Name = "SINGLE GAME", Icon = FontAwesomeIcons.User });
+            items.Add(new SideBarMenuItem { Type = MenuItemType.CreateGame, Name = "CREATE GAME", Icon = FontAwesomeIcons.Users });
+            items.Add(new SideBarMenuItem { Type = MenuItemType.JoinGame, Name = "FIND GAME", Icon = FontAwesomeIcons.BroadcastTower, Divider = true });
+#if DEBUG
+            items.Add(new SideBarMenuItem { Type = MenuItemType.Debug, Name = "Debug", Icon = FontAwesomeIcons.Code });
+#endif
+            items.Add(new SideBarMenuItem { Type = MenuItemType.Settings, Name = "Settings", Icon = FontAwesomeIcons.Cogs });
+            items.Add(new SideBarMenuItem { Type = MenuItemType.ShareApp, Name = "Share", Icon = FontAwesomeIcons.ShareAlt });
+            items.Add(new SideBarMenuItem { Type = MenuItemType.About, Name = "About", Icon = FontAwesomeIcons.InfoCircle });
 
-            };
+            return items;
         }
     }
 }

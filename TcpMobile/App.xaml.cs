@@ -29,6 +29,8 @@ namespace TcpMobile
 
             InitializeComponent();
 
+            VersionTracking.Track();
+
             MainPage = _serviceProvider.GetService<MainMDPage>();
         }
 

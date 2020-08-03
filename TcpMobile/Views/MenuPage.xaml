@@ -90,6 +90,12 @@
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
+            <StackLayout HorizontalOptions="End" Margin="20, 0, 20, 0">
+                <Label Text="{Binding CurrentVersion, StringFormat='Version  {0}'}"
+                       FontFamily="{StaticResource DefaultFont}"
+                       FontSize="14"
+                       TextColor="{StaticResource primaryDark}"/>
+            </StackLayout>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>
