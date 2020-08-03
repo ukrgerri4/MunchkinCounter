@@ -24,15 +24,12 @@ namespace MunchkinCounterLan.Views
 {
     public class JoinGameViewModel : INotifyPropertyChanged
     {
-        private readonly IGameClient _gameClient;
+        private IGameClient _gameClient => DependencyService.Get<IGameClient>();
 
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged(string prop = "") => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
 
-        public JoinGameViewModel(IGameClient gameClient)
-        {
-            _gameClient = gameClient;
-        }
+        public JoinGameViewModel() { }
 
         public ObservableCollection<MunchkinHost> Hosts => _gameClient.Hosts;
         public Player MyPlayer => _gameClient.MyPlayer;
@@ -146,9 +143,7 @@ namespace MunchkinCounterLan.Views
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class JoinGamePage : ContentPage
     {
-        private readonly IServiceProvider _serviceProvider;
-        private readonly IGameLogger _gameLogger;
-        private readonly IGameClient _gameClient;
+        private IGameClient _gameClient => DependencyService.Get<IGameClient>();
 
         private Subject<PageEventType> _innerSubject;
         private Subject<Unit> _destroy = new Subject<Unit>();
@@ -159,17 +154,14 @@ namespace MunchkinCounterLan.Views
 
         public bool _searching = false;
 
-        public JoinGamePage(IServiceProvider serviceProvider, IGameLogger gameLogger, IGameClient gameClient)
+        public JoinGamePage()
         {
-            _serviceProvider = serviceProvider;
-            _gameLogger = gameLogger;
-            _gameClient = gameClient;
 
             InitializeComponent();
 
             _innerSubject = new Subject<PageEventType>();
 
-            ViewModel = new JoinGameViewModel(_gameClient);
+            ViewModel = new JoinGameViewModel();
             ViewModel.ToolsClick = new Command<PageEventType>((eventType) => _innerSubject.OnNext(eventType));
             ViewModel.MyPlayer.PropertyChanged += (s, e) => _gameClient.SendUpdatedPlayerState();
 

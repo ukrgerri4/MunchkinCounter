@@ -14,15 +14,11 @@ namespace MunchkinCounterLan.Views
 {
     public class SettingsViewModel : INotifyPropertyChanged
     {
+        private IBrightnessService _brightnessService => DependencyService.Get<IBrightnessService>();
+        
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged(string prop = "") => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
-
         
-        private readonly IBrightnessService _brightnessService;
-        public SettingsViewModel(IBrightnessService brightnessService)
-        {
-            _brightnessService = brightnessService;
-        }
 
         public bool SleepModeSwitchValue
         {
@@ -69,20 +65,13 @@ namespace MunchkinCounterLan.Views
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class SettingsPage : PopupPage
     {
-        private readonly IGameLogger _gameLogger;
-        private readonly IBrightnessService _brightnessService;
-
         public SettingsViewModel viewModel { get; set; }
 
-        public SettingsPage(IGameLogger gameLogger,
-            IBrightnessService brightnessService)
+        public SettingsPage()
         {
-            _gameLogger = gameLogger;
-            _brightnessService = brightnessService;
-
             InitializeComponent();
 
-            viewModel = new SettingsViewModel(_brightnessService);
+            viewModel = new SettingsViewModel();
 
             BindingContext = viewModel;
         }

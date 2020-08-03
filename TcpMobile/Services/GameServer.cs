@@ -2,7 +2,6 @@
 using Infrastracture.Interfaces;
 using Infrastracture.Interfaces.GameMunchkin;
 using Infrastracture.Models;
-using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Concurrent;
 using System.IO;
@@ -14,14 +13,15 @@ using System.Text;
 using TcpMobile.Game.Models;
 using TcpMobile.Tcp.Enums;
 using TcpMobile.Tcp.Models;
+using Xamarin.Forms;
 
 namespace TcpMobile.Services
 {
     public class GameServer : IGameServer
     {
-        private readonly IGameLogger _gameLogger;
-        private readonly IConfiguration _configuration;
-        private readonly ILanServer _lanServer;
+        private IGameLogger _gameLogger => DependencyService.Get<IGameLogger>();
+        private ILanServer _lanServer => DependencyService.Get<ILanServer>();
+        private IDeviceInfoService _deviceInfoService => DependencyService.Get<IDeviceInfoService>();
 
         private IDisposable _hostBroadcaster;
         private IDisposable _connectedPlayersBroadcaster;
@@ -35,19 +35,11 @@ namespace TcpMobile.Services
         public MunchkinHost Host { get; set; }
         public ConcurrentDictionary<string, PlayerInfo> ConnectedPlayers { get; set; }
 
-        public GameServer(
-            IGameLogger gameLogger,
-            IConfiguration configuration,
-            ILanServer lanServer
-         )
+        public GameServer()
         {
-            _gameLogger = gameLogger;
-            _configuration = configuration;
-            _lanServer = lanServer;
-
             Host = new MunchkinHost
             {
-                Id = _configuration["DeviceId"],
+                Id = _deviceInfoService.DeviceId,
                 Name = "Game_1"
             };
 

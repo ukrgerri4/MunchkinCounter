@@ -2,16 +2,13 @@
 using Infrastracture.Interfaces;
 using Infrastracture.Interfaces.GameMunchkin;
 using Infrastracture.Models;
-using Microsoft.Extensions.Configuration;
 using MunchkinCounterLan.Views;
 using MunchkinCounterLan.Views.Popups;
 using Rg.Plugins.Popup.Services;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Threading.Tasks;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
@@ -84,22 +81,14 @@ namespace TcpMobile.Views
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class CreateGamePage : ContentPage
     {
-        private readonly IGameLogger _gameLogger;
-        private readonly IGameClient _gameClient;
-        private readonly IGameServer _gameServer;
+        private IGameServer _gameServer => DependencyService.Get<IGameServer>();
+        private IGameClient _gameClient => DependencyService.Get<IGameClient>();
+        private IGameLogger _gameLogger => DependencyService.Get<IGameLogger>();
 
         public CreateGameViewModel ViewModel { get; set; }
 
-        public CreateGamePage(
-            IGameLogger gameLogger,
-            IGameServer gameServer,
-            IGameClient gameClient
-        )
+        public CreateGamePage()
         {
-            _gameLogger = gameLogger;
-            _gameClient = gameClient;
-            _gameServer = gameServer;
-
             InitializeComponent();
 
             ViewModel = new CreateGameViewModel(_gameClient, _gameServer);

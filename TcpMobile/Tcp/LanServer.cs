@@ -3,8 +3,6 @@ using Core.Models;
 using Infrastracture.Interfaces;
 using Infrastracture.Interfaces.GameMunchkin;
 using Infrastracture.Models;
-using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,14 +11,14 @@ using System.Net.Sockets;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using TcpMobile.Tcp.Models;
+using Xamarin.Forms;
 using Xamarin.Forms.Internals;
 
 namespace TcpMobile.Tcp
 {
     public class LanServer: ILanServer
     {
-        private readonly IGameLogger _gameLogger;
-        private readonly IConfiguration _configuration;
+        private IGameLogger _gameLogger => DependencyService.Get<IGameLogger>();
 
         public Dictionary<string, StateObject> ConfirmedConnections = new Dictionary<string, StateObject>();
 
@@ -34,14 +32,6 @@ namespace TcpMobile.Tcp
         private Socket _mainUdpSocket;
         private IPEndPoint udpClientEP = new IPEndPoint(IPAddress.Broadcast, 42424);
         #endregion
-
-        public LanServer(
-            IConfiguration configuration,
-            IGameLogger gameLogger)
-        {
-            _configuration = configuration;
-            _gameLogger = gameLogger;
-        }
 
         private bool IsConnected(Socket socket)
         {

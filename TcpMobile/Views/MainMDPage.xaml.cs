@@ -1,6 +1,5 @@
 ﻿using MunchkinCounterLan.Views;
 using MunchkinCounterLan.Views.Popups;
-using Rg.Plugins.Popup.Pages;
 using Rg.Plugins.Popup.Services;
 using System;
 using System.Collections.Generic;
@@ -15,36 +14,20 @@ namespace TcpMobile.Views
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class MainMDPage : MasterDetailPage
     {
-        private readonly IServiceProvider _serviceProvider;
-
-        Dictionary<MenuItemType, Type> MenuPages;
-
         public MenuItemType CurrentPage { get; set; }
 
-        public MainMDPage(IServiceProvider serviceProvider)
+        public MainMDPage()
         {
-            _serviceProvider = serviceProvider;
-
             InitializeComponent();
-
-            IsPresentedChanged += (s, e) => MessagingCenter.Send(this, "SideMenuOpend", IsPresented);
-
+        
             MasterBehavior = MasterBehavior.Popover;
 
-            MenuPages = new Dictionary<MenuItemType, Type>
-            {
-                { MenuItemType.SingleGame, typeof(SingleGamePage) },
-                { MenuItemType.CreateGame, typeof(CreateGamePage) },
-                { MenuItemType.JoinGame, typeof(JoinGamePage) },
-                { MenuItemType.EndGame, typeof(SingleGamePage) },
-                { MenuItemType.Debug, typeof(DebugPage) },
-                { MenuItemType.Settings, typeof(SettingsPage) },
-                { MenuItemType.About, typeof(AboutPage) },
-            };
+            Master = new MenuPage();
+            Detail = DependencyService.Get<SingleGamePage>();
 
-            Master = _serviceProvider.GetService<MenuPage>();
-            Detail = _serviceProvider.GetService<SingleGamePage>();
             CurrentPage = MenuItemType.SingleGame;
+
+            IsPresentedChanged += (s, e) => MessagingCenter.Send(this, "SideMenuOpend", IsPresented);
 
             MessagingCenter.Subscribe<MenuPage, MenuItemType>(
                 this,
@@ -53,9 +36,13 @@ namespace TcpMobile.Views
                     switch (type)
                     {
                         case MenuItemType.Debug:
+                            await PopupNavigation.Instance.PushAsync(DependencyService.Get<DebugPage>());
+                            break;
                         case MenuItemType.Settings:
+                            await PopupNavigation.Instance.PushAsync(DependencyService.Get<SettingsPage>());
+                            break;
                         case MenuItemType.About:
-                            await PopupNavigation.Instance.PushAsync((PopupPage)_serviceProvider.GetService(MenuPages[type]));
+                            await PopupNavigation.Instance.PushAsync(DependencyService.Get<AboutPage>());
                             break;
                         case MenuItemType.ShareApp:
                             await Share.RequestAsync(new ShareTextRequest
@@ -65,10 +52,10 @@ namespace TcpMobile.Views
                             });
                             break;
                         default:
-                            if (Detail.GetType() != MenuPages[type])
+                            if (CurrentPage != type)
                             {
-                                var joinGamePage = _serviceProvider.GetService<JoinGamePage>();
-                                var createGamePage = _serviceProvider.GetService<CreateGamePage>();
+                                var joinGamePage = DependencyService.Get<JoinGamePage>();
+                                var createGamePage = DependencyService.Get<CreateGamePage>();
 
                                 if (joinGamePage?.ViewModel?.Process == true || createGamePage?.ViewModel?.WaitingPlayers == true)
                                 {
@@ -91,7 +78,7 @@ namespace TcpMobile.Views
             );
 
             MessagingCenter.Subscribe<CreateGamePage>(this, "StartGame", (s) => {
-                var joinPage = _serviceProvider.GetService<JoinGamePage>();
+                var joinPage = DependencyService.Get<JoinGamePage>();
                 (joinPage.BindingContext as JoinGameViewModel).Process = true;
                 GoToPage(MenuItemType.JoinGame);
             });
@@ -100,7 +87,19 @@ namespace TcpMobile.Views
 
         private void GoToPage(MenuItemType type)
         {
-            Detail = (Page)_serviceProvider.GetService(MenuPages[type]);
+            switch(type)
+            {
+                case MenuItemType.SingleGame:
+                    Detail = DependencyService.Get<SingleGamePage>();
+                    break;
+                case MenuItemType.CreateGame:
+                    Detail = DependencyService.Get<CreateGamePage>();
+                    break;
+                case MenuItemType.JoinGame:
+                    Detail = DependencyService.Get<JoinGamePage>();
+                    break;
+            }
+            
             CurrentPage = type;
             _ = Task.Run(async () =>
             {

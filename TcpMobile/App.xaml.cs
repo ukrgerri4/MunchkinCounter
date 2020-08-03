@@ -1,9 +1,5 @@
 ﻿using Infrastracture.Definitions;
 using Infrastracture.Interfaces;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using System.Reactive;
-using System.Reactive.Subjects;
 using TcpMobile.Views;
 using Xamarin.Essentials;
 using Xamarin.Forms;
@@ -12,26 +8,16 @@ namespace TcpMobile
 {
     public partial class App : Application
     {
-        private readonly System.IServiceProvider _serviceProvider;
-        private readonly IConfiguration _configuration;
-        private readonly IGameLogger _gameLogger;
-        private readonly IBrightnessService _brightnessService;
+        private IGameLogger _gameLogger => DependencyService.Get<IGameLogger>();
+        private IBrightnessService _brightnessService => DependencyService.Get<IBrightnessService>();
 
-        public App(System.IServiceProvider serviceProvider,
-            IConfiguration configuration,
-            IGameLogger gameLogger,
-            IBrightnessService brightnessService)
+        public App()
         {
-            _serviceProvider = serviceProvider;
-            _configuration = configuration;
-            _gameLogger = gameLogger;
-            _brightnessService = brightnessService;
-
             InitializeComponent();
 
             VersionTracking.Track();
 
-            MainPage = _serviceProvider.GetService<MainMDPage>();
+            MainPage = new MainMDPage();
         }
 
         protected override void OnStart()

@@ -3,7 +3,6 @@ using Infrastracture.Definitions;
 using Infrastracture.Interfaces;
 using Infrastracture.Interfaces.GameMunchkin;
 using Infrastracture.Models;
-using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -25,9 +24,9 @@ namespace TcpMobile.Services
 {
     public class GameClient : IGameClient
     {
-        private readonly IGameLogger _gameLogger;
-        private readonly IConfiguration _configuration;
-        private readonly ILanClient _lanClient;
+        private IGameLogger _gameLogger => DependencyService.Get<IGameLogger>();
+        private ILanClient _lanClient => DependencyService.Get<ILanClient>();
+        private IDeviceInfoService _deviceInfoService => DependencyService.Get<IDeviceInfoService>();
 
         public ObservableCollection<MunchkinHost> Hosts { get; set; }
         public Player MyPlayer { get; set; }
@@ -38,21 +37,13 @@ namespace TcpMobile.Services
 
         private Subject<Unit> _destroy = new Subject<Unit>();
 
-        public GameClient(
-            IGameLogger gameLogger,
-            IConfiguration configuration,
-            ILanClient lanClient
-         )
+        public GameClient()
         {
-            _gameLogger = gameLogger;
-            _configuration = configuration;
-            _lanClient = lanClient;
-
             Hosts = new ObservableCollection<MunchkinHost>();
 
             MyPlayer = new Player
             {
-                Id = _configuration["DeviceId"],
+                Id = _deviceInfoService.DeviceId,
                 Name = Preferences.Get(PreferencesKey.DefaultPlayerName, "Player-1"),
                 Sex = (byte)Preferences.Get(PreferencesKey.DefaultPlayerSex, 0)
         };

@@ -1,9 +1,7 @@
 ﻿using Core.Utils;
-using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using TcpMobile;
 using TcpMobile.Models;
 using TcpMobile.Views;
 using Xamarin.Essentials;
@@ -15,21 +13,15 @@ namespace MunchkinCounterLan.Views
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class MenuPage : ContentPage
     {
-        private readonly IServiceProvider _serviceProvider;
-        private readonly IConfiguration _configuration;
-
-        private JoinGamePage _joinGamePage => _serviceProvider.GetService<JoinGamePage>();
-        private CreateGamePage _createGamePage => _serviceProvider.GetService<CreateGamePage>();
+        private JoinGamePage _joinGamePage => DependencyService.Get<JoinGamePage>();
+        private CreateGamePage _createGamePage => DependencyService.Get<CreateGamePage>();
 
         public ObservableCollection<SideBarMenuItem> MenuItems { get; set; }
 
         public string CurrentVersion => VersionTracking.CurrentVersion;
 
-        public MenuPage(IServiceProvider serviceProvider,
-            IConfiguration configuration)
+        public MenuPage()
         {
-            _serviceProvider = serviceProvider;
-            _configuration = configuration;
 
             InitializeComponent();
 
@@ -89,7 +81,7 @@ namespace MunchkinCounterLan.Views
 
         private void SetCurrentPage()
         {
-            var masterDetailPage = _serviceProvider.GetService<MainMDPage>();
+            var masterDetailPage = (MainMDPage)Application.Current.MainPage;
             menuItemsListView.SelectedItem = MenuItems.FirstOrDefault(i => i.Type == masterDetailPage.CurrentPage);
         }
 

@@ -2,37 +2,31 @@
 using Infrastracture.Interfaces;
 using Infrastracture.Interfaces.GameMunchkin;
 using Infrastracture.Models;
-using Microsoft.Extensions.Configuration;
 using System;
 using System.Linq;
 using System.Net;
-using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using System.Text;
 using TcpMobile.Tcp.Enums;
 using TcpMobile.Tcp.Models;
+using Xamarin.Forms;
 
 namespace TcpMobile.Tcp
 {
     public class LanClient: ILanClient
     {
+        private IGameLogger _gameLogger => DependencyService.Get<IGameLogger>();
+        private IDeviceInfoService _deviceInfoService => DependencyService.Get<IDeviceInfoService>();
+
         public Subject<TcpEvent> TcpClientEventSubject { get; set; } = new Subject<TcpEvent>();
         private IDisposable _connectionChecker;
 
         private Socket _mainTcpSocket;
         private Socket _mainUdpSocket;
-        private readonly IGameLogger _gameLogger;
-        private readonly IConfiguration _configuration;
 
         private byte[] DEFAULT_PING_MESSAGE = new byte[] { 5, 0, (byte)MunchkinMessageType.Ping, 10, 4 };
 
-        public LanClient(IGameLogger gameLogger, IConfiguration configuration)
-        {
-            _gameLogger = gameLogger;
-            _configuration = configuration;
-        }
 
         private bool IsConnected(Socket socket)
         {
@@ -82,7 +76,7 @@ namespace TcpMobile.Tcp
                 if (!_mainTcpSocket.Connected) { return Result.Fail("Soket is not connected."); }
                 
                 var stateObj = new StateObject(_mainTcpSocket);
-                stateObj.Id = _configuration["DeviceId"];
+                stateObj.Id = _deviceInfoService.DeviceId;
                 _mainTcpSocket.BeginReceive(stateObj.buffer, 0, StateObject.BufferSize, 0, new AsyncCallback(OnDataReceived), stateObj);
 
                 StartConnectionCheck();

@@ -9,12 +9,10 @@ namespace MunchkinCounterLan.Views
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class DebugPage : PopupPage
     {
-        private readonly IGameLogger _gameLogger;
+        private IGameLogger _gameLogger => DependencyService.Get<IGameLogger>();
 
-        public DebugPage(IGameLogger gameLogger)
+        public DebugPage()
         {
-            _gameLogger = gameLogger;
-
             InitializeComponent();
 
             debugConsoleView.HasUnevenRows = true;

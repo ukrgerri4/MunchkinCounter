@@ -1,15 +1,16 @@
 ﻿using Android.App;
-using Android.Content;
 using Android.Content.PM;
-using Android.OS;
 using Android.Runtime;
-using Android.Views;
-using Android.Widget;
-using Java.Lang;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+using Android.OS;
 using Rg.Plugins.Popup.Services;
 using TcpMobile.Views;
+using Xamarin.Forms;
+using TcpMobile.Services;
+using Infrastracture.Interfaces;
+using Infrastracture.Interfaces.GameMunchkin;
+using TcpMobile.Tcp;
+using MunchkinCounterLan.Views;
+using TcpMobile.Droid.Services;
 
 namespace TcpMobile.Droid
 {
@@ -21,15 +22,16 @@ namespace TcpMobile.Droid
             TabLayoutResource = Resource.Layout.Tabbar;
             ToolbarResource = Resource.Layout.Toolbar;
 
+
             base.OnCreate(savedInstanceState);
-            Rg.Plugins.Popup.Popup.Init(this, savedInstanceState);
-            Xamarin.Forms.Forms.Init(this, savedInstanceState);
 
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
+            Rg.Plugins.Popup.Popup.Init(this, savedInstanceState);
             global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
 
-            var configStream = Assets.Open("appsettings.json");
-            LoadApplication(Startup.Init(ConfigureServices, configStream));
+            RegisterDependancies();
+
+            LoadApplication(new App());
 
             //Window.AddFlags(WindowManagerFlags.Fullscreen);
             //Window.DecorView.SystemUiVisibility = (StatusBarVisibility)SystemUiFlags.HideNavigation;
@@ -61,8 +63,26 @@ namespace TcpMobile.Droid
             MoveTaskToBack(false);
         }
 
-        void ConfigureServices(HostBuilderContext ctx, IServiceCollection services)
+        private void RegisterDependancies()
         {
+            // services
+            DependencyService.Register<IBrightnessService, AndroidBrightnessService>();
+            DependencyService.Register<IDeviceInfoService, DeviceInfoService>();
+            DependencyService.Register<IGameLogger, GameLogger>();
+            DependencyService.Register<ILanServer, LanServer>();
+            DependencyService.Register<ILanClient, LanClient>();
+            DependencyService.Register<IGameClient, GameClient>();
+            DependencyService.Register<IGameServer, GameServer>();
+
+            // default pages
+            DependencyService.Register<SingleGamePage>();
+            DependencyService.Register<CreateGamePage>();
+            DependencyService.Register<JoinGamePage>();
+
+            //// modal pages
+            DependencyService.Register<SettingsPage>();
+            DependencyService.Register<DebugPage>();
+            DependencyService.Register<AboutPage>();
         }
     }
 }
