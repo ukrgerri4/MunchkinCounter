@@ -64,6 +64,12 @@ namespace TcpMobile.Views
                                     {
                                         createGamePage.StopGame();
                                         joinGamePage.ExitGame();
+
+                                        if (CurrentPage == MenuItemType.JoinGame)
+                                        {
+                                            joinGamePage.StartSearching();
+                                        }
+
                                         GoToPage(type);
                                     };
                                     await PopupNavigation.Instance.PushAsync(alert);
@@ -97,6 +103,8 @@ namespace TcpMobile.Views
                     break;
                 case MenuItemType.JoinGame:
                     Detail = DependencyService.Get<JoinGamePage>();
+                    break;
+                case MenuItemType.EndGame:
                     break;
             }
             

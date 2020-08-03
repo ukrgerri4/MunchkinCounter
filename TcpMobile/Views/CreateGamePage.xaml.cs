@@ -100,8 +100,6 @@ namespace TcpMobile.Views
             MessagingCenter.Subscribe<IGameClient>(this, "PlayersUpdated", (sender) => {
                 ViewModel.OnPropertyChanged(nameof(ViewModel.AllPlayers));
             });
-
-            MessagingCenter.Subscribe<MenuPage>(this, "EndGame", (sender) => StopGame());
         }
 
         private async void TryCreate(object sender, EventArgs args)

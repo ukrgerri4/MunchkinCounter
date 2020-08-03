@@ -228,9 +228,6 @@ namespace MunchkinCounterLan.Views
                 };
                 await PopupNavigation.Instance.PushAsync(alert);
             });
-            
-
-            MessagingCenter.Subscribe<MenuPage>(this, "EndGame",(sender) => ExitGame());
         }
 
         private async void Connect(object sender, ItemTappedEventArgs e)
@@ -316,7 +313,7 @@ namespace MunchkinCounterLan.Views
             await PopupNavigation.Instance.PushAsync(confirmPage);
         }
 
-        private void StartSearching()
+        public void StartSearching()
         {
             if (!_searching && ViewModel.HostSearch)
             {

@@ -13,14 +13,14 @@
         <TableView>
             <TableView.Root>
                 <TableRoot>
-                    <TableSection x:Name="ipAddressSection" Title="Ip address:" TextColor="Black"/>
+                    <TableSection x:Name="ipAddressSection" Title="Ip address:" TextColor="{StaticResource primaryDark}"/>
                     <TableSection Title="Screen:" TextColor="Black">
                         <SwitchCell Text=" Keep screen on:" On="{Binding SleepModeSwitchValue}"/>
                     </TableSection>
-                    <TableSection Title="Single game:" TextColor="Black">
+                    <TableSection Title="Single game:" TextColor="{StaticResource primaryDark}">
                         <SwitchCell Text="Expand view while idle:" On="{Binding IsViewExpandable}"/>
                     </TableSection>
-                    <TableSection Title="Lan game:" TextColor="Black">
+                    <TableSection Title="Lan game:" TextColor="{StaticResource primaryDark}">
                         <SwitchCell Text="Show your munchkin in the player list:" On="{Binding ShowSelfMunchkinInLanGame}"/>
                     </TableSection>
                 </TableRoot>
