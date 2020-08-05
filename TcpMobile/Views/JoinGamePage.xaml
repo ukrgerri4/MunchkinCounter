@@ -92,7 +92,7 @@
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
 
-                    <Grid Grid.Row="0" Grid.Column="0" RowSpacing="0" ColumnSpacing="0" BackgroundColor="{StaticResource secondary}" Padding="5,0,5,0" Margin="0">
+                    <Grid Grid.Row="0" Grid.Column="0" RowSpacing="0" ColumnSpacing="0" BackgroundColor="{StaticResource secondary}" Padding="0,0,0,0" Margin="0">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
@@ -119,7 +119,7 @@
                             <DataTemplate>
                                 <ViewCell>
                                     <ViewCell.View>
-                                        <Grid RowSpacing="0" ColumnSpacing="0" BackgroundColor="{StaticResource primaryDark}" Padding="5,0,5,0">
+                                        <Grid RowSpacing="0" ColumnSpacing="0" BackgroundColor="{StaticResource primaryDark}" Padding="0,0,0,0">
                                             <Grid.RowDefinitions>
                                                 <RowDefinition Height="*" />
                                             </Grid.RowDefinitions>
