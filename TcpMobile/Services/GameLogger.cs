@@ -2,11 +2,14 @@
 using Infrastracture.Models;
 using System;
 using System.Collections.ObjectModel;
+using Xamarin.Forms;
 
 namespace TcpMobile.Services
 {
     public class GameLogger: IGameLogger
     {
+        private IDeviceInfoService _deviceInfoService => DependencyService.Get<IDeviceInfoService>();
+
         private ObservableCollection<LogUnit> _history = new ObservableCollection<LogUnit>();
         
         private LogUnit _lastLogUnit = null;
@@ -30,20 +33,19 @@ namespace TcpMobile.Services
 
         private void WriteToHistory(string message, LogType type)
         {
-#if DEBUG
-            if (IsDuplicateMessages(message))
+            if (_deviceInfoService.IsIgorPhone)
             {
-                _lastLogUnit.DuplicateMessagesCounter++;
-                _lastLogUnit.Date = DateTime.UtcNow;
-                return;
-            }
+                if (IsDuplicateMessages(message))
+                {
+                    _lastLogUnit.DuplicateMessagesCounter++;
+                    _lastLogUnit.Date = DateTime.UtcNow;
+                    return;
+                }
 
-            var logUnit = new LogUnit { Message = message, Type = type };
-            _lastLogUnit = logUnit;
-            _history.Add(logUnit);
-#else
-// write to file etc.
-#endif
+                var logUnit = new LogUnit { Message = message, Type = type };
+                _lastLogUnit = logUnit;
+                _history.Add(logUnit);
+            }
         }
 
         private bool IsDuplicateMessages(string message)

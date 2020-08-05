@@ -16,7 +16,7 @@ namespace MunchkinCounterLan.Views.Popups
             FontAwesomeIcons.DiceFive,
             FontAwesomeIcons.DiceSix
         };
-        public string DiceValue => _dice[new Random().Next(1, 6)];
+        public string DiceValue => _dice[new Random().Next(0, 6)];
         public DicePage()
         {
             InitializeComponent();

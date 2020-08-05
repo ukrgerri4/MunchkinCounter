@@ -1,8 +1,6 @@
 ﻿using MunchkinCounterLan.Views;
 using MunchkinCounterLan.Views.Popups;
 using Rg.Plugins.Popup.Services;
-using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using TcpMobile.Models;
 using Xamarin.Essentials;
@@ -22,7 +20,7 @@ namespace TcpMobile.Views
         
             MasterBehavior = MasterBehavior.Popover;
 
-            Master = new MenuPage();
+            Master = DependencyService.Get<MenuPage>();
             Detail = DependencyService.Get<SingleGamePage>();
 
             CurrentPage = MenuItemType.SingleGame;
@@ -41,15 +39,18 @@ namespace TcpMobile.Views
                         case MenuItemType.Settings:
                             await PopupNavigation.Instance.PushAsync(DependencyService.Get<SettingsPage>());
                             break;
-                        case MenuItemType.About:
-                            await PopupNavigation.Instance.PushAsync(DependencyService.Get<AboutPage>());
-                            break;
                         case MenuItemType.ShareApp:
                             await Share.RequestAsync(new ShareTextRequest
                             {
                                 Uri = "https://play.google.com/store/apps/details?id=com.kivgroupua.munchkincounterlan",
                                 Title = "Share Text"
                             });
+                            break;
+                        case MenuItemType.Contribute:
+                            await PopupNavigation.Instance.PushAsync(DependencyService.Get<ContributePage>());
+                            break;
+                        case MenuItemType.About:
+                            await PopupNavigation.Instance.PushAsync(DependencyService.Get<AboutPage>());
                             break;
                         default:
                             if (CurrentPage != type)
@@ -97,18 +98,20 @@ namespace TcpMobile.Views
             {
                 case MenuItemType.SingleGame:
                     Detail = DependencyService.Get<SingleGamePage>();
+                    CurrentPage = type;
                     break;
                 case MenuItemType.CreateGame:
                     Detail = DependencyService.Get<CreateGamePage>();
+                    CurrentPage = type;
                     break;
                 case MenuItemType.JoinGame:
                     Detail = DependencyService.Get<JoinGamePage>();
+                    CurrentPage = type;
                     break;
                 case MenuItemType.EndGame:
                     break;
             }
             
-            CurrentPage = type;
             _ = Task.Run(async () =>
             {
                 await Task.Delay(200);

@@ -62,7 +62,7 @@ namespace TcpMobile.Services
             }
             catch (Exception e)
             {
-                var errorMessage = $"Start game server error: {e.Message}";
+                var errorMessage = $"GameServer: start game server error: {e.Message}";
                 _gameLogger.Error(errorMessage);
                 return Result.Fail(errorMessage);
             }
@@ -86,7 +86,7 @@ namespace TcpMobile.Services
             }
             catch (Exception e)
             {
-                var errorMessage = $"Stop game server error: {e.Message}";
+                var errorMessage = $"GameServer: stop game server error: {e.Message}";
                 _gameLogger.Error(errorMessage);
                 return Result.Fail(errorMessage);
             }
@@ -102,7 +102,7 @@ namespace TcpMobile.Services
             }
             catch(Exception e)
             {
-                return Result.Fail($"Stop broadcasting error: {e.Message}");
+                return Result.Fail($"GameServer: stop broadcasting error: {e.Message}");
             }
         }
 
@@ -115,8 +115,7 @@ namespace TcpMobile.Services
         {
             _hostBroadcaster = Observable.Interval(TimeSpan.FromMilliseconds(HOST_BROADCAST_PERIOD_MS))
                 .TakeUntil(_destroy)
-                .Finally(() => _gameLogger.Debug("Host data broadcast stoped."))
-                //.Where(_ => string.IsNullOrWhiteSpace(Host.Id) && string.IsNullOrWhiteSpace(Host.Name))
+                .Finally(() => _gameLogger.Debug("GameServer: host data broadcast stoped."))
                 .Select(data =>
                 {
                     using (MemoryStream memoryStream = new MemoryStream())
@@ -142,7 +141,7 @@ namespace TcpMobile.Services
                         return memoryStream.ToArray();
                     }
                 })
-                .Do(_ => _gameLogger.Debug("Sart send host data"))
+                .Do(_ => _gameLogger.Debug("GameServer: sart send host data"))
                 .Subscribe(
                     message =>
                     {
@@ -150,7 +149,7 @@ namespace TcpMobile.Services
                     },
                     error =>
                     {
-                        _gameLogger.Error($"Error during broadcast host: {error.Message}");
+                        _gameLogger.Error($"GameServer: error during broadcast host: {error.Message}");
                     }
                 );
         }
@@ -164,7 +163,6 @@ namespace TcpMobile.Services
                 .Where(tcpEvent => ((Packet)tcpEvent.Data).MessageType == MunchkinMessageType.InitInfo ||
                     ((Packet)tcpEvent.Data).MessageType == MunchkinMessageType.UpdatePlayerState ||
                     ((Packet)tcpEvent.Data).MessageType == MunchkinMessageType.UpdatePlayerName)
-                .Do(tcpEvent => _gameLogger.Debug($"Recieved message {((Packet)tcpEvent.Data).MessageType}"))
                 .Subscribe(
                     tcpEvent =>
                     {
@@ -234,7 +232,7 @@ namespace TcpMobile.Services
                     },
                     error =>
                     {
-                        _gameLogger.Error($"Error during listening for new players: {error.Message}");
+                        _gameLogger.Error($"GameServer: error during listening for new players: {error.Message}");
                     }
                 );
         }
@@ -245,14 +243,13 @@ namespace TcpMobile.Services
                 .TakeUntil(_destroy)
                 .Where(tcpEvent => tcpEvent.Type == TcpEventType.ClientDisconnect)
                 .Where(tcpEvent => (string)tcpEvent.Data != null)
-                .Do(tcpEvent => _gameLogger.Debug($"Client disconnected handler - [{(string)tcpEvent.Data}]"))
                 .Subscribe(
                     tcpEvent =>
                     {
                         var removeResult = ConnectedPlayers.TryRemove((string)tcpEvent.Data, out PlayerInfo pi);
                         if (!removeResult)
                         {
-                            _gameLogger.Error($"Player connection id:[{(string)tcpEvent.Data}] not found.");
+                            _gameLogger.Error($"GameServer: player connection id:[{(string)tcpEvent.Data}] not found.");
                             return;
                         }
 
@@ -261,7 +258,7 @@ namespace TcpMobile.Services
                     },
                     error =>
                     {
-                        _gameLogger.Error($"Error during listening for players disconnections: {error.Message}");
+                        _gameLogger.Error($"GameServer: error during listening for players disconnections: {error.Message}");
                     }
                 );
         }
@@ -270,9 +267,9 @@ namespace TcpMobile.Services
         {
             _connectedPlayersBroadcaster = _updatePlayersSubject.AsObservable()
                 .TakeUntil(_destroy)
-                .Finally(() => _gameLogger.Debug("Connected players data broadcast stoped."))
+                .Finally(() => _gameLogger.Debug("GameServer: connected players data broadcast stoped."))
                 .Sample(TimeSpan.FromMilliseconds(CONNECTED_PLAYERS_BROADCAST_PERIOD_MS))
-                .Do(_ => _gameLogger.Debug("Start send players data."))
+                .Do(_ => _gameLogger.Debug("GameServer: start send players data."))
                 .Subscribe(
                     _ =>
                     {
@@ -307,13 +304,17 @@ namespace TcpMobile.Services
 
                             foreach (var player in players)
                             {
-                                _lanServer.BeginSendMessage(player.Key, message);
+                                var sendResult = _lanServer.BeginSendMessage(player.Key, message);
+                                if (sendResult.IsFail)
+                                {
+                                    _gameLogger.Error(sendResult.Error);
+                                }
                             }
                         }
                     },
                     error =>
                     {
-                        _gameLogger.Error($"Error during broadcast connected players: {error.Message}");
+                        _gameLogger.Error($"GameServer: error during broadcast connected players: {error.Message}");
                     }
                 );
         }

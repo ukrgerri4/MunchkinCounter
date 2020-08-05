@@ -211,6 +211,7 @@ namespace MunchkinCounterLan.Views
             });
 
             MessagingCenter.Subscribe<IGameClient>(this, "LostServerConnection", async (sender) => {
+
                 if (ViewModel.HostSearch) { return; }
 
                 ViewModel.OnPropertyChanged(nameof(ViewModel.LanPlayers));
@@ -279,6 +280,7 @@ namespace MunchkinCounterLan.Views
                 var connectResult =  _gameClient.Connect(ipAdress);
                 if (connectResult.IsFail) { return false; }
 
+                _gameClient.RestorePlayerData();
                 _gameClient.StartUpdatePlayers();
                 _gameClient.SendPlayerInfo();
                 _gameClient.StartListeningServerDisconnection();
@@ -341,6 +343,7 @@ namespace MunchkinCounterLan.Views
         {
             if (ViewModel.HostSearch) { return; }
 
+            _gameClient.SavePlayerData();
             _gameClient.CloseConnection();
 
             ViewModel.HostSearch = true;

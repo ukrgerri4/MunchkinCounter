@@ -1,0 +1,106 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<pages:PopupPage xmlns="http://xamarin.com/schemas/2014/forms"
+            xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+            xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+            xmlns:pages="clr-namespace:Rg.Plugins.Popup.Pages;assembly=Rg.Plugins.Popup"
+            xmlns:fa="clr-namespace:Core.Utils;assembly=Core"
+            mc:Ignorable="d"
+            x:Class="MunchkinCounterLan.Views.ContributePage"
+            BackgroundColor="{StaticResource modalBg}"
+            CloseWhenBackgroundIsClicked="False">
+    <pages:PopupPage.Resources>
+        <ResourceDictionary>
+            <Style x:Key="contributeIconLabel" TargetType="Label">
+                <Setter Property = "FontFamily" Value="{StaticResource FontAwesomeSolid}" />
+                <Setter Property = "WidthRequest" Value="70" />
+                <Setter Property = "Margin"  Value="0" />
+                <Setter Property = "Padding"  Value="0" />
+                <Setter Property = "FontSize"  Value="36" />
+                <Setter Property = "TextColor"  Value="{StaticResource primaryDark}" />
+                <Setter Property = "VerticalOptions"  Value="CenterAndExpand" />
+                <Setter Property = "HorizontalOptions"  Value="Start" />
+                <Setter Property = "HorizontalTextAlignment"  Value="Center" />
+            </Style>
+        </ResourceDictionary>
+    </pages:PopupPage.Resources>
+    <pages:PopupPage.Content>
+        <Grid Margin="25" RowSpacing="0" ColumnSpacing="0" BackgroundColor="{StaticResource primaryLight}" VerticalOptions="Center">
+            <Grid IsVisible="{Binding IsLoadingVisible}">
+                <ActivityIndicator></ActivityIndicator>
+            </Grid>
+
+            <Grid IsVisible="{Binding IsLoadingInvisible}" Margin="20" RowSpacing="20">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="2*"/>
+                    <RowDefinition Height="2*"/>
+                    <!--<RowDefinition Height="2*"/>-->
+                    <!--<RowDefinition Height="2*"/>-->
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Grid Grid.Row="0" Grid.Column="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="3*"/>
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Row="0" Grid.Column="1" Text="{x:Static fa:FontAwesomeIcons.Star}" Style="{StaticResource contributeIconLabel}" HorizontalOptions="CenterAndExpand"/>
+                    <Button Grid.Row="0" Grid.Column="3" Command="{Binding Rate}" Text="Rate" Style="{StaticResource textButton}" HorizontalOptions="CenterAndExpand"/>
+                </Grid>
+                <Grid Grid.Row="1" Grid.Column="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="3*"/>
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Row="0" Grid.Column="1" Text="{x:Static fa:FontAwesomeIcons.Smile}" Style="{StaticResource contributeIconLabel}" HorizontalOptions="CenterAndExpand"/>
+                    <Label Grid.Row="0" Grid.Column="2" Text="1$" Style="{StaticResource gameLabel}" TextColor="{StaticResource primaryDark}"/>
+                    <Button Grid.Row="0" Grid.Column="3" Command="{Binding Donate}" CommandParameter="min_donate" Text="Donate" Style="{StaticResource textButton}" HorizontalOptions="CenterAndExpand"/>
+                </Grid>
+                <!--<Grid Grid.Row="2" Grid.Column="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="3*"/>
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Row="0" Grid.Column="1" Text="{x:Static fa:FontAwesomeIcons.Grin}" Style="{StaticResource contributeIconLabel}" HorizontalOptions="CenterAndExpand"/>
+                    <Label Grid.Row="0" Grid.Column="2" Text="3$" Style="{StaticResource gameLabel}" TextColor="{StaticResource primaryDark}"/>
+                    <Button Grid.Row="0" Grid.Column="3" Command="{Binding Donate}" CommandParameter="3" Text="Donate" Style="{StaticResource textButton}" HorizontalOptions="CenterAndExpand"/>
+                </Grid>
+                <Grid Grid.Row="3" Grid.Column="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="3*"/>
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Row="0" Grid.Column="1" Text="{x:Static fa:FontAwesomeIcons.Laugh}" Style="{StaticResource contributeIconLabel}" HorizontalOptions="CenterAndExpand"/>
+                    <Label Grid.Row="0" Grid.Column="2" Text="5$" Style="{StaticResource gameLabel}" TextColor="{StaticResource primaryDark}"/>
+                    <Button Grid.Row="0" Grid.Column="3" Command="{Binding Donate}" CommandParameter="5" Text="Donate" Style="{StaticResource textButton}" HorizontalOptions="CenterAndExpand"/>
+                </Grid>-->
+                <Grid Grid.Row="2" Grid.Column="0" VerticalOptions="End" HorizontalOptions="Start">
+                    <Button Command="{Binding Close}" Text="{x:Static fa:FontAwesomeIcons.ChevronCircleLeft}" Style="{StaticResource actionIconButton}"/>
+                </Grid>
+            </Grid>
+        </Grid>
+    </pages:PopupPage.Content>
+</pages:PopupPage>

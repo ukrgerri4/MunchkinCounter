@@ -73,7 +73,7 @@ namespace TcpMobile.Tcp
                 _mainTcpSocket.Connect(new IPEndPoint(address, port));
                 _mainTcpSocket.LingerState = new LingerOption(true, 1);
 
-                if (!_mainTcpSocket.Connected) { return Result.Fail("Soket is not connected."); }
+                if (!_mainTcpSocket.Connected) { return Result.Fail("Client Connect: soket is not connected."); }
                 
                 var stateObj = new StateObject(_mainTcpSocket);
                 stateObj.Id = _deviceInfoService.DeviceId;
@@ -83,10 +83,17 @@ namespace TcpMobile.Tcp
 
                 return Result.Ok();
             }
-
+            catch (ObjectDisposedException)
+            {
+                return Result.Fail($"Client Connect: socket disposed");
+            }
             catch (SocketException se)
             {
-                return Result.Fail($"Client connect error: {se.Message}");
+                return Result.Fail($"Client Connect, socket: {se.ErrorCode}, {se.SocketErrorCode}");
+            }
+            catch (Exception e)
+            {
+                return Result.Fail($"Client Connect, unexpected {e.Message}");
             }
         }
 
@@ -127,42 +134,49 @@ namespace TcpMobile.Tcp
                 _connectionChecker?.Dispose();
                 _mainTcpSocket?.Close();
             }
+            catch (ObjectDisposedException)
+            {
+                _gameLogger.Error("Client Disconnect: socket has been closed");
+            }
+            catch (SocketException se)
+            {
+                _gameLogger.Error($"Client Disconnect, socket: {se.ErrorCode}, {se.SocketErrorCode}");
+            }
             catch (Exception e)
             {
-                _gameLogger.Error($"CLIENT TCP SOKET disconnect error: {e.Message}");
+                _gameLogger.Error($"Client Disconnect, unexpected: {e.Message}");
             }
-        }
-
-        public Result<int> SendMessage(byte[] message)
-        {
-            if (_mainTcpSocket == null)
-            {
-                return Result.Fail<int>("Soket is null.");
-            }
-
-            if (!_mainTcpSocket.Connected)
-            {
-                return Result.Fail<int>("Soket is not connected.");
-            }
-
-            var bytesSent = _mainTcpSocket.Send(message);
-            return Result.Ok(bytesSent);
         }
 
         public Result BeginSendMessage(byte[] message)
         {
-            if (_mainTcpSocket == null)
+            try
             {
-                return Result.Fail("Soket is null.");
-            }
+                if (_mainTcpSocket == null)
+                {
+                    return Result.Fail("Soket is null.");
+                }
 
-            if (!_mainTcpSocket.Connected)
+                if (!_mainTcpSocket.Connected)
+                {
+                    return Result.Fail("Soket is not connected.");
+                }
+
+                _mainTcpSocket.BeginSend(message, 0, message.Length, SocketFlags.None, new AsyncCallback(SendCallback), _mainTcpSocket);
+                return Result.Ok();
+            }
+            catch (ObjectDisposedException)
             {
-                return Result.Fail("Soket is not connected.");
+                return Result.Fail("Client BeginSendMessage: Socket has been closed");
             }
-
-            _mainTcpSocket.BeginSend(message, 0, message.Length, SocketFlags.None, new AsyncCallback(SendCallback), _mainTcpSocket);
-            return Result.Ok();
+            catch (SocketException se)
+            {
+                return Result.Fail($"Client BeginSendMessage: {se.ErrorCode}, {se.SocketErrorCode}");
+            }
+            catch (Exception e)
+            {
+                return Result.Fail($"Client BeginSendMessage UNEXPECTED: {e.Message}");
+            }
         }
 
         private void SendCallback(IAsyncResult ar)
@@ -180,7 +194,7 @@ namespace TcpMobile.Tcp
             catch (SocketException se)
             {
                 Disconnect();
-                _gameLogger.Error($"Client SendCallback: [{se.SocketErrorCode}] - {se.Message}");
+                _gameLogger.Error($"Client SendCallback: {se.ErrorCode}, {se.SocketErrorCode}");
             }
             catch (Exception e)
             {
@@ -220,7 +234,7 @@ namespace TcpMobile.Tcp
             {
                 Disconnect();
                 TcpClientEventSubject.OnNext(new TcpEvent { Type = TcpEventType.StopServerConnection });
-                _gameLogger.Error($"Client OnDataReceived: [{se.SocketErrorCode}] - {se.Message}");
+                _gameLogger.Error($"Client OnDataReceived: {se.ErrorCode}, {se.SocketErrorCode}");
             }
             catch (Exception e)
             {
@@ -245,9 +259,17 @@ namespace TcpMobile.Tcp
                 EndPoint clientEp = new IPEndPoint(IPAddress.Any, 0);
                 _mainUdpSocket?.BeginReceiveFrom(stateObj.buffer, 0, stateObj.buffer.Length, SocketFlags.None, ref clientEp, new AsyncCallback(ReceiveBroadcastCallback), stateObj);
             }
+            catch (ObjectDisposedException)
+            {
+                _gameLogger.Error("Client StartListeningBroadcast: socket has been closed");
+            }
+            catch (SocketException se)
+            {
+                _gameLogger.Error($"Client StartListeningBroadcast, socket: {se.ErrorCode}, {se.SocketErrorCode}");
+            }
             catch (Exception e)
             {
-                _gameLogger.Error($"StartListeningBroadcast unexpected: {e.Message}");
+                _gameLogger.Error($"Client StartListeningBroadcast, unexpected: {e.Message}");
             }
         }
 
@@ -277,7 +299,7 @@ namespace TcpMobile.Tcp
             }
             catch (SocketException se)
             {
-                _gameLogger.Error($"Client ReceiveBroadcastCallback socket: {se.SocketErrorCode}");
+                _gameLogger.Error($"Client ReceiveBroadcastCallback socket: {se.ErrorCode}, {se.SocketErrorCode}");
             }
             catch (Exception e)
             {
@@ -291,9 +313,17 @@ namespace TcpMobile.Tcp
             {
                 _mainUdpSocket?.Close();
             }
+            catch (ObjectDisposedException)
+            {
+                _gameLogger.Error("Client StopListeningBroadcast: socket has been closed");
+            }
+            catch (SocketException se)
+            {
+                _gameLogger.Error($"Client StopListeningBroadcast, socket: {se.ErrorCode}, {se.SocketErrorCode}");
+            }
             catch (Exception e)
             {
-                _gameLogger.Error($"StopListeningBroadcast unexpected: {e.Message}");
+                _gameLogger.Error($"Client StopListeningBroadcast, unexpected: {e.Message}");
             }
         }
     }

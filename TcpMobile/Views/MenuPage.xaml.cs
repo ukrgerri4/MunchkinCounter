@@ -1,4 +1,5 @@
 ﻿using Core.Utils;
+using Infrastracture.Interfaces;
 using System.Collections.ObjectModel;
 using System.Linq;
 using TcpMobile;
@@ -15,6 +16,8 @@ namespace MunchkinCounterLan.Views
     {
         private JoinGamePage _joinGamePage => DependencyService.Get<JoinGamePage>();
         private CreateGamePage _createGamePage => DependencyService.Get<CreateGamePage>();
+        private IDeviceInfoService _deviceInfoService => DependencyService.Get<IDeviceInfoService>();
+
 
         public ObservableCollection<SideBarMenuItem> MenuItems { get; set; }
 
@@ -44,19 +47,7 @@ namespace MunchkinCounterLan.Views
                 return;
 
             var selectedType = ((SideBarMenuItem)e.Item).Type;
-            switch (selectedType)
-            {
-                case MenuItemType.Debug:
-                case MenuItemType.Settings:
-                case MenuItemType.ShareApp:
-                case MenuItemType.About:
-                    MessagingCenter.Send(this, "GoTo", selectedType);
-                    break;
-                default:
-                    MessagingCenter.Send(this, "GoTo", selectedType);
-                    break;
-            }
-
+            MessagingCenter.Send(this, "GoTo", selectedType);
             SetCurrentPage();
         }
 
@@ -92,11 +83,15 @@ namespace MunchkinCounterLan.Views
             items.Add(new SideBarMenuItem { Type = MenuItemType.SingleGame, Name = "SINGLE GAME", Icon = FontAwesomeIcons.User });
             items.Add(new SideBarMenuItem { Type = MenuItemType.CreateGame, Name = "CREATE GAME", Icon = FontAwesomeIcons.Users });
             items.Add(new SideBarMenuItem { Type = MenuItemType.JoinGame, Name = "FIND GAME", Icon = FontAwesomeIcons.BroadcastTower, Divider = true });
-#if DEBUG
-            items.Add(new SideBarMenuItem { Type = MenuItemType.Debug, Name = "Debug", Icon = FontAwesomeIcons.Code });
-#endif
+
+            if (_deviceInfoService.IsIgorPhone)
+            {
+                items.Add(new SideBarMenuItem { Type = MenuItemType.Debug, Name = "Debug", Icon = FontAwesomeIcons.Code });
+            }
+
             items.Add(new SideBarMenuItem { Type = MenuItemType.Settings, Name = "Settings", Icon = FontAwesomeIcons.Cogs });
             items.Add(new SideBarMenuItem { Type = MenuItemType.ShareApp, Name = "Share", Icon = FontAwesomeIcons.ShareAlt });
+            items.Add(new SideBarMenuItem { Type = MenuItemType.Contribute, Name = "Contribute", Icon = FontAwesomeIcons.HandsHelping });
             items.Add(new SideBarMenuItem { Type = MenuItemType.About, Name = "About", Icon = FontAwesomeIcons.InfoCircle });
 
             return items;

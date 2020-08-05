@@ -20,5 +20,7 @@ namespace TcpMobile.Droid.Services
                 return _deviceId;
             }
         }
+
+        public bool IsIgorPhone => DeviceId.Equals("2c0c3053b1660e9f", System.StringComparison.InvariantCultureIgnoreCase);
     }
 }

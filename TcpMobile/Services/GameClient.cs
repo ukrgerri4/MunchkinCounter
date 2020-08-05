@@ -3,6 +3,7 @@ using Infrastracture.Definitions;
 using Infrastracture.Interfaces;
 using Infrastracture.Interfaces.GameMunchkin;
 using Infrastracture.Models;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -46,7 +47,7 @@ namespace TcpMobile.Services
                 Id = _deviceInfoService.DeviceId,
                 Name = Preferences.Get(PreferencesKey.DefaultPlayerName, "Player-1"),
                 Sex = (byte)Preferences.Get(PreferencesKey.DefaultPlayerSex, 0)
-        };
+            };
             Players = new List<Player>();
         }
 
@@ -73,7 +74,7 @@ namespace TcpMobile.Services
             }
             catch (Exception e)
             {
-                return Result.Fail($"Client stop error: {e.Message}");
+                return Result.Fail($"GameClient stop error: {e.Message}");
             }
         }
 
@@ -81,7 +82,7 @@ namespace TcpMobile.Services
         {
             var localIPs = Dns.GetHostAddresses(Dns.GetHostName());
 
-            _gameLogger.Debug($"Self connections => {string.Join(",", localIPs.Select(ip => ip.ToString()))}");
+            _gameLogger.Debug($"GameClient ConnectSelf connections => {string.Join(",", localIPs.Select(ip => ip.ToString()))}");
 
             var localIp = localIPs.FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetwork && ip.GetAddressBytes()[0] == 192);
 
@@ -122,7 +123,8 @@ namespace TcpMobile.Services
                 
                 if (initMessageResult.IsFail)
                 {
-                    return Result.Fail("Init message during connect to self fail.");
+                    _gameLogger.Error(initMessageResult.Error);
+                    return initMessageResult;
                 }
 
                 return Result.Ok();
@@ -150,7 +152,8 @@ namespace TcpMobile.Services
 
                 if (initMessageResult.IsFail)
                 {
-                    return Result.Fail("Update state message fail.");
+                    _gameLogger.Error(initMessageResult.Error);
+                    return initMessageResult;
                 }
 
                 return Result.Ok();
@@ -179,7 +182,8 @@ namespace TcpMobile.Services
 
                 if (initMessageResult.IsFail)
                 {
-                    return Result.Fail("Update name message fail.");
+                    _gameLogger.Error(initMessageResult.Error);
+                    return initMessageResult;
                 }
 
                 return Result.Ok();
@@ -193,7 +197,6 @@ namespace TcpMobile.Services
                 .Where(tcpEvent => tcpEvent.Type == TcpEventType.ReceiveData)
                 .Where(tcpEvent => tcpEvent.Data != null)
                 .Where(tcpEvent => ((Packet)tcpEvent.Data).MessageType == MunchkinMessageType.UpdatePlayers)
-                .Do(tcpEvent => _gameLogger.Debug($"Recieved {MunchkinMessageType.UpdatePlayers} message"))
                 .Select(MapToPlayerInfo)
                 .Subscribe(
                     UpdatePlayers,
@@ -293,14 +296,14 @@ namespace TcpMobile.Services
                     host.Capacity = packet.Buffer[position++];
                     host.Fullness = packet.Buffer[position++];
 
-                    _gameLogger.Debug($"Got new packet with ip [{packet.SenderIpAdress}]");
+                    _gameLogger.Debug($"GameClient: got new packet with ip [{packet.SenderIpAdress}]");
                     return host;
                 })
                 .Subscribe(host =>
                 {
                     if (!Hosts.Any(h => h.Id == host.Id))
                     {
-                        _gameLogger.Debug($"Added new host name[{host.Name}]");
+                        _gameLogger.Debug($"GameClient: added new host name[{host.Name}]");
                         Hosts.Add(host);
                     }
                     else
@@ -320,17 +323,18 @@ namespace TcpMobile.Services
             _lanClient.TcpClientEventSubject.AsObservable()
                 .TakeUntil(_destroy)
                 .Where(tcpEvent => tcpEvent.Type == TcpEventType.StopServerConnection)
-                .Do(tcpEvent => _gameLogger.Debug($"Server disconnected handler"))
+                .Do(tcpEvent => _gameLogger.Debug($"GameClient: server disconnected handler"))
                 .Subscribe(
                     tcpEvent =>
                     {
                         Hosts.Clear();
                         Players.Clear();
+                        SavePlayerData();
                         MessagingCenter.Send<IGameClient>(this, "LostServerConnection");
                     },
                     error =>
                     {
-                        _gameLogger.Error($"Error during listening for server disconnection: {error.Message}");
+                        _gameLogger.Error($"GameClient: error during listening for server disconnection: {error.Message}");
                     }
                 );
         }
@@ -339,6 +343,41 @@ namespace TcpMobile.Services
         {
             _hostsSearchSubscription?.Dispose();
             _lanClient.StopListeningBroadcast();
+        }
+
+        public void SavePlayerData()
+        {
+            var playerInfo = new PlayerInfo
+            {
+                Id = MyPlayer.Id,
+                Name = MyPlayer.Name,
+                Level = MyPlayer.Level,
+                Modifiers = MyPlayer.Modifiers,
+                Sex = MyPlayer.Sex
+            };
+            var serializedPlayer = JsonConvert.SerializeObject(playerInfo);
+            Preferences.Set(PreferencesKey.LastPlayerData, serializedPlayer);
+        }
+
+        public void RestorePlayerData()
+        {
+            try
+            {
+                var serializedPlayer = Preferences.Get(PreferencesKey.LastPlayerData, null);
+                if (serializedPlayer != null)
+                {
+                    var player = JsonConvert.DeserializeObject<Player>(serializedPlayer);
+                    MyPlayer.Name = player.Name;
+                    MyPlayer.Level = player.Level;
+                    MyPlayer.Modifiers = player.Modifiers;
+                    MyPlayer.Sex = player.Sex;
+                }
+            }
+            catch (Exception e)
+            {
+                _gameLogger.Error($"GameClient RestorePlayerData: {e.Message}");
+            }
+            
         }
     }
 }

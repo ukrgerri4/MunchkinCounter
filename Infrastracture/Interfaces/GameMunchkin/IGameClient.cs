@@ -23,5 +23,7 @@ namespace Infrastracture.Interfaces.GameMunchkin
         void StartUpdatePlayers();
         Result CloseConnection();
         void StopSearchHosts();
+        void RestorePlayerData();
+        void SavePlayerData();
     }
 }

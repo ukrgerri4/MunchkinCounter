@@ -1,11 +1,7 @@
 ﻿using Core.Models;
 using Infrastracture.Models;
-using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Reactive.Subjects;
-using System.Text;
-using TcpMobile.Tcp.Models;
 
 namespace Infrastracture.Interfaces.GameMunchkin
 {
@@ -13,11 +9,10 @@ namespace Infrastracture.Interfaces.GameMunchkin
     {
         Subject<TcpEvent> TcpClientEventSubject { get; }
 
-        Result BeginSendMessage(byte[] message);
         Result Connect(IPAddress address, int port = 42420);
         void Disconnect();
-        Result<int> SendMessage(byte[] message);
         void StartListeningBroadcast(int port = 42424);
         void StopListeningBroadcast();
+        Result BeginSendMessage(byte[] message);
     }
 }

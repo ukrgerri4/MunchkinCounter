@@ -13,6 +13,7 @@ namespace TcpMobile.Models
         Debug,
         Settings,
         ShareApp,
+        Contribute,
         About
     }
 

@@ -59,10 +59,17 @@ namespace TcpMobile.Tcp
 
                 TcpServerEventSubject?.OnNext(new TcpEvent { Type = TcpEventType.ServerStarted });
             }
-
+            catch (ObjectDisposedException)
+            {
+                _gameLogger.Error("Server StartTcpServer: socket has been closed");
+            }
             catch (SocketException se)
             {
-                _gameLogger.Debug(se.Message);
+                _gameLogger.Error($"Server StartTcpServer, socket: {se.ErrorCode}, {se.SocketErrorCode}");
+            }
+            catch (Exception e)
+            {
+                _gameLogger.Error($"Server StartTcpServer, unexpected: {e.Message}");
             }
         }
 
@@ -80,9 +87,17 @@ namespace TcpMobile.Tcp
 
                 _mainTcpSocket?.Close();
             }
+            catch (ObjectDisposedException)
+            {
+                _gameLogger.Error("Server StopTcpServer: socket has been closed");
+            }
+            catch (SocketException se)
+            {
+                _gameLogger.Error($"Server StopTcpServer, socket: {se.ErrorCode}, {se.SocketErrorCode}");
+            }
             catch (Exception e)
             {
-                _gameLogger.Error($"SERVER TCP SOCKET close error: {e.Message}");
+                _gameLogger.Error($"Server StopTcpServer, unexpected: {e.Message}");
             }
         }
 
@@ -103,12 +118,16 @@ namespace TcpMobile.Tcp
             }
             catch (ObjectDisposedException)
             {
-                _gameLogger.Debug("OnClientConnection: Socket has been closed");
+                _gameLogger.Debug("Server OnClientConnection: socket has been closed");
             }
             catch (SocketException se)
             {
-                _gameLogger.Debug($"OnClientConnection: {se.Message}");
+                _gameLogger.Debug($"Server OnClientConnection, socket: {se.Message}");
                 TcpServerEventSubject?.OnNext(new TcpEvent { Type = TcpEventType.ClientDisconnect });
+            }
+            catch (Exception e)
+            {
+                _gameLogger.Error($"Server OnClientConnection, unexpected: {e.Message}");
             }
         }
 
@@ -182,12 +201,12 @@ namespace TcpMobile.Tcp
             }
             catch (ObjectDisposedException)
             {
-                _gameLogger.Error("Server OnDataReceived disposed error: Socket has been closed");
+                _gameLogger.Error("Server OnDataReceived: socket has been closed");
                 OnSocketErrorHandler(stateObj);
             }
             catch (SocketException se)
             {
-                _gameLogger.Error($"Server OnDataReceived socket error: {se.Message}");
+                _gameLogger.Error($"Server OnDataReceived, socket: {se.ErrorCode}, {se.Message}");
                 OnSocketErrorHandler(stateObj);
             }
             catch (Exception e)
@@ -206,65 +225,44 @@ namespace TcpMobile.Tcp
             TcpServerEventSubject?.OnNext(new TcpEvent { Type = TcpEventType.ClientDisconnect, Data = stateObj.Id });
         }
 
-        public Result<int> SendMessage(string id, byte[] message)
-        {
-            try
-            {
-                if (_mainTcpSocket == null)
-                {
-                    return Result.Fail<int>("Server soket is null.");
-                }
-
-                if (!ConfirmedConnections.ContainsKey(id))
-                {
-                    return Result.Fail<int>($"Soket with id - [{id}] not found.");
-                }
-
-                var remoteStateObj = ConfirmedConnections[id];
-
-                if (remoteStateObj.workSocket == null || !remoteStateObj.workSocket.Connected)
-                {
-                    return Result.Fail<int>("Remote soket is not connected.");
-                }
-
-                var bytesSent = remoteStateObj.workSocket.Send(message);
-                return Result.Ok(bytesSent);
-            }
-            catch (Exception e)
-            {
-                _gameLogger.Error($"Server sendMessage unexpected: {e.Message}");
-                return Result.Fail<int>($"Unexpected: {e.Message}");
-            }
-        }
-
         public Result BeginSendMessage(string id, byte[] message)
         {
             try
             {
                 if (_mainTcpSocket == null)
                 {
-                    return Result.Fail("Server soket is null.");
+                    return Result.Fail("Server BeginSendMessage: server soket is null.");
                 }
 
                 if (!ConfirmedConnections.ContainsKey(id))
                 {
-                    return Result.Fail($"Soket with id - [{id}] not found.");
+                    return Result.Fail($"Server BeginSendMessage: soket with id - [{id}] not found.");
                 }
 
                 var remoteStateObj = ConfirmedConnections[id];
 
                 if (remoteStateObj.workSocket == null || !remoteStateObj.workSocket.Connected)
                 {
-                    return Result.Fail("Remote soket is not connected.");
+                    return Result.Fail("Server BeginSendMessage: remote soket is not connected.");
                 }
 
                 remoteStateObj.workSocket.BeginSend(message, 0, message.Length, SocketFlags.None, new AsyncCallback(TcpSendCallback), remoteStateObj);
                 return Result.Ok();
             }
+            catch (ObjectDisposedException)
+            {
+                var errorMessage = $"Server BeginSendMessage: socket disposed";
+                return Result.Fail(errorMessage);
+            }
+            catch (SocketException se)
+            {
+                var errorMessage = $"Server BeginSendMessage, socket: {se.ErrorCode}, {se.SocketErrorCode}";
+                return Result.Fail(errorMessage);
+            }
             catch (Exception e)
             {
-                _gameLogger.Error($"Server sendMessage unexpected: {e.Message}");
-                return Result.Fail($"Unexpected: {e.Message}");
+                var errorMessage = $"Server BeginSendMessage, unexpected {e.Message}";
+                return Result.Fail(errorMessage);
             }
         }
 
@@ -279,17 +277,17 @@ namespace TcpMobile.Tcp
             catch (ObjectDisposedException)
             {
                 OnSocketErrorHandler(remoteStateObj);
-                _gameLogger.Error("Server SendCallback: Socket has been closed");
+                _gameLogger.Error("Server SendCallback: socket has been closed");
             }
             catch (SocketException se)
             {
                 OnSocketErrorHandler(remoteStateObj);
-                _gameLogger.Error($"Server SendCallback: [{se.SocketErrorCode}] - {se.Message}");
+                _gameLogger.Error($"Server SendCallback, socket: [{se.SocketErrorCode}] - {se.Message}");
             }
             catch (Exception e)
             {
                 OnSocketErrorHandler(remoteStateObj);
-                _gameLogger.Error($"Server SendCallback UNEXPECTED: {e.Message}");
+                _gameLogger.Error($"Server SendCallback, UNEXPECTED: {e.Message}");
             }
         }
 
@@ -308,16 +306,16 @@ namespace TcpMobile.Tcp
 
                                 stateObj?.workSocket?.Close();
                                 OnSocketErrorHandler(stateObj);
-                                _gameLogger.Debug($"Server Connection check: disconnected and removed");
+                                _gameLogger.Debug($"Server StartConnectionsCheck: disconnected and removed");
                             }
                             catch(Exception e)
                             {
                                 OnSocketErrorHandler(stateObj);
-                                _gameLogger.Error($"Server Connection check error: {e.Message}");
+                                _gameLogger.Error($"Server StartConnectionsCheck: {e.Message}");
                             }
                         }
                     },
-                    error => _gameLogger.Error($"Server Connection check subscribe error: {error.Message}")
+                    error => _gameLogger.Error($"Server StartConnectionsCheck: {error.Message}")
                 );
         }
 
@@ -335,13 +333,29 @@ namespace TcpMobile.Tcp
             }
             catch (Exception e)
             {
-                _gameLogger.Error($"Server start UDP server error: {e.Message}");
+                _gameLogger.Error($"Server StartUdpServer, error: {e.Message}");
             }
         }
 
-        public void BroadcastMessage(byte[] message)
+        public Result BroadcastMessage(byte[] message)
         {
-            _mainUdpSocket.BeginSendTo(message, 0, message.Length, SocketFlags.None, udpClientEP, new AsyncCallback(UdpSendCallback), _mainUdpSocket);
+            try
+            {
+                _mainUdpSocket?.BeginSendTo(message, 0, message.Length, SocketFlags.None, udpClientEP, new AsyncCallback(UdpSendCallback), _mainUdpSocket);
+                return Result.Ok();
+            }
+            catch (ObjectDisposedException)
+            {
+                return Result.Fail("Server BroadcastMessage: socket has been closed");
+            }
+            catch (SocketException se)
+            {
+                return Result.Fail($"Server BroadcastMessage, socket: [{se.ErrorCode}], [{se.SocketErrorCode}] - {se.Message}");
+            }
+            catch (Exception e)
+            {
+                return Result.Fail($"Server BroadcastMessage, unexpected: {e.Message}");
+            }
         }
 
         private void UdpSendCallback(IAsyncResult asyncResult)
@@ -357,7 +371,7 @@ namespace TcpMobile.Tcp
             }
             catch (Exception e)
             {
-                _gameLogger.Error($"Server stop UDP server error: {e.Message}");
+                _gameLogger.Error($"Server StopUdpServer, error: {e.Message}");
             }
         }
     }
