@@ -178,10 +178,10 @@ namespace MunchkinCounterLan.Views
                         switch (eventType)
                         {
                             case PageEventType.ResetMunchkin:
-                                await ResetMunchkinHandler();
+                                await ResetMunchkinHandlerAsync();
                                 break;
                             case PageEventType.ThrowDice:
-                                await PopupNavigation.Instance.PushAsync(new DicePage());
+                                await ThrowDiceHandler();
                                 break;
                         }
 
@@ -217,7 +217,7 @@ namespace MunchkinCounterLan.Views
                 ViewModel.OnPropertyChanged(nameof(ViewModel.LanPlayers));
                 ExitGame();
 
-                var alert = new AlertPage("Connection to server lost.", "TryReconnect", "Exit");
+                var alert = new AlertPage("Connection to server lost.", "TryReconnect", "Exit", closeOnConfirm: false);
                 alert.Confirmed += async (s, e) =>
                 {
                     var reconnectResult = TryReconnectToLastHost();
@@ -292,7 +292,7 @@ namespace MunchkinCounterLan.Views
             return false;
         }
 
-        private async Task ResetMunchkinHandler()
+        private async Task ResetMunchkinHandlerAsync()
         {
             var confirmPage = new ConfirmPage();
             confirmPage.OnReset += (s, ev) => {
@@ -313,6 +313,18 @@ namespace MunchkinCounterLan.Views
             };
 
             await PopupNavigation.Instance.PushAsync(confirmPage);
+        }
+
+        private async Task ThrowDiceHandler()
+        {
+            var dicePage = new DicePage();
+            dicePage.Throwed += (s, diceValue) =>
+            {
+                ViewModel.MyPlayer.Dice = diceValue;
+                _gameClient.SendUpdatedPlayerState();
+            };
+
+            await PopupNavigation.Instance.PushAsync(dicePage);
         }
 
         public void StartSearching()

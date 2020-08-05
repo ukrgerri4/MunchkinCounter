@@ -1,9 +1,9 @@
 ﻿using Core.Utils;
 using Infrastracture.Interfaces;
+using MunchkinCounterLan.Models;
 using System.Collections.ObjectModel;
 using System.Linq;
 using TcpMobile;
-using TcpMobile.Models;
 using TcpMobile.Views;
 using Xamarin.Essentials;
 using Xamarin.Forms;
@@ -47,7 +47,12 @@ namespace MunchkinCounterLan.Views
                 return;
 
             var selectedType = ((SideBarMenuItem)e.Item).Type;
-            MessagingCenter.Send(this, "GoTo", selectedType);
+            GoTo(selectedType);
+        }
+
+        public void GoTo(MenuItemType type)
+        {
+            MessagingCenter.Send(this, "GoTo", type);
             SetCurrentPage();
         }
 
@@ -58,7 +63,7 @@ namespace MunchkinCounterLan.Views
             {
                 if (endGameMenuItem == null)
                 {
-                    MenuItems.Insert(3, new SideBarMenuItem { Type = MenuItemType.EndGame, Name = "END GAME", Icon = FontAwesomeIcons.SignOutAlt, Divider = true });
+                    MenuItems.Insert(4, new SideBarMenuItem { Type = MenuItemType.EndGame, Name = "END GAME", Icon = FontAwesomeIcons.SignOutAlt, Divider = true });
                 }
             }
             else
@@ -79,10 +84,11 @@ namespace MunchkinCounterLan.Views
         private ObservableCollection<SideBarMenuItem> InitMenuItems()
         {
             var items = new ObservableCollection<SideBarMenuItem>();
-            
+
+            items.Add(new SideBarMenuItem { Type = MenuItemType.HomePage, Name = "HOME", Icon = FontAwesomeIcons.Home });
             items.Add(new SideBarMenuItem { Type = MenuItemType.SingleGame, Name = "SINGLE GAME", Icon = FontAwesomeIcons.User });
             items.Add(new SideBarMenuItem { Type = MenuItemType.CreateGame, Name = "CREATE GAME", Icon = FontAwesomeIcons.Users });
-            items.Add(new SideBarMenuItem { Type = MenuItemType.JoinGame, Name = "FIND GAME", Icon = FontAwesomeIcons.BroadcastTower, Divider = true });
+            items.Add(new SideBarMenuItem { Type = MenuItemType.JoinGame, Name = "JOIN GAME", Icon = FontAwesomeIcons.BroadcastTower, Divider = true });
 
             if (_deviceInfoService.IsIgorPhone)
             {

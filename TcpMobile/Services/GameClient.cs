@@ -67,6 +67,7 @@ namespace TcpMobile.Services
                 Players.Clear();
                 MyPlayer.Level = 1;
                 MyPlayer.Modifiers = 0;
+                MyPlayer.Dice = 0;
 
                 MessagingCenter.Send<IGameClient>(this, "PlayersUpdated");
 
@@ -111,6 +112,7 @@ namespace TcpMobile.Services
                 memoryStream.WriteByte(MyPlayer.Sex);
                 memoryStream.WriteByte(MyPlayer.Level);
                 memoryStream.WriteByte(MyPlayer.Modifiers);
+                memoryStream.WriteByte(MyPlayer.Dice);
 
                 memoryStream.WriteByte(10);
                 memoryStream.WriteByte(4);
@@ -140,6 +142,7 @@ namespace TcpMobile.Services
                 memoryStream.WriteByte(MyPlayer.Sex);
                 memoryStream.WriteByte(MyPlayer.Level);
                 memoryStream.WriteByte(MyPlayer.Modifiers);
+                memoryStream.WriteByte(MyPlayer.Dice);
 
                 memoryStream.WriteByte(10);
                 memoryStream.WriteByte(4);
@@ -225,6 +228,7 @@ namespace TcpMobile.Services
                 p.Sex = packet.Buffer[position++];
                 p.Level = packet.Buffer[position++];
                 p.Modifiers = packet.Buffer[position++];
+                p.Dice = packet.Buffer[position++];
                 players.Add(p);
             }
             return players;
@@ -251,6 +255,7 @@ namespace TcpMobile.Services
                     p.Sex = updatedPlayer.Sex;
                     p.Level = updatedPlayer.Level;
                     p.Modifiers = updatedPlayer.Modifiers;
+                    p.Dice = updatedPlayer.Dice;
                 }
                 else
                 {
@@ -260,7 +265,8 @@ namespace TcpMobile.Services
                         Name = updatedPlayer.Name,
                         Sex = updatedPlayer.Sex,
                         Level = updatedPlayer.Level,
-                        Modifiers = updatedPlayer.Modifiers
+                        Modifiers = updatedPlayer.Modifiers,
+                        Dice = updatedPlayer.Dice
                     });
                 }
             }
@@ -353,7 +359,8 @@ namespace TcpMobile.Services
                 Name = MyPlayer.Name,
                 Level = MyPlayer.Level,
                 Modifiers = MyPlayer.Modifiers,
-                Sex = MyPlayer.Sex
+                Sex = MyPlayer.Sex,
+                Dice = MyPlayer.Dice
             };
             var serializedPlayer = JsonConvert.SerializeObject(playerInfo);
             Preferences.Set(PreferencesKey.LastPlayerData, serializedPlayer);
@@ -371,6 +378,7 @@ namespace TcpMobile.Services
                     MyPlayer.Level = player.Level;
                     MyPlayer.Modifiers = player.Modifiers;
                     MyPlayer.Sex = player.Sex;
+                    MyPlayer.Dice = player.Dice;
                 }
             }
             catch (Exception e)

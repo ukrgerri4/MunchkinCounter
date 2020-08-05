@@ -10,6 +10,7 @@ namespace TcpMobile
     {
         private IGameLogger _gameLogger => DependencyService.Get<IGameLogger>();
         private IBrightnessService _brightnessService => DependencyService.Get<IBrightnessService>();
+        private IScreenshotService _screenshotService => DependencyService.Get<IScreenshotService>();
 
         public App()
         {

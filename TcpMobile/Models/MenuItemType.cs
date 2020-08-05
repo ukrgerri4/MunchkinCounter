@@ -1,15 +1,15 @@
-﻿using Core.Utils;
-using System;
-
-namespace TcpMobile.Models
+﻿namespace MunchkinCounterLan.Models
 {
     public enum MenuItemType
     {
         Default,
+        HomePage,
+        SingleGame,
         CreateGame,
         JoinGame,
-        SingleGame,
+
         EndGame,
+
         Debug,
         Settings,
         ShareApp,

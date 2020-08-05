@@ -78,6 +78,7 @@ namespace TcpMobile.Droid
         private void RegisterDependancies()
         {
             // services
+            DependencyService.Register<IScreenshotService, ScreenshotService>();
             DependencyService.Register<IBrightnessService, AndroidBrightnessService>();
             DependencyService.Register<IDeviceInfoService, DeviceInfoService>();
             DependencyService.Register<IGameLogger, GameLogger>();
@@ -87,6 +88,7 @@ namespace TcpMobile.Droid
             DependencyService.Register<IGameServer, GameServer>();
 
             // default pages
+            DependencyService.Register<HomePage>();
             DependencyService.Register<MenuPage>();
             DependencyService.Register<SingleGamePage>();
             DependencyService.Register<CreateGamePage>();

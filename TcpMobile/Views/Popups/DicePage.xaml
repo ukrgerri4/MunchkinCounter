@@ -9,8 +9,8 @@
              BackgroundColor="{StaticResource modalBg}"
              CloseWhenBackgroundIsClicked="True">
     <StackLayout VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" BackgroundColor="{StaticResource secondary}" Padding="30">
-        <Button Clicked="Throw"
-                Text="{Binding DiceValue}"
+        <Button Command="{Binding ThrowDiceCommand}"
+                Text="{Binding DiceIconValue}"
                 Style="{StaticResource iconButton}"
                 FontSize="192"
                 TextColor="{StaticResource primaryDark}"/>

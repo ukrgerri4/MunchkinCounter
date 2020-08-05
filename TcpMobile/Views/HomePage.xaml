@@ -1,0 +1,91 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:fa="clr-namespace:Core.Utils;assembly=Core"
+             xmlns:local="clr-namespace:MunchkinCounterLan.Models"
+             mc:Ignorable="d"
+             x:Class="MunchkinCounterLan.Views.HomePage"
+             Style="{StaticResource mainBgView}">
+    <ContentPage.Content>
+        <Grid RowDefinitions="1*, 2, 7*" ColumnDefinitions="*" RowSpacing="0" ColumnSpacing="0" Margin="5,0,5,0" Padding="10">
+
+            <Grid Grid.Row="0" Grid.Column="0"  RowDefinitions="*" ColumnDefinitions="1*, 5*" RowSpacing="0" ColumnSpacing="0">
+                <Label Grid.Row="0" Grid.Column="0"
+                       Text="{x:Static fa:FontAwesomeIcons.ArrowRight}"
+                       FontFamily="{StaticResource FontAwesomeSolid}"
+                       FontSize="36"
+                       BackgroundColor="Transparent"
+                       TextColor="{StaticResource secondary}"
+                       Padding="0"
+                       HorizontalTextAlignment="Center"
+                       VerticalTextAlignment="Center"/>
+                <Label Grid.Row="0" Grid.Column="1"
+                       Text="Pull right to open the side menu"
+                       Style="{StaticResource gameLabel}"
+                       TextColor="{StaticResource primaryDark}"
+                       LineBreakMode="WordWrap"/>
+            </Grid>
+
+            <BoxView Grid.Row="1" Grid.Column="0" HorizontalOptions="FillAndExpand" VerticalOptions="StartAndExpand" Color="{StaticResource secondary}" Margin="5,0,5,0"/>
+            
+            <Grid Grid.Row="2" Grid.Column="0" RowDefinitions="1*, 1*, 1*" ColumnDefinitions="*" RowSpacing="0" ColumnSpacing="0">
+                
+                <Frame Grid.Row="0" Grid.Column="0" BorderColor="{StaticResource secondary}" BackgroundColor="Transparent" Padding="0" Margin="10">
+                    <Frame.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding GoTo}" CommandParameter="{x:Static local:MenuItemType.SingleGame}"/>
+                    </Frame.GestureRecognizers>
+
+                    <Grid RowDefinitions="1*, 1*" ColumnDefinitions="*" RowSpacing="0" ColumnSpacing="0">
+                        <Label Grid.Row="0" Grid.Column="0" Text="SINGLE GAME" Style="{StaticResource gameLabel}" TextColor="{StaticResource primaryDark}" FontSize="Title" VerticalTextAlignment="End"/>
+                        <Label Grid.Row="1" Grid.Column="0"
+                               Text="Count points and broadcast your screen to other players"
+                               Style="{StaticResource gameLabel}"
+                               TextColor="{StaticResource secondary}"
+                               FontSize="Subtitle"
+                               LineBreakMode="WordWrap"
+                               VerticalTextAlignment="Start"/>
+                    </Grid>
+                </Frame>
+
+                <Frame Grid.Row="1" Grid.Column="0" BorderColor="{StaticResource secondary}" BackgroundColor="Transparent" Padding="0" Margin="10">
+                    <Frame.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding GoTo}" CommandParameter="{x:Static local:MenuItemType.CreateGame}"/>
+                    </Frame.GestureRecognizers>
+
+                    <Grid RowDefinitions="1*, 1*" ColumnDefinitions="*" RowSpacing="0" ColumnSpacing="0">
+                        <Label Grid.Row="0" Grid.Column="0" Text="CREATE GAME" Style="{StaticResource gameLabel}" TextColor="{StaticResource primaryDark}" FontSize="Title" VerticalTextAlignment="End"/>
+                        <Label Grid.Row="1" Grid.Column="0"
+                               Text="Create local game and ask your friends to join your game"
+                               Style="{StaticResource gameLabel}"
+                               TextColor="{StaticResource secondary}"
+                               FontSize="Subtitle"
+                               LineBreakMode="WordWrap"
+                               VerticalTextAlignment="Start"/>
+                    </Grid>
+                </Frame>
+
+                <Frame Grid.Row="2" Grid.Column="0" BorderColor="{StaticResource secondary}" BackgroundColor="Transparent" Padding="0" Margin="10">
+                    <Frame.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding GoTo}" CommandParameter="{x:Static local:MenuItemType.JoinGame}"/>
+                    </Frame.GestureRecognizers>
+
+                    <Grid RowDefinitions="1*, 1*" ColumnDefinitions="*" RowSpacing="0" ColumnSpacing="0">
+                        <Label Grid.Row="0" Grid.Column="0" Text="JOIN GAME" Style="{StaticResource gameLabel}" TextColor="{StaticResource primaryDark}" FontSize="Title" VerticalTextAlignment="End"/>
+                        <Label Grid.Row="1" Grid.Column="0"
+                               Text="Start to find game in local network"
+                               Style="{StaticResource gameLabel}"
+                               TextColor="{StaticResource secondary}"
+                               FontSize="Subtitle"
+                               LineBreakMode="WordWrap"
+                               VerticalTextAlignment="Start"/>
+                    </Grid>
+                </Frame>
+                
+                <!--<Label Grid.Row="3" Grid.Column="0" Text="Do something 3" Style="{StaticResource gameLabel}" TextColor="{StaticResource primaryDark}"/>-->
+            </Grid>
+            
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>

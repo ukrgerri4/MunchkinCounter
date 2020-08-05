@@ -1,8 +1,8 @@
-﻿using MunchkinCounterLan.Views;
+﻿using MunchkinCounterLan.Models;
+using MunchkinCounterLan.Views;
 using MunchkinCounterLan.Views.Popups;
 using Rg.Plugins.Popup.Services;
 using System.Threading.Tasks;
-using TcpMobile.Models;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
@@ -21,9 +21,9 @@ namespace TcpMobile.Views
             MasterBehavior = MasterBehavior.Popover;
 
             Master = DependencyService.Get<MenuPage>();
-            Detail = DependencyService.Get<SingleGamePage>();
+            Detail = DependencyService.Get<HomePage>();
 
-            CurrentPage = MenuItemType.SingleGame;
+            CurrentPage = MenuItemType.HomePage;
 
             IsPresentedChanged += (s, e) => MessagingCenter.Send(this, "SideMenuOpend", IsPresented);
 
@@ -79,6 +79,14 @@ namespace TcpMobile.Views
 
                                 GoToPage(type);
                             }
+                            else
+                            {
+                                _ = Task.Run(async () =>
+                                {
+                                    await Task.Delay(200);
+                                    IsPresented = false;
+                                });
+                            }
                             break;
                     }
                 }
@@ -96,6 +104,10 @@ namespace TcpMobile.Views
         {
             switch(type)
             {
+                case MenuItemType.HomePage:
+                    Detail = DependencyService.Get<HomePage>();
+                    CurrentPage = type;
+                    break;
                 case MenuItemType.SingleGame:
                     Detail = DependencyService.Get<SingleGamePage>();
                     CurrentPage = type;
@@ -109,6 +121,8 @@ namespace TcpMobile.Views
                     CurrentPage = type;
                     break;
                 case MenuItemType.EndGame:
+                    Detail = DependencyService.Get<HomePage>();
+                    CurrentPage = MenuItemType.HomePage;
                     break;
             }
             

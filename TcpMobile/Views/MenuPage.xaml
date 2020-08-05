@@ -14,8 +14,8 @@
                 <Setter Property = "FontFamily" Value="Acme-Regular.ttf#Acme-Regular" />
                 <Setter Property = "LineBreakMode"  Value="NoWrap" />
                 <Setter Property = "Margin"  Value="5" />
-                <Setter Property = "Padding"  Value="0,10,0,10" />
-                <Setter Property = "FontSize"  Value="30" />
+                <Setter Property = "Padding"  Value="0,5,0,5" />
+                <Setter Property = "FontSize"  Value="24" />
                 <Setter Property = "TextColor"  Value="{StaticResource primaryDark}" />
                 <Setter Property = "VerticalOptions"  Value="FillAndExpand" />
                 <Setter Property = "HorizontalOptions"  Value="FillAndExpand" />
@@ -23,37 +23,12 @@
                 <Setter Property = "HorizontalTextAlignment"  Value="Start" />
             </Style>
 
-            <Style x:Key="menuButton" TargetType="Button">
-                <Setter Property = "FontSize"  Value="30" />
-                <Setter Property = "Margin"  Value="5" />
-                <Setter Property = "TextColor"  Value="{StaticResource primaryDark}" />
-                <Setter Property = "FontFamily" Value="Acme-Regular.ttf#Acme-Regular" />
-                <Setter Property = "VerticalOptions"  Value="FillAndExpand" />
-                <Setter Property = "HorizontalOptions"  Value="FillAndExpand" />
-                <Setter Property = "VisualStateManager.VisualStateGroups">
-                    <VisualStateGroupList x:Name="CommonStates">
-                        <VisualStateGroup>
-                            <VisualState x:Name="Normal">
-                                <VisualState.Setters>
-                                    <Setter Property="BackgroundColor" Value="Transparent" />
-                                </VisualState.Setters>
-                            </VisualState>
-                            <VisualState x:Name="Pressed">
-                                <VisualState.Setters>
-                                    <Setter Property="BackgroundColor" Value="{StaticResource secondary}" />
-                                </VisualState.Setters>
-                            </VisualState>
-                        </VisualStateGroup>
-                    </VisualStateGroupList>
-                </Setter>
-            </Style>
-
             <Style x:Key="menuIconLabel" TargetType="Label">
                 <Setter Property = "FontFamily" Value="{StaticResource FontAwesomeSolid}" />
                 <Setter Property = "WidthRequest" Value="70" />
                 <Setter Property = "Margin"  Value="0" />
                 <Setter Property = "Padding"  Value="0" />
-                <Setter Property = "FontSize"  Value="36" />
+                <Setter Property = "FontSize"  Value="24" />
                 <Setter Property = "TextColor"  Value="{StaticResource primaryDark}" />
                 <Setter Property = "VerticalOptions"  Value="CenterAndExpand" />
                 <Setter Property = "HorizontalOptions"  Value="Start" />

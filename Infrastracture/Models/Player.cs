@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Windows.Input;
 using Xamarin.Forms;
+using Infrastracture.Definitions;
 
 namespace Infrastracture.Models
 {
@@ -12,6 +13,7 @@ namespace Infrastracture.Models
         private byte _sex; // 0 - female, 1 - male
         private byte _level;
         private byte _modifiers;
+        private byte _dice; // 0 - unset, 1-6 values
 
         public ICommand IncreaseLevel { get; set; }
         public ICommand DecreaseLevel { get; set; }
@@ -87,6 +89,20 @@ namespace Infrastracture.Models
             }
         }
 
+        public byte Dice
+        {
+            get => _dice;
+            set
+            {
+                if (_dice != value)
+                {
+                    _dice = value;
+                    OnPropertyChanged(nameof(Dice));
+                    OnPropertyChanged(nameof(DiceIcon));
+                }
+            }
+        }
+
         public int Power
         {
             get => Level + Modifiers;
@@ -97,10 +113,16 @@ namespace Infrastracture.Models
             get => _sex == 1 ? FontAwesomeIcons.Mars : FontAwesomeIcons.Venus;
         }
 
+        public string DiceIcon
+        {
+            get => DiceHelper.FaSet[Dice];
+        }
+
         public Player()
         {
             Level = 1;
             Modifiers = 0;
+            Dice = 0;
 
             IncreaseLevel = new Command(
                 () =>

@@ -1,6 +1,9 @@
 ﻿using Core.Utils;
+using Infrastracture.Definitions;
 using Rg.Plugins.Popup.Pages;
 using System;
+using System.Windows.Input;
+using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
 namespace MunchkinCounterLan.Views.Popups
@@ -8,31 +11,29 @@ namespace MunchkinCounterLan.Views.Popups
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class DicePage : PopupPage
     {
-        private static readonly string[] _dice = {
-            FontAwesomeIcons.DiceOne,
-            FontAwesomeIcons.DiceTwo,
-            FontAwesomeIcons.DiceThree,
-            FontAwesomeIcons.DiceFour,
-            FontAwesomeIcons.DiceFive,
-            FontAwesomeIcons.DiceSix
-        };
-        public string DiceValue => _dice[new Random().Next(0, 6)];
+        public event EventHandler<byte> Throwed;
+
+        private byte _diceValue = 0;
+        public string DiceIconValue => DiceHelper.FaSet[_diceValue];
+
+        public ICommand ThrowDiceCommand { get; set; }
+
         public DicePage()
         {
             InitializeComponent();
 
+            Appearing += (s,e) => ThrowDice();
+
+            ThrowDiceCommand = new Command(() => ThrowDice());
+
             BindingContext = this;
         }
 
-        private void Throw(object sender, EventArgs e)
+        private void ThrowDice()
         {
-            OnPropertyChanged(nameof(DiceValue));
-        }
-
-        protected override void OnAppearing()
-        {
-            base.OnAppearing();
-            OnPropertyChanged(nameof(DiceValue));
+            _diceValue = (byte)new Random().Next(1, 7);
+            Throwed?.Invoke(this, _diceValue);
+            OnPropertyChanged(nameof(DiceIconValue));
         }
     }
 }

@@ -39,14 +39,14 @@
                                 <Frame BorderColor="Transparent" Padding="0" Margin="5,0,5,0">
                                     <Image Source="bgImage.jpg" Aspect="AspectFill"/>
                                 </Frame>
-                                <AbsoluteLayout BackgroundColor="Transparent" VerticalOptions="Center">
+                                <!--<AbsoluteLayout BackgroundColor="Transparent" VerticalOptions="Center">
                                     <Label Text="{x:Static fa:FontAwesomeIcons.CaretRight}"
                                            FontFamily="{StaticResource FontAwesomeSolid}"
                                            FontSize="24"
                                            BackgroundColor="Transparent"
                                            TextColor="#99858859"
                                            Padding="7,0,0,0"/>
-                                </AbsoluteLayout>
+                                </AbsoluteLayout>-->
                                 <ContentPresenter/>
                             </Grid>
                         </ControlTemplate>
@@ -111,8 +111,8 @@
                 <Setter Property = "FontSize" Value="20" />
                 <Setter Property = "TextColor" Value="{StaticResource primaryLight}" />
                 <Setter Property = "FontAttributes" Value="Bold" />
-                <Setter Property = "VerticalOptions"  Value="FillAndExpand" />
-                <Setter Property = "HorizontalOptions"  Value="FillAndExpand" />
+                <!--<Setter Property = "VerticalOptions"  Value="FillAndExpand" />
+                <Setter Property = "HorizontalOptions"  Value="FillAndExpand" />-->
                 <Setter Property = "VerticalTextAlignment"  Value="Center" />
                 <Setter Property = "HorizontalTextAlignment"  Value="Center" />
             </Style>

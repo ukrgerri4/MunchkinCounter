@@ -99,6 +99,8 @@
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="1*" />
                             <ColumnDefinition Width="1" />
+                            <ColumnDefinition Width="1*" />
+                            <ColumnDefinition Width="1" />
                             <ColumnDefinition Width="6*" />
                             <ColumnDefinition Width="1*" />
                             <ColumnDefinition Width="1*" />
@@ -106,10 +108,11 @@
                         </Grid.ColumnDefinitions>
 
                         <Label Grid.Row="0" Grid.Column="0" Text="Sex" Style="{StaticResource gameTitleLabel}"/>
-                        <Label Grid.Row="0" Grid.Column="2" Text="Name" Style="{StaticResource gameTitleLabel}"/>
-                        <Label Grid.Row="0" Grid.Column="3" Text="Lvl" Style="{StaticResource gameTitleLabel}"/>
-                        <Label Grid.Row="0" Grid.Column="4" Text="Mod" Style="{StaticResource gameTitleLabel}"/>
-                        <Label Grid.Row="0" Grid.Column="5" Text="Pwr" Style="{StaticResource gameTitleLabel}"/>
+                        <Label Grid.Row="0" Grid.Column="2" Text="Dice" Style="{StaticResource gameTitleLabel}"/>
+                        <Label Grid.Row="0" Grid.Column="4" Text="Name" Style="{StaticResource gameTitleLabel}"/>
+                        <Label Grid.Row="0" Grid.Column="5" Text="Lvl" Style="{StaticResource gameTitleLabel}"/>
+                        <Label Grid.Row="0" Grid.Column="6" Text="Mod" Style="{StaticResource gameTitleLabel}"/>
+                        <Label Grid.Row="0" Grid.Column="7" Text="Pwr" Style="{StaticResource gameTitleLabel}"/>
                     </Grid>
                     <ListView Grid.Row="1" Grid.Column="0" x:Name="gameListView" ItemsSource="{Binding LanPlayers}" Margin="0" SelectionMode="None" IsPullToRefreshEnabled="False">
                         <ListView.ItemTemplate>
@@ -123,18 +126,34 @@
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="1*" />
                                                 <ColumnDefinition Width="1" />
+                                                <ColumnDefinition Width="1*" />
+                                                <ColumnDefinition Width="1" />
                                                 <ColumnDefinition Width="6*" />
                                                 <ColumnDefinition Width="1*" />
                                                 <ColumnDefinition Width="1*" />
                                                 <ColumnDefinition Width="1*" />
                                             </Grid.ColumnDefinitions>
 
-                                            <Label Grid.Row="0" Grid.Column="0" Text="{Binding SexIcon, Mode=OneWay}" FontFamily="{StaticResource FontAwesomeSolid}" FontSize="24" TextColor="{StaticResource primaryLight}" VerticalOptions="Center" HorizontalOptions="Center"/>
+                                            <Label Grid.Row="0" Grid.Column="0"
+                                                   Text="{Binding SexIcon, Mode=OneWay}"
+                                                   FontFamily="{StaticResource FontAwesomeSolid}"
+                                                   FontSize="24"
+                                                   TextColor="{StaticResource primaryLight}"
+                                                   VerticalOptions="Center"
+                                                   HorizontalOptions="Center"/>
                                             <BoxView Grid.Row="0" Grid.Column="1" HorizontalOptions="StartAndExpand" VerticalOptions="FillAndExpand" Color="{StaticResource secondary}" Margin="0,3,0,3" />
-                                            <Label Grid.Row="0" Grid.Column="2" Text="{Binding Name, Mode=OneWay}" Style="{StaticResource gameLabel}"/>
-                                            <Label Grid.Row="0" Grid.Column="3" Text="{Binding Level, Mode=OneWay}" Style="{StaticResource gameLabel}"/>
-                                            <Label Grid.Row="0" Grid.Column="4" Text="{Binding Modifiers, Mode=OneWay}" Style="{StaticResource gameLabel}"/>
-                                            <Label Grid.Row="0" Grid.Column="5" Text="{Binding Power, Mode=OneWay}" Style="{StaticResource gameLabel}"/>
+                                            <Label Grid.Row="0" Grid.Column="2"
+                                                   Text="{Binding DiceIcon, Mode=OneWay}"
+                                                   FontFamily="{StaticResource FontAwesomeSolid}"
+                                                   FontSize="24"
+                                                   TextColor="{StaticResource primaryLight}"
+                                                   VerticalOptions="Center"
+                                                   HorizontalOptions="Center"/>
+                                            <BoxView Grid.Row="0" Grid.Column="3" HorizontalOptions="StartAndExpand" VerticalOptions="FillAndExpand" Color="{StaticResource secondary}" Margin="0,3,0,3" />
+                                            <Label Grid.Row="0" Grid.Column="4" Text="{Binding Name, Mode=OneWay}" Style="{StaticResource gameLabel}"/>
+                                            <Label Grid.Row="0" Grid.Column="5" Text="{Binding Level, Mode=OneWay}" Style="{StaticResource gameLabel}"/>
+                                            <Label Grid.Row="0" Grid.Column="6" Text="{Binding Modifiers, Mode=OneWay}" Style="{StaticResource gameLabel}"/>
+                                            <Label Grid.Row="0" Grid.Column="7" Text="{Binding Power, Mode=OneWay}" Style="{StaticResource gameLabel}"/>
                                         </Grid>
                                     </ViewCell.View>
                                 </ViewCell>

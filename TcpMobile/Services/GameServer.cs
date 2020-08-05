@@ -185,6 +185,7 @@ namespace TcpMobile.Services
                                 playerInfo.Sex = packet.Buffer[position++];
                                 playerInfo.Level = packet.Buffer[position++];
                                 playerInfo.Modifiers = packet.Buffer[position++];
+                                playerInfo.Dice = packet.Buffer[position++];
 
                                 if (packet.SenderId != playerInfo.Id)
                                 {
@@ -198,6 +199,7 @@ namespace TcpMobile.Services
                                     ConnectedPlayers[packet.SenderId].Name = playerInfo.Name;
                                     ConnectedPlayers[packet.SenderId].Level = playerInfo.Level;
                                     ConnectedPlayers[packet.SenderId].Modifiers = playerInfo.Modifiers;
+                                    ConnectedPlayers[packet.SenderId].Dice = playerInfo.Dice;
                                 }
                                 else
                                 {
@@ -209,12 +211,14 @@ namespace TcpMobile.Services
                                 var sex = packet.Buffer[position++];
                                 var level = packet.Buffer[position++];
                                 var modifiers = packet.Buffer[position++];
+                                var dice = packet.Buffer[position++];
 
                                 if (ConnectedPlayers.ContainsKey(packet.SenderId))
                                 {
                                     ConnectedPlayers[packet.SenderId].Sex = sex;
                                     ConnectedPlayers[packet.SenderId].Level = level;
                                     ConnectedPlayers[packet.SenderId].Modifiers = modifiers;
+                                    ConnectedPlayers[packet.SenderId].Dice = dice;
                                 }
 
                                 break;
@@ -294,6 +298,7 @@ namespace TcpMobile.Services
                                 memoryStream.WriteByte(player.Value.Sex);
                                 memoryStream.WriteByte(player.Value.Level);
                                 memoryStream.WriteByte(player.Value.Modifiers);
+                                memoryStream.WriteByte(player.Value.Dice);
                             }
 
                             memoryStream.Seek(0, SeekOrigin.Begin);
