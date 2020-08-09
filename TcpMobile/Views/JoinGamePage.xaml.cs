@@ -58,7 +58,8 @@ namespace MunchkinCounterLan.Views
             }
         }
 
-        public ICommand ToolsClick { get; set; }
+        public ICommand ToolsCommand { get; set; }
+        public ICommand FightCommand { get; set; }
 
         private bool _hostSearch = true;
         public bool HostSearch
@@ -143,9 +144,15 @@ namespace MunchkinCounterLan.Views
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class JoinGamePage : ContentPage
     {
+        private class InnerEvent
+        {
+            public PageEventType EventType { get; set; }
+            public object Data { get; set; }
+        }
+
         private IGameClient _gameClient => DependencyService.Get<IGameClient>();
 
-        private Subject<PageEventType> _innerSubject;
+        private Subject<InnerEvent> _innerSubject;
         private Subject<Unit> _destroy = new Subject<Unit>();
         
         private bool _toolsClickHandling = false;
@@ -159,10 +166,11 @@ namespace MunchkinCounterLan.Views
 
             InitializeComponent();
 
-            _innerSubject = new Subject<PageEventType>();
+            _innerSubject = new Subject<InnerEvent>();
 
             ViewModel = new JoinGameViewModel();
-            ViewModel.ToolsClick = new Command<PageEventType>((eventType) => _innerSubject.OnNext(eventType));
+            ViewModel.ToolsCommand = new Command<PageEventType>((eventType) => _innerSubject.OnNext(new InnerEvent { EventType = eventType }));
+            ViewModel.FightCommand = new Command<string>(async (id) => await PopupNavigation.Instance.PushAsync(new AlertPage(id)));
             ViewModel.MyPlayer.PropertyChanged += (s, e) => _gameClient.SendUpdatedPlayerState();
 
             Appearing += (s, e) =>
@@ -172,16 +180,19 @@ namespace MunchkinCounterLan.Views
                 _innerSubject.AsObservable()
                     .TakeUntil(_destroy)
                     .Where(_ => !_toolsClickHandling)
-                    .Where(eventType => eventType == PageEventType.ResetMunchkin || eventType == PageEventType.ThrowDice)
+                    .Where(_ => _.EventType == PageEventType.ResetMunchkin || _.EventType == PageEventType.ThrowDice || _.EventType == PageEventType.Fight)
                     .Do(_ => _toolsClickHandling = true)
-                    .Subscribe(async eventType => {
-                        switch (eventType)
+                    .Subscribe(async _ => {
+                        switch (_.EventType)
                         {
                             case PageEventType.ResetMunchkin:
                                 await ResetMunchkinHandlerAsync();
                                 break;
                             case PageEventType.ThrowDice:
                                 await ThrowDiceHandler();
+                                break;
+                            case PageEventType.Fight:
+                                await FightHandler(_);
                                 break;
                         }
 
@@ -227,6 +238,8 @@ namespace MunchkinCounterLan.Views
                         StartSearching();
                     }
                 };
+                alert.Rejected += (s,e) => StartSearching();
+
                 await PopupNavigation.Instance.PushAsync(alert);
             });
         }
@@ -327,6 +340,17 @@ namespace MunchkinCounterLan.Views
             await PopupNavigation.Instance.PushAsync(dicePage);
         }
 
+        private async Task FightHandler(InnerEvent iev)
+        {
+            string partnerId = null;
+            if (iev != null)
+            {
+                partnerId = ((Player)iev.Data).Id != ViewModel.MyPlayer.Id ? ((Player)iev.Data).Id : null;
+            }
+            
+            await PopupNavigation.Instance.PushAsync(new FightPage(partnerId));
+        }
+
         public void StartSearching()
         {
             if (!_searching && ViewModel.HostSearch)
@@ -359,6 +383,14 @@ namespace MunchkinCounterLan.Views
             _gameClient.CloseConnection();
 
             ViewModel.HostSearch = true;
+        }
+
+        private void FightClick(object sender, ItemTappedEventArgs e)
+        {
+            if (e.Item is Player p && p != null)
+            {
+                _innerSubject.OnNext(new InnerEvent { EventType = PageEventType.Fight, Data = p });
+            }
         }
     }
 }

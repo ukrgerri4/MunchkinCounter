@@ -7,8 +7,7 @@
              xmlns:fa="clr-namespace:Core.Utils;assembly=Core"
              mc:Ignorable="d"
              x:Class="MunchkinCounterLan.Views.Popups.ConfirmPage"
-             BackgroundColor="{StaticResource modalBg}"
-             CloseWhenBackgroundIsClicked="False">
+             BackgroundColor="{StaticResource modalBg}">
     <pages:PopupPage.Resources>
         <ResourceDictionary>
             <Style x:Key="confirmTextButton" TargetType="Button" BasedOn="{StaticResource textButton}">

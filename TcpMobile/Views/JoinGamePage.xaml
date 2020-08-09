@@ -114,7 +114,7 @@
                         <Label Grid.Row="0" Grid.Column="6" Text="Mod" Style="{StaticResource gameTitleLabel}"/>
                         <Label Grid.Row="0" Grid.Column="7" Text="Pwr" Style="{StaticResource gameTitleLabel}"/>
                     </Grid>
-                    <ListView Grid.Row="1" Grid.Column="0" x:Name="gameListView" ItemsSource="{Binding LanPlayers}" Margin="0" SelectionMode="None" IsPullToRefreshEnabled="False">
+                    <ListView Grid.Row="1" Grid.Column="0" x:Name="gameListView" ItemsSource="{Binding LanPlayers}" Margin="0" SelectionMode="Single" IsPullToRefreshEnabled="False" ItemTapped="FightClick">
                         <ListView.ItemTemplate>
                             <DataTemplate>
                                 <ViewCell>
@@ -194,7 +194,7 @@
                         <BoxView WidthRequest="1" HorizontalOptions="StartAndExpand" VerticalOptions="FillAndExpand" Color="{StaticResource secondary}" Margin="0,5,0,0" />
                         <FlexLayout Direction="Column" JustifyContent="SpaceAround">
                             <Button
-                                Command="{Binding ToolsClick}"
+                                Command="{Binding ToolsCommand}"
                                 CommandParameter="{x:Static local:PageEventType.ResetMunchkin}"
                                 Text="{x:Static fa:FontAwesomeIcons.Skull}"
                                 Style="{StaticResource actionIconButton}"/>
@@ -203,7 +203,7 @@
                                 Text="{Binding MyPlayer.SexIcon}"
                                 Style="{StaticResource actionIconButton}"/>
                             <Button
-                                Command="{Binding ToolsClick}"
+                                Command="{Binding ToolsCommand}"
                                 CommandParameter="{x:Static local:PageEventType.ThrowDice}"
                                 Text="{x:Static fa:FontAwesomeIcons.Dice}"
                                 Style="{StaticResource actionIconButton}" />

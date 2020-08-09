@@ -111,8 +111,8 @@
                 <Setter Property = "FontSize" Value="20" />
                 <Setter Property = "TextColor" Value="{StaticResource primaryLight}" />
                 <Setter Property = "FontAttributes" Value="Bold" />
-                <!--<Setter Property = "VerticalOptions"  Value="FillAndExpand" />
-                <Setter Property = "HorizontalOptions"  Value="FillAndExpand" />-->
+                <Setter Property = "VerticalOptions"  Value="FillAndExpand" />
+                <Setter Property = "HorizontalOptions"  Value="FillAndExpand" />
                 <Setter Property = "VerticalTextAlignment"  Value="Center" />
                 <Setter Property = "HorizontalTextAlignment"  Value="Center" />
             </Style>

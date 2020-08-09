@@ -4,6 +4,7 @@
     {
         ExpandView,
         ResetMunchkin,
-        ThrowDice
+        ThrowDice,
+        Fight
     }
 }
