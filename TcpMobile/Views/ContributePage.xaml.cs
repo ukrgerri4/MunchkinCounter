@@ -86,7 +86,7 @@ namespace MunchkinCounterLan.Views
             catch (Exception ex)
             {
                 _gameLogger.Error($"DonatePurchaseAsync: {ex.Message}");
-                await PopupNavigation.Instance.PushAsync(new AlertPage("Ups, something went wrong", "Ok"));
+                await PopupNavigation.Instance.PushAsync(new AlertPage("Oops, something went wrong", "Ok"));
             }
             finally
             {

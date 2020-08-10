@@ -17,8 +17,8 @@ namespace MunchkinCounterLan.Views.Popups
         private IGameClient _gameClient => DependencyService.Get<IGameClient>();
 
         public ICommand CloseCommand { get; set; }
-        public ICommand IncreaceMonsterPowerCommand { get; set; }
-        public ICommand DecreaceMonsterPowerCommand { get; set; }
+
+        public ICommand AddMonsterPowerCommand { get; set; }
 
         private int _monsterPower = 0;
         public int MonsterPower
@@ -44,6 +44,100 @@ namespace MunchkinCounterLan.Views.Popups
             ? null
             : _gameClient.Players.FirstOrDefault(p => p.Id == _partnerId);
 
+
+        private bool _considerMyPlayerLevel = true;
+        public bool ConsiderMyPlayerLevel
+        {
+            get => _considerMyPlayerLevel;
+            set
+            {
+                if (_considerMyPlayerLevel != value)
+                {
+                    _considerMyPlayerLevel = value;
+                    OnPropertyChanged(nameof(ConsiderMyPlayerLevel));
+                    OnPropertyChanged(nameof(CalculatedPower));
+                }
+            }
+        }
+
+        private bool _considerMyPlayerModifiers = true;
+        public bool ConsiderMyPlayerModifiers
+        {
+            get => _considerMyPlayerModifiers;
+            set
+            {
+                if (_considerMyPlayerModifiers != value)
+                {
+                    _considerMyPlayerModifiers = value;
+                    OnPropertyChanged(nameof(ConsiderMyPlayerModifiers));
+                    OnPropertyChanged(nameof(CalculatedPower));
+                }
+            }
+        }
+
+        private bool _considerMyPartnerLevel = true;
+        public bool ConsiderMyPartnerLevel
+        {
+            get => _considerMyPartnerLevel;
+            set
+            {
+                if (_considerMyPartnerLevel != value)
+                {
+                    _considerMyPartnerLevel = value;
+                    OnPropertyChanged(nameof(ConsiderMyPartnerLevel));
+                    OnPropertyChanged(nameof(CalculatedPower));
+                }
+            }
+        }
+
+        private bool _considerMyPartnerModifiers = true;
+        public bool ConsiderMyPartnerModifiers
+        {
+            get => _considerMyPartnerModifiers;
+            set
+            {
+                if (_considerMyPartnerModifiers != value)
+                {
+                    _considerMyPartnerModifiers = value;
+                    OnPropertyChanged(nameof(ConsiderMyPartnerModifiers));
+                    OnPropertyChanged(nameof(CalculatedPower));
+                }
+            }
+        }
+
+        public ICommand AddAdditionalPlayerPowerCommand { get; set; }
+        private int _additionalPlayerPower = 0;
+        public int AdditionalPlayerPower
+        {
+            get => _additionalPlayerPower;
+            set
+            {
+                if (_additionalPlayerPower != value)
+                {
+                    _additionalPlayerPower = value;
+                    OnPropertyChanged(nameof(AdditionalPlayerPower));
+                    OnPropertyChanged(nameof(CalculatedPower));
+                }
+            }
+        }
+
+        public int CalculatedPower
+        {
+            get
+            {
+                var calculatedPower = 0;
+
+                if (ConsiderMyPlayerLevel) calculatedPower += MyPlayer.Level;
+                if (ConsiderMyPlayerModifiers) calculatedPower += MyPlayer.Modifiers;
+                if (ConsiderMyPartnerLevel) calculatedPower += MyPartner?.Level ?? 0;
+                if (ConsiderMyPartnerModifiers) calculatedPower += MyPartner?.Modifiers ?? 0;
+
+                calculatedPower += AdditionalPlayerPower;
+
+                return calculatedPower;
+            }
+        }
+
         public FightPage(string partnerId = null)
         {
             _partnerId = partnerId;
@@ -51,8 +145,17 @@ namespace MunchkinCounterLan.Views.Popups
             InitializeComponent();
 
             CloseCommand = new Command(async () => await PopupNavigation.Instance.PopAsync());
-            IncreaceMonsterPowerCommand = new Command(() => MonsterPower++);
-            DecreaceMonsterPowerCommand = new Command(() => MonsterPower--);
+            AddMonsterPowerCommand = new Command<int>((power) => MonsterPower += power);
+            AddAdditionalPlayerPowerCommand = new Command<int>((power) => AdditionalPlayerPower += power);
+
+            if (MyPartner != null)
+            {
+                MyPartner.PropertyChanged += (s, e) => OnPropertyChanged(nameof(CalculatedPower));
+            }
+            if (MyPlayer != null)
+            {
+                MyPlayer.PropertyChanged += (s, e) => OnPropertyChanged(nameof(CalculatedPower));
+            }
 
             Appearing += (s, e) =>
             {
@@ -61,28 +164,6 @@ namespace MunchkinCounterLan.Views.Popups
             };
 
             BindingContext = this;
-        }
-
-        private bool pressed = false;
-        private void Button_Pressed(object sender, System.EventArgs e)
-        {
-            if (!pressed)
-            {
-                pressed = true;
-                _ = Task.Run(async () =>
-                {
-                    while (pressed)
-                    {
-                        await Task.Delay(200);
-                        IncreaceMonsterPowerCommand?.Execute(null);
-                    }
-                });
-            }
-        }
-
-        private void Button_Released(object sender, System.EventArgs e)
-        {
-            pressed = false;
         }
     }
 }

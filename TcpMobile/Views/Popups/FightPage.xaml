@@ -5,34 +5,128 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:pages="clr-namespace:Rg.Plugins.Popup.Pages;assembly=Rg.Plugins.Popup"
              xmlns:fa="clr-namespace:Core.Utils;assembly=Core"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"  
              mc:Ignorable="d"
              x:Class="MunchkinCounterLan.Views.Popups.FightPage"
              BackgroundColor="{StaticResource modalBg}">
+    <pages:PopupPage.Resources>
+        <ResourceDictionary>
+            <Style x:Key="innerImageButton" TargetType="Button" BasedOn="{StaticResource upDownButton}">
+                <Setter Property = "TextColor" Value="{StaticResource secondary}" />
+                <Setter Property = "VerticalOptions"  Value="CenterAndExpand" />
+                <Setter Property = "HorizontalOptions"  Value="CenterAndExpand" />
+            </Style>
+            <Style x:Key="innerTextButton" TargetType="Button" BasedOn="{StaticResource textButton}">
+                <Setter Property = "FontSize" Value="36" />
+                <Setter Property = "CornerRadius" Value="30" />
+                <Setter Property = "TextColor" Value="{StaticResource secondary}" />
+                <Setter Property = "VerticalOptions"  Value="CenterAndExpand" />
+                <Setter Property = "HorizontalOptions"  Value="CenterAndExpand" />
+            </Style>
+        </ResourceDictionary>
+    </pages:PopupPage.Resources>
+
     <pages:PopupPage.Content>
-        <Grid RowDefinitions="5*, 2, 5*, auto" ColumnDefinitions="*" RowSpacing="0" ColumnSpacing="0" Margin="20" Padding="10" BackgroundColor="{StaticResource secondary}">
-            <Grid Grid.Row="0" Grid.Column="0" RowDefinitions="*" ColumnDefinitions="1*, auto, 1*" RowSpacing="0" ColumnSpacing="0">
-                <Label Grid.Row="0" Grid.Column="0" Text="{Binding MyPlayer.Power}" Style="{StaticResource gameLabel}" TextColor="{StaticResource primaryDark}"/>
-                <Label IsVisible="{Binding HavePartner}" Grid.Row="0" Grid.Column="1" Text="{Binding MyPartner.Power}" Style="{StaticResource gameLabel}" TextColor="{StaticResource primaryDark}"/>
-                <Label Grid.Row="0" Grid.Column="2" Text="{Binding MyPlayer.Power}" Style="{StaticResource gameLabel}" TextColor="{StaticResource primaryDark}"/>
+        <Grid RowDefinitions="5*, 2, 3*, auto" ColumnDefinitions="*" RowSpacing="0" ColumnSpacing="0" Margin="20" Padding="10" BackgroundColor="{StaticResource secondary}">
+            <Grid Grid.Row="0" Grid.Column="0" RowDefinitions="*" ColumnDefinitions="3*, 1*" RowSpacing="0" ColumnSpacing="0">
+                <Grid Grid.Row="0" Grid.Column="0" RowDefinitions="1*, 1*, auto, auto, 0.5*, 2*" ColumnDefinitions="1*, 1*, 1*" RowSpacing="0" ColumnSpacing="0">
+
+
+                    <Label Grid.Row="0" Grid.Column="0" Text="Name" Style="{StaticResource gameLabel}" TextColor="{StaticResource primaryDark}"/>
+                    <Label Grid.Row="0" Grid.Column="1" Text="Lvl" Style="{StaticResource gameLabel}" TextColor="{StaticResource primaryDark}"/>
+                    <Label Grid.Row="0" Grid.Column="2" Text="Mod" Style="{StaticResource gameLabel}" TextColor="{StaticResource primaryDark}"/>
+
+                    <Label Grid.Row="1" Grid.Column="0" Text="{Binding MyPlayer.Name}" Style="{StaticResource gameLabel}" TextColor="{StaticResource primaryDark}"/>
+                    <Grid Grid.Row="1" Grid.Column="1" RowDefinitions="*" ColumnDefinitions="1*, 1*" RowSpacing="0" ColumnSpacing="0">
+                        <CheckBox Grid.Row="0" Grid.Column="0" IsChecked="{Binding ConsiderMyPlayerLevel}" HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand"></CheckBox>
+                        <Label Grid.Row="0" Grid.Column="1" Text="{Binding MyPlayer.Level}" Style="{StaticResource gameLabel}" TextColor="{StaticResource primaryDark}"/>
+                    </Grid>
+                    <Grid Grid.Row="1" Grid.Column="2" RowDefinitions="*" ColumnDefinitions="1*, 1*" RowSpacing="0" ColumnSpacing="0">
+                        <CheckBox Grid.Row="0" Grid.Column="0" IsChecked="{Binding ConsiderMyPlayerModifiers}" HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand"></CheckBox>
+                        <Label Grid.Row="0" Grid.Column="1" Text="{Binding MyPlayer.Modifiers}" Style="{StaticResource gameLabel}" TextColor="{StaticResource primaryDark}"/>
+                    </Grid>
+                    
+                    <Label IsVisible="{Binding HavePartner}" Grid.Row="2" Grid.Column="2" Text="+" Style="{StaticResource gameLabel}" TextColor="{StaticResource primaryDark}"/>
+                    <Label IsVisible="{Binding HavePartner}" Grid.Row="3" Grid.Column="0" Text="{Binding MyPartner.Name}" Style="{StaticResource gameLabel}" TextColor="{StaticResource primaryDark}"/>
+                    <Grid IsVisible="{Binding HavePartner}" Grid.Row="3" Grid.Column="1" RowDefinitions="*" ColumnDefinitions="1*, 1*" RowSpacing="0" ColumnSpacing="0">
+                        <CheckBox Grid.Row="0" Grid.Column="0" IsChecked="{Binding ConsiderMyPartnerLevel}" HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand"></CheckBox>
+                        <Label Grid.Row="0" Grid.Column="1" Text="{Binding MyPartner.Level}" Style="{StaticResource gameLabel}" TextColor="{StaticResource primaryDark}"/>
+                    </Grid>
+                    <Grid IsVisible="{Binding HavePartner}" Grid.Row="3" Grid.Column="2" RowDefinitions="*" ColumnDefinitions="1*, 1*" RowSpacing="0" ColumnSpacing="0">
+                        <CheckBox Grid.Row="0" Grid.Column="0" IsChecked="{Binding ConsiderMyPartnerModifiers}" HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand"></CheckBox>
+                        <Label Grid.Row="0" Grid.Column="1" Text="{Binding MyPartner.Modifiers}" Style="{StaticResource gameLabel}" TextColor="{StaticResource primaryDark}"/>
+                    </Grid>
+
+                    <Label Grid.Row="4" Grid.Column="2" Text="+" Style="{StaticResource gameLabel}" TextColor="{StaticResource primaryDark}"/>
+
+                    <Grid Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" RowDefinitions="*" ColumnDefinitions="5*, 1*" RowSpacing="0" ColumnSpacing="0">
+                        <Label Grid.Row="0" Grid.Column="0" Text="{Binding CalculatedPower}" Style="{StaticResource gameLabel}" TextColor="{StaticResource primaryDark}" FontSize="90" HorizontalTextAlignment="Start"/>
+                        <Label Grid.Row="0" Grid.Column="1" Text="=" Style="{StaticResource gameLabel}" TextColor="{StaticResource primaryDark}"/>
+                    </Grid>
+
+                    <Label Grid.Row="5" Grid.Column="2" Text="{Binding AdditionalPlayerPower}" Style="{StaticResource gameLabel}" TextColor="{StaticResource primaryDark}" FontSize="50"/>
+
+                </Grid>
+                <Grid Grid.Row="0" Grid.Column="1" RowDefinitions="1*, 1*" ColumnDefinitions="*" RowSpacing="10" ColumnSpacing="10">
+                    <Button Grid.Row="0" Grid.Column="0"
+                        Command="{Binding AddAdditionalPlayerPowerCommand}"
+                        Text="{x:Static fa:FontAwesomeIcons.ChevronUp}"
+                        Style="{StaticResource innerImageButton}">
+                        <Button.CommandParameter>
+                            <sys:Int32>1</sys:Int32>
+                        </Button.CommandParameter>
+                    </Button>
+                    <Button Grid.Row="1" Grid.Column="0"
+                        Command="{Binding AddAdditionalPlayerPowerCommand}"
+                        Text="{x:Static fa:FontAwesomeIcons.ChevronDown}"
+                        Style="{StaticResource innerImageButton}">
+                        <Button.CommandParameter>
+                            <sys:Int32>-1</sys:Int32>
+                        </Button.CommandParameter>
+                    </Button>
+                </Grid>
             </Grid>
             
             <BoxView Grid.Row="1" Grid.Column="0" HorizontalOptions="FillAndExpand" VerticalOptions="StartAndExpand" Color="{StaticResource primaryDark}" Margin="5,0,5,0"/>
             
-            <Grid Grid.Row="2" Grid.Column="0" RowDefinitions="*" ColumnDefinitions="1*, 1*" RowSpacing="0" ColumnSpacing="0">
-                <Button Grid.Row="0" Grid.Column="0"
-                    Command="{Binding DecreaceMonsterPowerCommand}"
-                    Text="{x:Static fa:FontAwesomeIcons.ArrowLeft}"
-                    Style="{StaticResource actionIconButton}"
-                    VerticalOptions="CenterAndExpand"
-                    HorizontalOptions="CenterAndExpand"/>
-                <Label Grid.Row="0" Grid.Column="1" Text="{Binding MonsterPower}" Style="{StaticResource gameLabel}" TextColor="{StaticResource primaryDark}"/>
-                <Button Grid.Row="0" Grid.Column="2"
-                    Pressed="Button_Pressed"
-                    Released="Button_Released"
-                    Text="{x:Static fa:FontAwesomeIcons.ArrowRight}"
-                    Style="{StaticResource actionIconButton}"
-                    VerticalOptions="CenterAndExpand"
-                    HorizontalOptions="CenterAndExpand"/>
+            <Grid Grid.Row="2" Grid.Column="0" RowDefinitions="auto, *" ColumnDefinitions="1*, 1*" RowSpacing="0" ColumnSpacing="0">
+                <Label Grid.Row="0" Grid.ColumnSpan="2" Text="Monster power" Style="{StaticResource gameLabel}" TextColor="{StaticResource primaryDark}"/>
+                <Label Grid.Row="1" Grid.Column="0" Text="{Binding MonsterPower}" Style="{StaticResource gameLabel}" TextColor="{StaticResource primaryDark}" FontSize="90" HorizontalTextAlignment="Start"/>
+
+                <Grid Grid.Row="1" Grid.Column="1" RowDefinitions="1*, 1*" ColumnDefinitions="1*, 1*" RowSpacing="10" ColumnSpacing="10">
+                    <Button Grid.Row="0" Grid.Column="0"
+                        Command="{Binding AddMonsterPowerCommand}"
+                        Text="+5"
+                        Style="{StaticResource innerTextButton}">
+                        <Button.CommandParameter>
+                            <sys:Int32>5</sys:Int32>
+                        </Button.CommandParameter>
+                    </Button>
+                    <Button Grid.Row="1" Grid.Column="0"
+                        Command="{Binding AddMonsterPowerCommand}"
+                        Text="-5"
+                        Style="{StaticResource innerTextButton}">
+                        <Button.CommandParameter>
+                            <sys:Int32>-5</sys:Int32>
+                        </Button.CommandParameter>
+                    </Button>
+                    <Button Grid.Row="0" Grid.Column="1"
+                        Command="{Binding AddMonsterPowerCommand}"
+                        Text="{x:Static fa:FontAwesomeIcons.ChevronUp}"
+                        Style="{StaticResource innerImageButton}">
+                        <Button.CommandParameter>
+                            <sys:Int32>1</sys:Int32>
+                        </Button.CommandParameter>
+                    </Button>
+                    <Button Grid.Row="1" Grid.Column="1"
+                        Command="{Binding AddMonsterPowerCommand}"
+                        Text="{x:Static fa:FontAwesomeIcons.ChevronDown}"
+                        Style="{StaticResource innerImageButton}">
+                        <Button.CommandParameter>
+                            <sys:Int32>-1</sys:Int32>
+                        </Button.CommandParameter>
+                    </Button>
+                </Grid>
             </Grid>
 
             <Button Grid.Row="3"
