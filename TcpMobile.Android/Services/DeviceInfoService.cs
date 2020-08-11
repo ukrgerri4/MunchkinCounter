@@ -22,22 +22,6 @@ namespace TcpMobile.Droid.Services
 
                 if (string.IsNullOrWhiteSpace(_deviceId))
                 {
-                    var serialDeviceId = Android.OS.Build.GetSerial();
-                    if (!string.IsNullOrWhiteSpace(serialDeviceId) && serialDeviceId != Build.Unknown && serialDeviceId != "0")
-                    {
-                        _deviceId = serialDeviceId;
-                        Preferences.Set(PreferencesKey.DeviceId, _deviceId);
-                    }
-                }
-
-                if (string.IsNullOrWhiteSpace(_deviceId))
-                {
-                    _deviceId = Android.Provider.Settings.Secure.GetString(Android.App.Application.Context.ContentResolver, Android.Provider.Settings.Secure.AndroidId);
-                    Preferences.Set(PreferencesKey.DeviceId, _deviceId);
-                }
-
-                if (string.IsNullOrWhiteSpace(_deviceId))
-                {
                     _deviceId = Guid.NewGuid().ToString();
                     Preferences.Set(PreferencesKey.DeviceId, _deviceId);
                 }

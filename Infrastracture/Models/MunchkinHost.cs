@@ -41,7 +41,7 @@ namespace Infrastracture.Models
             }
         }
         
-        private string _name = "Game 1";
+        private string _name = "RandomGame";
         public string Name
         {
             get => _name;
@@ -56,7 +56,7 @@ namespace Infrastracture.Models
         }
 
         
-        private byte _capacity = 6;
+        private byte _capacity = 10;
         public byte Capacity
         {
             get => _capacity;

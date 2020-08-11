@@ -17,15 +17,15 @@ namespace TcpMobile.Views
 {
     public class CreateGameViewModel : INotifyPropertyChanged
     {
+        private IGameServer _gameServer => DependencyService.Get<IGameServer>();
+        private IGameClient _gameClient => DependencyService.Get<IGameClient>();
+
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged(string prop = "") => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
 
-        private readonly IGameClient _gameClient;
-        private readonly IGameServer _gameServer;
-        public CreateGameViewModel(IGameClient gameClient, IGameServer gameServer)
+        public CreateGameViewModel()
         {
-            _gameClient = gameClient;
-            _gameServer = gameServer;
+            _gameClient.Players.CollectionChanged += (s, e) => OnPropertyChanged(nameof(AllPlayers));
         }
 
         public MunchkinHost Host => _gameServer.Host;
@@ -91,15 +91,11 @@ namespace TcpMobile.Views
         {
             InitializeComponent();
 
-            ViewModel = new CreateGameViewModel(_gameClient, _gameServer);
+            ViewModel = new CreateGameViewModel();
 
             TrySetPlayerDefaults();
 
             BindingContext = ViewModel;
-
-            MessagingCenter.Subscribe<IGameClient>(this, "PlayersUpdated", (sender) => {
-                ViewModel.OnPropertyChanged(nameof(ViewModel.AllPlayers));
-            });
         }
 
         private async void TryCreate(object sender, EventArgs args)

@@ -49,17 +49,6 @@ namespace MunchkinCounterLan.Views
                 OnPropertyChanged(nameof(IsViewExpandable));
             }
         }
-
-        public bool ShowSelfMunchkinInLanGame
-        {
-            get { return Preferences.Get(PreferencesKey.ShowSelfMunchkinInLanGame, true); }
-            set
-            {
-                Preferences.Set(PreferencesKey.ShowSelfMunchkinInLanGame, value);
-                MessagingCenter.Send(this, "SettingsChanged");
-                OnPropertyChanged(nameof(ShowSelfMunchkinInLanGame));
-            }
-        }
     }
 
     [XamlCompilation(XamlCompilationOptions.Compile)]

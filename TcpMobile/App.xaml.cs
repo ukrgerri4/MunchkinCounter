@@ -1,5 +1,6 @@
 ﻿using Infrastracture.Definitions;
 using Infrastracture.Interfaces;
+using System;
 using TcpMobile.Views;
 using Xamarin.Essentials;
 using Xamarin.Forms;
@@ -10,7 +11,6 @@ namespace TcpMobile
     {
         private IGameLogger _gameLogger => DependencyService.Get<IGameLogger>();
         private IBrightnessService _brightnessService => DependencyService.Get<IBrightnessService>();
-        private IScreenshotService _screenshotService => DependencyService.Get<IScreenshotService>();
 
         public App()
         {
@@ -19,6 +19,17 @@ namespace TcpMobile
             VersionTracking.Track();
 
             MainPage = new MainMDPage();
+
+            AdjustBrightness();
+        }
+
+        private void AdjustBrightness()
+        {
+            if (Preferences.Get(PreferencesKey.KeepScreenOn, true))
+            {
+                Preferences.Set(PreferencesKey.KeepScreenOn, true);
+                _brightnessService.KeepScreenOn();
+            }
         }
 
         protected override void OnStart()

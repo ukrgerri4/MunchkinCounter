@@ -29,34 +29,22 @@ namespace MunchkinCounterLan.Views
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged(string prop = "") => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
 
-        public JoinGameViewModel() { }
+        public JoinGameViewModel()
+        {
+            _gameClient.Hosts.CollectionChanged += (s, e) => OnPropertyChanged(nameof(ConnectionsExists));
+            _gameClient.Players.CollectionChanged += (s,e) => OnPropertyChanged(nameof(LanPlayers));
+            _gameClient.MyPlayer.PropertyChanged += (s, e) => _gameClient.SendUpdatedPlayerState();
+        }
 
         public ObservableCollection<MunchkinHost> Hosts => _gameClient.Hosts;
         public Player MyPlayer => _gameClient.MyPlayer;
 
-        public List<Player> LanPlayers
-        {
-            get
-            {
-                if (Preferences.Get(PreferencesKey.ShowSelfMunchkinInLanGame, true))
-                {
-                    return _gameClient.Players
-                        .OrderByDescending(p => p.Level)
-                        .ThenByDescending(p => p.Modifiers)
-                        .ThenBy(p => p.Name)
-                        .ToList();
-                }
-                else
-                {
-                    return _gameClient.Players
-                        .Where(p => p.Id != _gameClient.MyPlayer.Id)
-                        .OrderByDescending(p => p.Level)
-                        .ThenByDescending(p => p.Modifiers)
-                        .ThenBy(p => p.Name)
-                        .ToList();
-                }
-            }
-        }
+        public List<Player> LanPlayers =>
+            _gameClient.Players
+                .OrderByDescending(p => p.Level)
+                .ThenByDescending(p => p.Modifiers)
+                .ThenBy(p => p.Name)
+                .ToList();
 
         public ICommand ToolsCommand { get; set; }
         public ICommand FightCommand { get; set; }
@@ -101,7 +89,7 @@ namespace MunchkinCounterLan.Views
 
         public bool ConnectionsExists
         {
-            get => _hostSearch && Hosts.Any();
+            get => Hosts.Any();
         }
 
         public int _loaderPointsCount = 0;
@@ -171,7 +159,6 @@ namespace MunchkinCounterLan.Views
             ViewModel = new JoinGameViewModel();
             ViewModel.ToolsCommand = new Command<PageEventType>((eventType) => _innerSubject.OnNext(new InnerEvent { EventType = eventType }));
             ViewModel.FightCommand = new Command<string>(async (id) => await PopupNavigation.Instance.PushAsync(new AlertPage(id)));
-            ViewModel.MyPlayer.PropertyChanged += (s, e) => _gameClient.SendUpdatedPlayerState();
 
             Appearing += (s, e) =>
             {
@@ -207,19 +194,6 @@ namespace MunchkinCounterLan.Views
             };
 
             BindingContext = ViewModel;
-
-            MessagingCenter.Subscribe<IGameClient>(this, "HostsUpdated", (sender) => {
-                ViewModel.OnPropertyChanged(nameof(ViewModel.ConnectionsExists));
-            });
-
-            MessagingCenter.Subscribe<IGameClient>(this, "PlayersUpdated", (sender) => {
-                ViewModel.OnPropertyChanged(nameof(ViewModel.LanPlayers));
-            });
-
-            MessagingCenter.Subscribe<SettingsViewModel>(this, "SettingsChanged", (sender) =>
-            {
-                ViewModel.OnPropertyChanged(nameof(ViewModel.LanPlayers));
-            });
 
             MessagingCenter.Subscribe<IGameClient>(this, "LostServerConnection", async (sender) => {
 

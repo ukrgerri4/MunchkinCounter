@@ -31,7 +31,7 @@ namespace TcpMobile.Services
 
         public ObservableCollection<MunchkinHost> Hosts { get; set; }
         public Player MyPlayer { get; set; }
-        public List<Player> Players { get; set; }
+        public ObservableCollection<Player> Players { get; set; }
 
         
         private IDisposable _hostsSearchSubscription;
@@ -45,10 +45,10 @@ namespace TcpMobile.Services
             MyPlayer = new Player
             {
                 Id = _deviceInfoService.DeviceId,
-                Name = Preferences.Get(PreferencesKey.DefaultPlayerName, "Player-1"),
+                Name = Preferences.Get(PreferencesKey.DefaultPlayerName, "Munchkinator"),
                 Sex = (byte)Preferences.Get(PreferencesKey.DefaultPlayerSex, 0)
             };
-            Players = new List<Player>();
+            Players = new ObservableCollection<Player>();
         }
 
         public Result Connect(IPAddress ip)
@@ -68,8 +68,6 @@ namespace TcpMobile.Services
                 MyPlayer.Level = 1;
                 MyPlayer.Modifiers = 0;
                 MyPlayer.Dice = 0;
-
-                MessagingCenter.Send<IGameClient>(this, "PlayersUpdated");
 
                 return Result.Ok();
             }
@@ -270,8 +268,6 @@ namespace TcpMobile.Services
                     });
                 }
             }
-
-            MessagingCenter.Send<IGameClient>(this, "PlayersUpdated");
         }
 
         public void StartSearchHosts()
@@ -319,8 +315,6 @@ namespace TcpMobile.Services
                         hostToUpdate.Capacity = host.Capacity;
                         hostToUpdate.Fullness = host.Fullness;
                     }
-
-                    MessagingCenter.Send<IGameClient>(this, "HostsUpdated");
                 });
         }
 

@@ -10,7 +10,7 @@ namespace Infrastracture.Interfaces.GameMunchkin
     public interface IGameClient
     {
         Player MyPlayer { get; set; }
-        List<Player> Players { get; set; }
+        ObservableCollection<Player> Players { get; set; }
         ObservableCollection<MunchkinHost> Hosts { get; set; }
 
         Result Connect(IPAddress ip);

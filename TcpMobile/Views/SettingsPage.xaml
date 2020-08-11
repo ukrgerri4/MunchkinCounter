@@ -20,9 +20,6 @@
                     <TableSection Title="Single game:" TextColor="{StaticResource primaryDark}">
                         <SwitchCell Text="Expand view while idle:" On="{Binding IsViewExpandable}"/>
                     </TableSection>
-                    <TableSection Title="Lan game:" TextColor="{StaticResource primaryDark}">
-                        <SwitchCell Text="Show your munchkin in the player list:" On="{Binding ShowSelfMunchkinInLanGame}"/>
-                    </TableSection>
                 </TableRoot>
             </TableView.Root>
         </TableView>

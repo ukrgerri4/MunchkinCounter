@@ -12,7 +12,6 @@
         public const string LastPlayerData = "last_player_data";
         public const string IsViewExpandable = "is_view_exp";
         public const string ViewExpandTimeoutSeconds = "exp_timeout";
-        public const string ShowSelfMunchkinInLanGame = "show_self_lan";
 
         public const string IsDebugMenuVisible = "debug_menu";
     }

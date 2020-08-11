@@ -164,7 +164,7 @@
 
                 <Grid Grid.Row="1" Grid.Column="0" RowSpacing="0" ColumnSpacing="0" Padding="0" Margin="0">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="1" />
+                        <RowDefinition Height="2" />
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
@@ -191,7 +191,7 @@
                         <Label Text="{Binding MyPlayer.Power}" Style="{StaticResource centeredLabel}" FontSize="50"></Label>
                     </StackLayout>
                     <StackLayout Grid.Row="1" Grid.Column="3" Spacing="0" Orientation="Horizontal">
-                        <BoxView WidthRequest="1" HorizontalOptions="StartAndExpand" VerticalOptions="FillAndExpand" Color="{StaticResource secondary}" Margin="0,5,0,0" />
+                        <BoxView WidthRequest="2" HorizontalOptions="StartAndExpand" VerticalOptions="FillAndExpand" Color="{StaticResource secondary}" Margin="0,5,0,0" />
                         <FlexLayout Direction="Column" JustifyContent="SpaceAround">
                             <Button
                                 Command="{Binding ToolsCommand}"
