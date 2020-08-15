@@ -8,12 +8,13 @@ using Rg.Plugins.Popup.Services;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
-namespace TcpMobile.Views
+namespace MunchkinCounterLan.Views
 {
     public class CreateGameViewModel : INotifyPropertyChanged
     {
@@ -37,45 +38,6 @@ namespace TcpMobile.Views
                     .ThenByDescending(p => p.Modifiers)
                     .ThenBy(p => p.Name)
                     .ToList();
-
-        private bool _creatingGame = true;
-        private bool _waitingPlayers = false;
-
-        public bool CreatingGame
-        {
-            get => _creatingGame;
-            set
-            {
-                if (_creatingGame != value)
-                {
-                    _creatingGame = value;
-                    if (_creatingGame)
-                    {
-                        WaitingPlayers = false;
-                    }
-
-                    OnPropertyChanged(nameof(CreatingGame));
-                }
-            }
-        }
-
-        public bool WaitingPlayers
-        {
-            get => _waitingPlayers;
-            set
-            {
-                if (_waitingPlayers != value)
-                {
-                    _waitingPlayers = value;
-                    if (_waitingPlayers)
-                    {
-                        CreatingGame = false;
-                    }
-
-                    OnPropertyChanged(nameof(WaitingPlayers));
-                }
-            }
-        }
     }
 
     [XamlCompilation(XamlCompilationOptions.Compile)]
@@ -111,7 +73,7 @@ namespace TcpMobile.Views
 
                 SavePlayerDefaults();
 
-                ViewModel.WaitingPlayers = true;
+                await Shell.Current.GoToAsync("host");
             }
             catch (Exception e)
             {
@@ -122,26 +84,6 @@ namespace TcpMobile.Views
                 
                 _gameLogger.Error($"Create game error: {e.Message}");
             }
-        }
-
-        private void TryStart(object sender, EventArgs args)
-        {
-            _gameServer.StopBroadcast();
-            MessagingCenter.Send(this, "StartGame");
-        }
-
-        private void TryStop(object sender, EventArgs args)
-        {
-            if (!ViewModel.WaitingPlayers) { return; }
-
-            StopGame();
-        }
-
-        public void StopGame()
-        {
-            _gameServer.Stop();
-
-            ViewModel.CreatingGame = true;
         }
 
         private void SavePlayerDefaults()

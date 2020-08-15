@@ -2,8 +2,6 @@
 using Android.Content.PM;
 using Android.Runtime;
 using Android.OS;
-using Rg.Plugins.Popup.Services;
-using TcpMobile.Views;
 using Xamarin.Forms;
 using TcpMobile.Services;
 using Infrastracture.Interfaces;
@@ -13,6 +11,8 @@ using MunchkinCounterLan.Views;
 using TcpMobile.Droid.Services;
 using Plugin.InAppBilling;
 using Android.Content;
+using Android.Views;
+using Rg.Plugins.Popup.Services;
 
 namespace TcpMobile.Droid
 {
@@ -39,7 +39,7 @@ namespace TcpMobile.Droid
 
             LoadApplication(new App());
 
-            //Window.AddFlags(WindowManagerFlags.Fullscreen);
+            //Window.AddFlags(WindowManagerFlags.TranslucentNavigation);
             //Window.DecorView.SystemUiVisibility = (StatusBarVisibility)SystemUiFlags.HideNavigation;
         }
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Android.Content.PM.Permission[] grantResults)
@@ -63,12 +63,6 @@ namespace TcpMobile.Droid
                 return;
             }
 
-            if (App.Current.MainPage is MainMDPage mainPage && mainPage.IsPresented)
-            {
-                mainPage.IsPresented = false;
-                return;
-            }
-
             //Intent main = new Intent(Intent.ActionMain);
             //main.AddCategory(Intent.CategoryHome);
             //StartActivity(main);
@@ -78,7 +72,7 @@ namespace TcpMobile.Droid
         private void RegisterDependancies()
         {
             // services
-            DependencyService.Register<IScreenshotService, ScreenshotService>();
+            //DependencyService.Register<IScreenshotService, ScreenshotService>();
             DependencyService.Register<IBrightnessService, AndroidBrightnessService>();
             DependencyService.Register<IDeviceInfoService, DeviceInfoService>();
             DependencyService.Register<IGameLogger, GameLogger>();
@@ -87,14 +81,7 @@ namespace TcpMobile.Droid
             DependencyService.Register<IGameClient, GameClient>();
             DependencyService.Register<IGameServer, GameServer>();
 
-            // default pages
-            DependencyService.Register<HomePage>();
-            DependencyService.Register<MenuPage>();
-            DependencyService.Register<SingleGamePage>();
-            DependencyService.Register<CreateGamePage>();
-            DependencyService.Register<JoinGamePage>();
-
-            //// modal pages
+            // modal pages
             DependencyService.Register<DebugPage>();
             DependencyService.Register<SettingsPage>();
             DependencyService.Register<ContributePage>();

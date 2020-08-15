@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:fa="clr-namespace:Core.Utils;assembly=Core"
+             xmlns:local="clr-namespace:MunchkinCounterLan.Models"
+             x:Class="MunchkinCounterLan.Views.HostPage"
+             Style="{StaticResource mainBgView}"
+             Shell.TabBarIsVisible="False">
+    <ContentPage.Content>
+        <Grid RowSpacing="0" ColumnSpacing="0" Margin="5">
+            <Grid RowDefinitions="auto, 1, *, 1, auto, 1, auto" ColumnDefinitions="*"
+                  RowSpacing="5" ColumnSpacing="0"
+                  Margin="0" Padding="0">
+
+                <Grid RowDefinitions="*" ColumnDefinitions="7*, 1*, 1*, 1*"
+                      RowSpacing="0" ColumnSpacing="0"
+                      Padding="5" Margin="0"
+                      BackgroundColor="{StaticResource secondary}">
+                    <Label Grid.Row="0" Grid.Column="0" Text="{Binding Host.Name}" Style="{StaticResource gameLabel}"/>
+                    <Label Grid.Row="0" Grid.Column="1" Text="{Binding Host.Fullness}" Style="{StaticResource gameLabel}"/>
+                    <Label Grid.Row="0" Grid.Column="2" Text="/" Style="{StaticResource gameLabel}"/>
+                    <Label Grid.Row="0" Grid.Column="3" Text="{Binding Host.Capacity}" Style="{StaticResource gameLabel}"/>
+                </Grid>
+
+                <ListView Grid.Row="2" Grid.Column="0" ItemsSource="{Binding AllPlayers}" BackgroundColor="Transparent" SeparatorVisibility="None" RowHeight="50" Margin="10,0,10,0" SelectionMode="None">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <ViewCell>
+                                <ViewCell.View BackgroundColor="Transparent">
+                                    <Grid RowDefinitions="*" ColumnDefinitions="1*, 1, 6*"
+                                          RowSpacing="0" ColumnSpacing="0"
+                                          Padding="0" Margin="5"
+                                          BackgroundColor="{StaticResource primaryDark}">
+                                        <Label Grid.Row="0" Grid.Column="0" Text="{Binding SexIcon, Mode=OneWay}" FontFamily="{StaticResource FontAwesomeSolid}" FontSize="24" TextColor="{StaticResource primaryLight}" VerticalOptions="Center" HorizontalOptions="Center"/>
+                                        <BoxView Grid.Row="0" Grid.Column="1" HorizontalOptions="StartAndExpand" VerticalOptions="FillAndExpand" Color="{StaticResource secondary}" Margin="0,3,0,3" />
+                                        <Label Grid.Row="0" Grid.Column="2" Text="{Binding Name, Mode=OneWay}" Style="{StaticResource gameLabel}"/>
+                                    </Grid>
+                                </ViewCell.View>
+                            </ViewCell>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+
+                <BoxView Grid.Row="3" Grid.Column="0" HorizontalOptions="FillAndExpand" VerticalOptions="StartAndExpand" Color="{StaticResource secondary}" Margin="5,0,5,0"/>
+                <Label Grid.Row="4" Grid.Column="0" Text="Please wait while all players coonnected, then press begin" FontFamily="{StaticResource DefaultFont}" TextColor="{StaticResource primaryDark}" HorizontalTextAlignment="Center"/>
+                <BoxView Grid.Row="5" Grid.Column="0" HorizontalOptions="FillAndExpand" VerticalOptions="StartAndExpand" Color="{StaticResource secondary}" Margin="5,0,5,0"/>
+
+                <Grid Grid.Row="6" Grid.Column="0"
+                      RowDefinitions="*" ColumnDefinitions="1*, 1*"
+                      RowSpacing="0" ColumnSpacing="0"
+                      Padding="0" Margin="0"
+                      HeightRequest="50">
+                    <Button Grid.Row="0" Grid.Column="0" Text="&lt; Cancel" Command="{Binding EndGameCommand}" Style="{StaticResource textButton}" TextColor="{StaticResource secondary}" FontSize="20" HorizontalOptions="Center"/>
+                    <Button Grid.Row="0" Grid.Column="1" Text="Begin &gt;" Command="{Binding StartGameCommand}" Style="{StaticResource textButton}" TextColor="{StaticResource secondary}" FontSize="20" HorizontalOptions="Center"/>
+                </Grid>
+
+            </Grid>
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>

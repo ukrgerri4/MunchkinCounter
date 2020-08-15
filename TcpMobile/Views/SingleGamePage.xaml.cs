@@ -18,6 +18,8 @@ namespace MunchkinCounterLan.Views
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class SingleGamePage : ContentPage
     {
+        private const int DEF_EXPAND_TIME_SECONDS = 5;
+
         private Subject<PageEventType> _innerSubject;
         private Subject<Unit> _destroy = new Subject<Unit>();
         private bool _toolsClickHandling = false;
@@ -39,7 +41,7 @@ namespace MunchkinCounterLan.Views
             }
         }
 
-        private int _rotateValue = 180;
+        private int _rotateValue = 0;
         public int RotateValue
         {
             get => _rotateValue;
@@ -67,7 +69,7 @@ namespace MunchkinCounterLan.Views
             {
                 _innerSubject.AsObservable()
                     .TakeUntil(_destroy)
-                    .Throttle(TimeSpan.FromSeconds(Preferences.Get(PreferencesKey.ViewExpandTimeoutSeconds, 15)))
+                    .Throttle(TimeSpan.FromSeconds(Preferences.Get(PreferencesKey.ViewExpandTimeoutSeconds, DEF_EXPAND_TIME_SECONDS)))
                     .Where(eventType => eventType == PageEventType.ExpandView)
                     .Where(_ => Preferences.Get(PreferencesKey.IsViewExpandable, true))
                     .Subscribe(_ => {
@@ -76,6 +78,7 @@ namespace MunchkinCounterLan.Views
                             if (IsControlsVisible)
                             {
                                 IsControlsVisible = false;
+                                RotateValue = 180;
                             }
                         });
                     });
@@ -92,7 +95,7 @@ namespace MunchkinCounterLan.Views
                                 await ResetMunchkinHandler();
                                 break;
                             case PageEventType.ThrowDice:
-                                await PopupNavigation.Instance.PushAsync(new DicePage());
+                                await ThrowDiceHandler();
                                 break;
                         }
 
@@ -106,6 +109,7 @@ namespace MunchkinCounterLan.Views
             {
                 _destroy.OnNext(Unit.Default);
                 IsControlsVisible = true;
+                RotateValue = 0;
             };
 
             var tapGestureRecognizer = new TapGestureRecognizer();
@@ -113,12 +117,20 @@ namespace MunchkinCounterLan.Views
                 if (!IsControlsVisible)
                 {
                     IsControlsVisible = true;
+                    RotateValue = 0;
                 }
                 _innerSubject.OnNext(PageEventType.ExpandView);
             };
             gameViewGrid.GestureRecognizers.Add(tapGestureRecognizer);
 
             BindingContext = this;
+        }
+
+        private async Task ThrowDiceHandler()
+        {
+            var dicePage = new DicePage();
+            dicePage.Disappearing += (s, e) => _innerSubject.OnNext(PageEventType.ExpandView);
+            await PopupNavigation.Instance.PushAsync(dicePage);
         }
 
         private void RotateView(object sender, EventArgs e)
@@ -145,7 +157,7 @@ namespace MunchkinCounterLan.Views
                         break;
                 }
             };
-
+            confirmPage.Disappearing += (s,e) => _innerSubject.OnNext(PageEventType.ExpandView);
             await PopupNavigation.Instance.PushAsync(confirmPage);
         }
     }

@@ -2,20 +2,15 @@
 using Infrastracture.Interfaces;
 using Infrastracture.Interfaces.GameMunchkin;
 using Infrastracture.Models;
-using MunchkinCounterLan.Models;
 using MunchkinCounterLan.Views.Popups;
 using Rg.Plugins.Popup.Services;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Net;
-using System.Reactive;
 using System.Reactive.Linq;
-using System.Reactive.Subjects;
 using System.Threading.Tasks;
-using System.Windows.Input;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
@@ -32,60 +27,10 @@ namespace MunchkinCounterLan.Views
         public JoinGameViewModel()
         {
             _gameClient.Hosts.CollectionChanged += (s, e) => OnPropertyChanged(nameof(ConnectionsExists));
-            _gameClient.Players.CollectionChanged += (s,e) => OnPropertyChanged(nameof(LanPlayers));
-            _gameClient.MyPlayer.PropertyChanged += (s, e) => _gameClient.SendUpdatedPlayerState();
         }
 
         public ObservableCollection<MunchkinHost> Hosts => _gameClient.Hosts;
         public Player MyPlayer => _gameClient.MyPlayer;
-
-        public List<Player> LanPlayers =>
-            _gameClient.Players
-                .OrderByDescending(p => p.Level)
-                .ThenByDescending(p => p.Modifiers)
-                .ThenBy(p => p.Name)
-                .ToList();
-
-        public ICommand ToolsCommand { get; set; }
-        public ICommand FightCommand { get; set; }
-
-        private bool _hostSearch = true;
-        public bool HostSearch
-        {
-            get => _hostSearch;
-            set
-            {
-                if (_hostSearch != value)
-                {
-                    _hostSearch = value;
-                    if (_hostSearch)
-                    {
-                        Process = false;
-                    }
-
-                    OnPropertyChanged(nameof(HostSearch));
-                }
-            }
-        }
-
-        private bool _process = false;
-        public bool Process
-        {
-            get => _process;
-            set
-            {
-                if (_process != value)
-                {
-                    _process = value;
-                    if (_process)
-                    {
-                        HostSearch = false;
-                    }
-
-                    OnPropertyChanged(nameof(Process));
-                }
-            }
-        }
 
         public bool ConnectionsExists
         {
@@ -132,90 +77,39 @@ namespace MunchkinCounterLan.Views
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class JoinGamePage : ContentPage
     {
-        private class InnerEvent
-        {
-            public PageEventType EventType { get; set; }
-            public object Data { get; set; }
-        }
-
         private IGameClient _gameClient => DependencyService.Get<IGameClient>();
-
-        private Subject<InnerEvent> _innerSubject;
-        private Subject<Unit> _destroy = new Subject<Unit>();
-        
-        private bool _toolsClickHandling = false;
+        private IGameLogger _gameLogger => DependencyService.Get<IGameLogger>();
 
         public JoinGameViewModel ViewModel { get; set; }
 
         public bool _searching = false;
 
+        
+        private bool _connecting = false;
+        public bool Connecting
+        { 
+            get => _connecting; 
+            set
+            {
+                if (_connecting != value)
+                {
+                    _connecting = value;
+                    OnPropertyChanged(nameof(Connecting));
+                }
+            }
+        }
+
         public JoinGamePage()
         {
-
             InitializeComponent();
 
-            _innerSubject = new Subject<InnerEvent>();
-
             ViewModel = new JoinGameViewModel();
-            ViewModel.ToolsCommand = new Command<PageEventType>((eventType) => _innerSubject.OnNext(new InnerEvent { EventType = eventType }));
-            ViewModel.FightCommand = new Command<string>(async (id) => await PopupNavigation.Instance.PushAsync(new AlertPage(id)));
 
-            Appearing += (s, e) =>
-            {
-                StartSearching();
+            Appearing += (s, e) => StartSearching();
 
-                _innerSubject.AsObservable()
-                    .TakeUntil(_destroy)
-                    .Where(_ => !_toolsClickHandling)
-                    .Where(_ => _.EventType == PageEventType.ResetMunchkin || _.EventType == PageEventType.ThrowDice || _.EventType == PageEventType.Fight)
-                    .Do(_ => _toolsClickHandling = true)
-                    .Subscribe(async _ => {
-                        switch (_.EventType)
-                        {
-                            case PageEventType.ResetMunchkin:
-                                await ResetMunchkinHandlerAsync();
-                                break;
-                            case PageEventType.ThrowDice:
-                                await ThrowDiceHandler();
-                                break;
-                            case PageEventType.Fight:
-                                await FightHandler(_);
-                                break;
-                        }
-
-                        _toolsClickHandling = false;
-                    });
-            };
-
-            Disappearing += (s, e) =>
-            {
-                StopSearching();
-                _destroy.OnNext(Unit.Default);
-            };
-
+            Disappearing += (s, e) => StopSearching();
+            
             BindingContext = ViewModel;
-
-            MessagingCenter.Subscribe<IGameClient>(this, "LostServerConnection", async (sender) => {
-
-                if (ViewModel.HostSearch) { return; }
-
-                ViewModel.OnPropertyChanged(nameof(ViewModel.LanPlayers));
-                ExitGame();
-
-                var alert = new AlertPage("Connection to server lost.", "TryReconnect", "Exit", closeOnConfirm: false);
-                alert.Confirmed += async (s, e) =>
-                {
-                    var reconnectResult = TryReconnectToLastHost();
-                    if (!reconnectResult)
-                    {
-                        await PopupNavigation.Instance.PushAsync(new AlertPage("Reconnect to host failed, search for new host."));
-                        StartSearching();
-                    }
-                };
-                alert.Rejected += (s,e) => StartSearching();
-
-                await PopupNavigation.Instance.PushAsync(alert);
-            });
         }
 
         private async void Connect(object sender, ItemTappedEventArgs e)
@@ -225,7 +119,7 @@ namespace MunchkinCounterLan.Views
                 var enterPlayerDataPage = new EnterPlayerDataPage();
                 enterPlayerDataPage.Name = Preferences.Get(PreferencesKey.DefaultPlayerName, string.Empty);
                 enterPlayerDataPage.Sex = (byte)Preferences.Get(PreferencesKey.DefaultPlayerSex, 0);
-                enterPlayerDataPage.OnNextPressed += (se, ev) =>
+                enterPlayerDataPage.OnNextPressed += async (s, ev) =>
                 {
                     ViewModel.MyPlayer.Name = ev.Name;
                     ViewModel.MyPlayer.Sex = ev.Sex;
@@ -233,7 +127,17 @@ namespace MunchkinCounterLan.Views
                     Preferences.Set(PreferencesKey.DefaultPlayerName, ev.Name);
                     Preferences.Set(PreferencesKey.DefaultPlayerSex, ev.Sex);
 
-                    _gameClient.Connect(munchkinHost.IpAddress);
+                    Connecting = true;
+                    var connectResult = _gameClient.Connect(munchkinHost.IpAddress);
+                    Connecting = false;
+
+                    if (connectResult.IsFail)
+                    {
+                        _gameLogger.Error(connectResult.Error);
+                        await PopupNavigation.Instance.PushAsync(new AlertPage("Join game error, please check your lan connection."));
+                        return;
+                    }
+
                     _gameClient.StartUpdatePlayers();
                     _gameClient.SendPlayerInfo();
                     _gameClient.StartListeningServerDisconnection();
@@ -241,7 +145,7 @@ namespace MunchkinCounterLan.Views
                     Preferences.Set(PreferencesKey.LastConnectedHostIp, munchkinHost.IpAddress.ToString());
 
                     StopSearching();
-                    ViewModel.Process = true;
+                    await Shell.Current.GoToAsync($"gameprocess");
                 };
                 await PopupNavigation.Instance.PushAsync(enterPlayerDataPage);
             }
@@ -249,12 +153,16 @@ namespace MunchkinCounterLan.Views
 
         private async void Reconnect(object sender, EventArgs e)
         {
+            Connecting = true;
             var reconnectResult = TryReconnectToLastHost();
+            Connecting = false;
+
             if (!reconnectResult)
             {
                 await PopupNavigation.Instance.PushAsync(new AlertPage("Reconnect to host failed, search for new host."));
                 return;
             }
+            await Shell.Current.GoToAsync($"gameprocess");
         }
 
         private bool TryReconnectToLastHost()
@@ -273,61 +181,14 @@ namespace MunchkinCounterLan.Views
                 _gameClient.StartListeningServerDisconnection();
 
                 StopSearching();
-                ViewModel.Process = true;
                 return true;
             }
             return false;
         }
 
-        private async Task ResetMunchkinHandlerAsync()
-        {
-            var confirmPage = new ConfirmPage();
-            confirmPage.OnReset += (s, ev) => {
-                switch (ev)
-                {
-                    case "level":
-                        ViewModel.MyPlayer.ResetLevel();
-                        break;
-                    case "modifiers":
-                        ViewModel.MyPlayer.ResetModifyers();
-                        break;
-                    case "all":
-                        ViewModel.MyPlayer.ResetLevel();
-                        ViewModel.MyPlayer.ResetModifyers();
-                        break;
-                }
-                _gameClient.SendUpdatedPlayerState();
-            };
-
-            await PopupNavigation.Instance.PushAsync(confirmPage);
-        }
-
-        private async Task ThrowDiceHandler()
-        {
-            var dicePage = new DicePage();
-            dicePage.Throwed += (s, diceValue) =>
-            {
-                ViewModel.MyPlayer.Dice = diceValue;
-                _gameClient.SendUpdatedPlayerState();
-            };
-
-            await PopupNavigation.Instance.PushAsync(dicePage);
-        }
-
-        private async Task FightHandler(InnerEvent iev)
-        {
-            string partnerId = null;
-            if (iev != null)
-            {
-                partnerId = ((Player)iev.Data).Id != ViewModel.MyPlayer.Id ? ((Player)iev.Data).Id : null;
-            }
-            
-            await PopupNavigation.Instance.PushAsync(new FightPage(partnerId));
-        }
-
         public void StartSearching()
         {
-            if (!_searching && ViewModel.HostSearch)
+            if (!_searching)
             {
                 _gameClient.StartSearchHosts();
                 _searching = true;
@@ -351,20 +212,8 @@ namespace MunchkinCounterLan.Views
 
         public void ExitGame()
         {
-            if (ViewModel.HostSearch) { return; }
-
             _gameClient.SavePlayerData();
             _gameClient.CloseConnection();
-
-            ViewModel.HostSearch = true;
-        }
-
-        private void FightClick(object sender, ItemTappedEventArgs e)
-        {
-            if (e.Item is Player p && p != null)
-            {
-                _innerSubject.OnNext(new InnerEvent { EventType = PageEventType.Fight, Data = p });
-            }
         }
     }
 }

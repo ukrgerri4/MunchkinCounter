@@ -4,7 +4,9 @@ using Rg.Plugins.Popup.Pages;
 using Rg.Plugins.Popup.Services;
 using System;
 using System.ComponentModel;
+using System.Linq;
 using System.Net;
+using System.Windows.Input;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Internals;
@@ -19,6 +21,7 @@ namespace MunchkinCounterLan.Views
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged(string prop = "") => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
         
+        public ICommand DebugCommand { get; set; }
 
         public bool SleepModeSwitchValue
         {
@@ -49,6 +52,16 @@ namespace MunchkinCounterLan.Views
                 OnPropertyChanged(nameof(IsViewExpandable));
             }
         }
+
+        public bool IsDebugModeEnabled
+        {
+            get { return Preferences.Get(PreferencesKey.IsDebugModeEnabled, false); }
+            set
+            {
+                Preferences.Set(PreferencesKey.IsDebugModeEnabled, value);
+                OnPropertyChanged(nameof(IsDebugModeEnabled));
+            }
+        }
     }
 
     [XamlCompilation(XamlCompilationOptions.Compile)]
@@ -61,6 +74,7 @@ namespace MunchkinCounterLan.Views
             InitializeComponent();
 
             viewModel = new SettingsViewModel();
+            viewModel.DebugCommand = new Command(async () => await PopupNavigation.Instance.PushAsync(DependencyService.Get<DebugPage>()));
 
             BindingContext = viewModel;
         }
@@ -71,7 +85,9 @@ namespace MunchkinCounterLan.Views
 
             var dnsName = Dns.GetHostName();
             var ips = Dns.GetHostAddresses(dnsName);
-            ips.ForEach(ip => ipAddressSection.Add(new TextCell { Text = ip.ToString() }));
+            ips.Select(ip => ip.ToString())
+               .Where(ip => ip.Contains("192.168"))
+               .ForEach(ip => ipAddressSection.Add(new TextCell { Text = ip }));
         }
 
         private async void Close(object sender, EventArgs e)

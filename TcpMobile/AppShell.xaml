@@ -1,0 +1,148 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Shell xmlns="http://xamarin.com/schemas/2014/forms"
+        xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+        xmlns:local="clr-namespace:MunchkinCounterLan.Models"
+        xmlns:views="clr-namespace:MunchkinCounterLan.Views"
+        xmlns:fa="clr-namespace:Core.Utils;assembly=Core"
+        x:Class="MunchkinCounterLan.AppShell"
+        FlyoutBackgroundColor="{StaticResource primaryLight}">
+    <Shell.Resources>
+        <ResourceDictionary>
+            <Style x:Key="BaseStyle" TargetType="Element" ApplyToDerivedTypes="True">
+                <Setter Property="Shell.BackgroundColor" Value="{StaticResource primaryDark}" />
+                <Setter Property="Shell.ForegroundColor" Value="{StaticResource secondary}" />
+                <Setter Property="Shell.TitleColor" Value="{StaticResource secondary}" />
+                <Setter Property="Shell.UnselectedColor" Value="{StaticResource secondary}" />
+                <Setter Property="Shell.DisabledColor" Value="{StaticResource secondary}" />
+            </Style>
+
+            <Style TargetType="TabBar" BasedOn="{StaticResource BaseStyle}" />
+            <Style TargetType="FlyoutItem" BasedOn="{StaticResource BaseStyle}" />
+
+            <Style Class="FlyoutItemLayoutStyle" TargetType="Layout" ApplyToDerivedTypes="True">
+                <Setter TargetName="FlyoutItemLabel" Property="Label.FontFamily" Value="{StaticResource DefaultFont}" />
+                <Setter TargetName="FlyoutItemLabel" Property="Label.FontSize" Value="24" />
+                <Setter TargetName="FlyoutItemLabel" Property="Label.TextColor" Value="{StaticResource primaryDark}" />
+                <Setter Property="VisualStateManager.VisualStateGroups">
+                    <VisualStateGroupList>
+                        <VisualStateGroup x:Name="CommonStates">
+                            <VisualState x:Name="Normal">
+                                <VisualState.Setters>
+
+                                </VisualState.Setters>
+                            </VisualState>
+                            <VisualState x:Name="Selected">
+                                <VisualState.Setters>
+                                    <Setter Property="BackgroundColor" Value="{StaticResource secondary}" />
+                                </VisualState.Setters>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateGroupList>
+                </Setter>
+            </Style>
+        </ResourceDictionary>
+    </Shell.Resources>
+
+    <FlyoutItem Shell.TabBarIsVisible="False" FlyoutDisplayOptions="AsMultipleItems">
+        <ShellContent Route="home" Title="Home" ContentTemplate="{DataTemplate views:HomePage}">
+            <ShellContent.Icon>
+                <FontImageSource
+                    FontFamily="{StaticResource FontAwesomeSolid}"
+                    Glyph="{x:Static fa:FontAwesomeIcons.Home}"
+                    Color="{StaticResource primaryDark}"
+                    Size="16"/>
+            </ShellContent.Icon>
+        </ShellContent>
+    </FlyoutItem>
+
+    <FlyoutItem Route="single" Title="Single" FlyoutDisplayOptions="AsMultipleItems">
+        
+        <ShellContent Route="share" Title="Single game" ContentTemplate="{DataTemplate views:SingleGamePage}" Shell.NavBarIsVisible="False" Shell.TabBarIsVisible="False">
+            <ShellContent.Icon>
+                <FontImageSource
+                    FontFamily="{StaticResource FontAwesomeSolid}"
+                    Glyph="{x:Static fa:FontAwesomeIcons.MobileAlt}"
+                    Color="{StaticResource primaryDark}"
+                    Size="16"/>
+            </ShellContent.Icon>
+        </ShellContent>
+
+        <ShellContent IsVisible="False" Route="manage" Title="Manage game" ContentTemplate="{DataTemplate views:ManageGamePage}" Shell.NavBarIsVisible="False" Shell.TabBarIsVisible="False">
+            <ShellContent.Icon>
+                <FontImageSource
+                    FontFamily="{StaticResource FontAwesomeSolid}"
+                    Glyph="{x:Static fa:FontAwesomeIcons.Tasks}"
+                    Color="{StaticResource primaryDark}"
+                    Size="16"/>
+            </ShellContent.Icon>
+        </ShellContent>
+    </FlyoutItem>
+
+
+    <FlyoutItem Route="multiplayer" Title="Multiplayer" FlyoutDisplayOptions="AsSingleItem">
+        <FlyoutItem.Icon>
+            <FontImageSource
+                    FontFamily="{StaticResource FontAwesomeSolid}"
+                    Glyph="{x:Static fa:FontAwesomeIcons.NetworkWired}"
+                    Color="{StaticResource primaryDark}"
+                    Size="16"/>
+        </FlyoutItem.Icon>
+        
+        <ShellContent Route="create"  Title="Create game" ContentTemplate="{DataTemplate views:CreateGamePage}">
+            <ShellContent.Icon>
+                <FontImageSource
+                    FontFamily="{StaticResource FontAwesomeSolid}"
+                    Glyph="{x:Static fa:FontAwesomeIcons.Users}"
+                    Color="{StaticResource primaryDark}"
+                    Size="16"/>
+            </ShellContent.Icon>
+        </ShellContent>
+
+        <ShellContent Route="join" Title="Join game" ContentTemplate="{DataTemplate views:JoinGamePage}">
+            <ShellContent.Icon>
+                <FontImageSource
+                    FontFamily="{StaticResource FontAwesomeSolid}"
+                    Glyph="{x:Static fa:FontAwesomeIcons.BroadcastTower}"
+                    Color="{StaticResource primaryDark}"
+                    Size="16"/>
+            </ShellContent.Icon>
+        </ShellContent>
+    </FlyoutItem>
+    
+    <MenuItem Text="Settings" Command="{Binding OpenModalCommand}" CommandParameter="{x:Static local:MenuItemType.Settings}">
+        <MenuItem.IconImageSource>
+            <FontImageSource
+                FontFamily="{StaticResource FontAwesomeSolid}"
+                Glyph="{x:Static fa:FontAwesomeIcons.Cogs}"
+                Color="{StaticResource primaryDark}"
+                Size="16"/>
+        </MenuItem.IconImageSource>
+    </MenuItem>
+    <MenuItem Text="Share" Command="{Binding OpenModalCommand}" CommandParameter="{x:Static local:MenuItemType.ShareApp}">
+        <MenuItem.IconImageSource>
+            <FontImageSource
+                FontFamily="{StaticResource FontAwesomeSolid}"
+                Glyph="{x:Static fa:FontAwesomeIcons.ShareAlt}"
+                Color="{StaticResource primaryDark}"
+                Size="16"/>
+        </MenuItem.IconImageSource>
+    </MenuItem>
+    <MenuItem Text="Contribute" Command="{Binding OpenModalCommand}" CommandParameter="{x:Static local:MenuItemType.Contribute}">
+        <MenuItem.IconImageSource>
+            <FontImageSource
+                FontFamily="{StaticResource FontAwesomeSolid}"
+                Glyph="{x:Static fa:FontAwesomeIcons.HandsHelping}"
+                Color="{StaticResource primaryDark}"
+                Size="16"/>
+        </MenuItem.IconImageSource>
+    </MenuItem>
+    <MenuItem Text="About" Command="{Binding OpenModalCommand}" CommandParameter="{x:Static local:MenuItemType.About}">
+        <MenuItem.IconImageSource>
+            <FontImageSource
+                FontFamily="{StaticResource FontAwesomeSolid}"
+                Glyph="{x:Static fa:FontAwesomeIcons.InfoCircle}"
+                Color="{StaticResource primaryDark}"
+                Size="16"/>
+        </MenuItem.IconImageSource>
+    </MenuItem>
+</Shell>

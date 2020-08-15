@@ -3,214 +3,68 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:d="http://xamarin.com/schemas/2014/forms/design"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:fa="clr-namespace:Core.Utils;assembly=Core"
-             xmlns:local="clr-namespace:MunchkinCounterLan.Models"
              mc:Ignorable="d"
              x:Class="MunchkinCounterLan.Views.JoinGamePage"
+             x:Name="ThisPage"
+             Title="Join game"
              Style="{StaticResource mainBgView}">
     <ContentPage.Content>
-        <Grid RowSpacing="0" ColumnSpacing="0" Margin="0" Padding="10,5,10,5">
-            <Grid IsVisible="{Binding HostSearch}" RowSpacing="0" ColumnSpacing="0" Margin="0" Padding="0" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="auto"/>
-                    <RowDefinition Height="1"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="1"/>
-                    <RowDefinition Height="auto"/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                
-                <StackLayout Grid.Row="0" Grid.Column="0" Orientation="Vertical" Spacing="0" Padding="5">
-                    <Label Text="Requirements:"
+        <Grid>
+            <Grid RowSpacing="0" ColumnSpacing="0" Margin="0" Padding="10,5,10,5">
+                <Grid RowDefinitions="auto, 1, *, 1, auto" ColumnDefinitions="*" RowSpacing="0" ColumnSpacing="0" Margin="0" Padding="0">
+                    <Grid Grid.Row="0" Grid.Column="0" RowDefinitions="auto, auto, auto, auto" ColumnDefinitions="*" RowSpacing="0" ColumnSpacing="0" Margin="0" Padding="5">
+                        <Label Grid.Row="0" Grid.Column="0"
+                           Text="Requirements:"
+                           FontFamily="{StaticResource DefaultFont}" TextColor="{StaticResource primaryDark}" VerticalTextAlignment="Center"/>
+                        <Label Grid.Row="1" Grid.Column="0"
+                           Text="- all players must be in one local network, basically connected to one wi-fi router."
                            FontFamily="{StaticResource DefaultFont}" TextColor="{StaticResource primaryDark}"/>
-                    <Label Text="- all players must be in one local network, basically connected to one wi-fi router."
+                        <Label Grid.Row="2" Grid.Column="0"
+                           Text="- if no local network around, alternatively some one can start be hotspot and share wi-fi connection to others."
                            FontFamily="{StaticResource DefaultFont}" TextColor="{StaticResource primaryDark}"/>
-                    <Label Text="- if no local network around, alternatively some one can start be hotspot and share wi-fi connection to others."
-                           FontFamily="{StaticResource DefaultFont}" TextColor="{StaticResource primaryDark}"/>
-                    <Label Text="- when host is found, click on it to connect."
-                           FontFamily="{StaticResource DefaultFont}" TextColor="{StaticResource primaryDark}"/>
-                </StackLayout>
-                
-                <BoxView Grid.Row="1" Grid.Column="0" HorizontalOptions="FillAndExpand" VerticalOptions="StartAndExpand" Color="{StaticResource secondary}" Margin="5,0,5,0"/>
-
-                <ListView Grid.Row="2" Grid.Column="0" x:Name="hostsView" BackgroundColor="Transparent" ItemsSource="{Binding Hosts}" SeparatorVisibility="None" RowHeight="50" Margin="10" ItemTapped="Connect">
-                    <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <ViewCell>
-                                <ViewCell.View BackgroundColor="Transparent">
-                                    <Grid RowSpacing="0" ColumnSpacing="0" BackgroundColor="{StaticResource primaryDark}" Margin="5">
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="*"/>
-                                        </Grid.RowDefinitions>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="6*" />
-                                            <ColumnDefinition Width="1*" />
-                                            <ColumnDefinition Width="1*" />
-                                            <ColumnDefinition Width="1*" />
-                                        </Grid.ColumnDefinitions>
-
-                                        <Label Grid.Row="0" Grid.Column="0" Text="{Binding Name, Mode=OneWay}" Style="{StaticResource gameLabel}"/>
-                                        <Label Grid.Row="0" Grid.Column="1" Text="{Binding Fullness, Mode=OneWay}" Style="{StaticResource gameLabel}"/>
-                                        <Label Grid.Row="0" Grid.Column="2" Text="/" Style="{StaticResource gameLabel}"/>
-                                        <Label Grid.Row="0" Grid.Column="3" Text="{Binding Capacity, Mode=OneWay}" Style="{StaticResource gameLabel}"/>
-                                    </Grid>
-                                </ViewCell.View>
-                            </ViewCell>
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>
-                
-                <BoxView Grid.Row="3" Grid.Column="0" HorizontalOptions="FillAndExpand" VerticalOptions="StartAndExpand" Color="{StaticResource secondary}" Margin="5,0,5,0"/>
-
-                <StackLayout Grid.Row="4" Grid.Column="0" Orientation="Horizontal" Spacing="20" VerticalOptions="CenterAndExpand" HorizontalOptions="FillAndExpand">
-                    <Button Clicked="Reconnect" Text="Reconnect" Style="{StaticResource textButton}" FontSize="24" BackgroundColor="{StaticResource secondary}" Margin="0,10,0,5" Padding="5,0,5,0"/>
-                    <StackLayout Orientation="Horizontal" Spacing="0" VerticalOptions="CenterAndExpand" HorizontalOptions="FillAndExpand">
-                        <Label Text="Searching hosts" FontFamily="{StaticResource DefaultFont}" TextColor="{StaticResource primaryDark}" FontSize="24"/>
-                        <Label Text="{Binding LoaderPointsValue}" FontFamily="{StaticResource DefaultFont}" TextColor="{StaticResource primaryDark}" FontSize="24"/>
-                    </StackLayout>
-                </StackLayout>
-
-            </Grid>
-
-            <Grid IsVisible="{Binding Process}" RowSpacing="0" ColumnSpacing="0" Padding="0" Margin="0">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="3*" />
-                    <RowDefinition Height="auto" />
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-
-                <Grid Grid.Row="0" Grid.Column="0" RowSpacing="0" ColumnSpacing="0" Padding="0,10,0,5" Margin="0">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="auto" />
-                        <RowDefinition Height="*" />
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-
-                    <Grid Grid.Row="0" Grid.Column="0" RowSpacing="0" ColumnSpacing="0" BackgroundColor="{StaticResource secondary}" Padding="0,0,0,0" Margin="0">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="*" />
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="1*" />
-                            <ColumnDefinition Width="1" />
-                            <ColumnDefinition Width="1*" />
-                            <ColumnDefinition Width="1" />
-                            <ColumnDefinition Width="6*" />
-                            <ColumnDefinition Width="1*" />
-                            <ColumnDefinition Width="1*" />
-                            <ColumnDefinition Width="1*" />
-                        </Grid.ColumnDefinitions>
-
-                        <Label Grid.Row="0" Grid.Column="0" Text="Sex" Style="{StaticResource gameTitleLabel}"/>
-                        <Label Grid.Row="0" Grid.Column="2" Text="Dice" Style="{StaticResource gameTitleLabel}"/>
-                        <Label Grid.Row="0" Grid.Column="4" Text="Name" Style="{StaticResource gameTitleLabel}"/>
-                        <Label Grid.Row="0" Grid.Column="5" Text="Lvl" Style="{StaticResource gameTitleLabel}"/>
-                        <Label Grid.Row="0" Grid.Column="6" Text="Mod" Style="{StaticResource gameTitleLabel}"/>
-                        <Label Grid.Row="0" Grid.Column="7" Text="Pwr" Style="{StaticResource gameTitleLabel}"/>
+                        <Label Grid.Row="3" Grid.Column="0"
+                           Text="- when host is found, click on it to connect."
+                           FontFamily="{StaticResource DefaultFont}" TextColor="{StaticResource primaryDark}" VerticalTextAlignment="Center"/>
                     </Grid>
-                    <ListView Grid.Row="1" Grid.Column="0" x:Name="gameListView" ItemsSource="{Binding LanPlayers}" Margin="0" SelectionMode="Single" IsPullToRefreshEnabled="False" ItemTapped="FightClick">
+
+                    <BoxView Grid.Row="1" Grid.Column="0" HorizontalOptions="FillAndExpand" VerticalOptions="StartAndExpand" Color="{StaticResource secondary}" Margin="5,0,5,0"/>
+
+                    <ListView Grid.Row="2" Grid.Column="0" x:Name="hostsView" BackgroundColor="Transparent" ItemsSource="{Binding Hosts}" SeparatorVisibility="None" RowHeight="50" Margin="10" ItemTapped="Connect">
                         <ListView.ItemTemplate>
                             <DataTemplate>
                                 <ViewCell>
-                                    <ViewCell.View>
-                                        <Grid RowSpacing="0" ColumnSpacing="0" BackgroundColor="{StaticResource primaryDark}" Padding="0,0,0,0">
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition Height="*" />
-                                            </Grid.RowDefinitions>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="1*" />
-                                                <ColumnDefinition Width="1" />
-                                                <ColumnDefinition Width="1*" />
-                                                <ColumnDefinition Width="1" />
-                                                <ColumnDefinition Width="6*" />
-                                                <ColumnDefinition Width="1*" />
-                                                <ColumnDefinition Width="1*" />
-                                                <ColumnDefinition Width="1*" />
-                                            </Grid.ColumnDefinitions>
-
-                                            <Label Grid.Row="0" Grid.Column="0"
-                                                   Text="{Binding SexIcon, Mode=OneWay}"
-                                                   FontFamily="{StaticResource FontAwesomeSolid}"
-                                                   FontSize="24"
-                                                   TextColor="{StaticResource primaryLight}"
-                                                   VerticalOptions="Center"
-                                                   HorizontalOptions="Center"/>
-                                            <BoxView Grid.Row="0" Grid.Column="1" HorizontalOptions="StartAndExpand" VerticalOptions="FillAndExpand" Color="{StaticResource secondary}" Margin="0,3,0,3" />
-                                            <Label Grid.Row="0" Grid.Column="2"
-                                                   Text="{Binding DiceIcon, Mode=OneWay}"
-                                                   FontFamily="{StaticResource FontAwesomeSolid}"
-                                                   FontSize="24"
-                                                   TextColor="{StaticResource primaryLight}"
-                                                   VerticalOptions="Center"
-                                                   HorizontalOptions="Center"/>
-                                            <BoxView Grid.Row="0" Grid.Column="3" HorizontalOptions="StartAndExpand" VerticalOptions="FillAndExpand" Color="{StaticResource secondary}" Margin="0,3,0,3" />
-                                            <Label Grid.Row="0" Grid.Column="4" Text="{Binding Name, Mode=OneWay}" Style="{StaticResource gameLabel}"/>
-                                            <Label Grid.Row="0" Grid.Column="5" Text="{Binding Level, Mode=OneWay}" Style="{StaticResource gameLabel}"/>
-                                            <Label Grid.Row="0" Grid.Column="6" Text="{Binding Modifiers, Mode=OneWay}" Style="{StaticResource gameLabel}"/>
-                                            <Label Grid.Row="0" Grid.Column="7" Text="{Binding Power, Mode=OneWay}" Style="{StaticResource gameLabel}"/>
+                                    <ViewCell.View BackgroundColor="Transparent">
+                                        <Grid RowDefinitions="*" ColumnDefinitions="6*, 1*, 1*, 1*" RowSpacing="0" ColumnSpacing="0" BackgroundColor="{StaticResource primaryDark}" Margin="5">
+                                            <Label Grid.Row="0" Grid.Column="0" Text="{Binding Name, Mode=OneWay}" Style="{StaticResource gameLabel}"/>
+                                            <Label Grid.Row="0" Grid.Column="1" Text="{Binding Fullness, Mode=OneWay}" Style="{StaticResource gameLabel}"/>
+                                            <Label Grid.Row="0" Grid.Column="2" Text="/" Style="{StaticResource gameLabel}"/>
+                                            <Label Grid.Row="0" Grid.Column="3" Text="{Binding Capacity, Mode=OneWay}" Style="{StaticResource gameLabel}"/>
                                         </Grid>
                                     </ViewCell.View>
                                 </ViewCell>
                             </DataTemplate>
                         </ListView.ItemTemplate>
                     </ListView>
-                </Grid>
 
-                <Grid Grid.Row="1" Grid.Column="0" RowSpacing="0" ColumnSpacing="0" Padding="0" Margin="0">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="2" />
-                        <RowDefinition Height="*" />
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="3*" />
-                        <ColumnDefinition Width="3*" />
-                        <ColumnDefinition Width="3*" />
-                        <ColumnDefinition Width="2*" />
-                    </Grid.ColumnDefinitions>
-                    <BoxView Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="4" HorizontalOptions="FillAndExpand" VerticalOptions="StartAndExpand" Color="{StaticResource secondary}" Margin="5,0,5,0"/>
-                    <StackLayout Grid.Row="1" Grid.Column="0" Spacing="0" Margin="0,0,5,0">
-                        <Label Text="level" Style="{StaticResource centeredLabel}" FontSize="20" TextColor="{StaticResource secondary}" VerticalOptions="End"/>
-                        <Button Command="{Binding MyPlayer.IncreaseLevel}" Text="{x:Static fa:FontAwesomeIcons.ChevronUp}" Style="{StaticResource upDownButton}"/>
-                        <Label Text="{Binding MyPlayer.Level}" Style="{StaticResource centeredLabel}" FontSize="50"/>
-                        <Button Command="{Binding MyPlayer.DecreaseLevel}" Text="{x:Static fa:FontAwesomeIcons.ChevronDown}" Style="{StaticResource upDownButton}"/>
+                    <BoxView Grid.Row="3" Grid.Column="0" HorizontalOptions="FillAndExpand" VerticalOptions="StartAndExpand" Color="{StaticResource secondary}" Margin="5,0,5,0"/>
+
+                    <StackLayout Grid.Row="4" Grid.Column="0" Orientation="Horizontal" Spacing="20" VerticalOptions="CenterAndExpand" HorizontalOptions="FillAndExpand">
+                        <Button Clicked="Reconnect" Text="Reconnect" Style="{StaticResource textButton}" FontSize="24" BackgroundColor="{StaticResource secondary}" Margin="0,10,0,5" Padding="5,0,5,0"/>
+                        <StackLayout Orientation="Horizontal" Spacing="0" VerticalOptions="CenterAndExpand" HorizontalOptions="FillAndExpand">
+                            <Label Text="Searching hosts" FontFamily="{StaticResource DefaultFont}" TextColor="{StaticResource primaryDark}" FontSize="24"/>
+                            <Label Text="{Binding LoaderPointsValue}" FontFamily="{StaticResource DefaultFont}" TextColor="{StaticResource primaryDark}" FontSize="24"/>
+                        </StackLayout>
                     </StackLayout>
-                    <StackLayout Grid.Row="1" Grid.Column="1"  Spacing="0" Margin="0,0,5,0">
-                        <Label Text="modifiers" Style="{StaticResource centeredLabel}" FontSize="20" TextColor="{StaticResource secondary}" VerticalOptions="End"/>
-                        <Button Command="{Binding MyPlayer.IncreaseModifiers}" Text="{x:Static fa:FontAwesomeIcons.ChevronUp}" Style="{StaticResource upDownButton}"/>
-                        <Label Text="{Binding MyPlayer.Modifiers}" Style="{StaticResource centeredLabel}" FontSize="50"/>
-                        <Button Command="{Binding MyPlayer.DecreaseModifiers}" Text="{x:Static fa:FontAwesomeIcons.ChevronDown}" Style="{StaticResource upDownButton}"/>
-                    </StackLayout>
-                    <StackLayout Grid.Row="1" Grid.Column="2"  Spacing="0">
-                        <Label Text="power" Style="{StaticResource centeredLabel}" FontSize="20" TextColor="{StaticResource secondary}" VerticalOptions="End"></Label>
-                        <Label Text="{Binding MyPlayer.Power}" Style="{StaticResource centeredLabel}" FontSize="50"></Label>
-                    </StackLayout>
-                    <StackLayout Grid.Row="1" Grid.Column="3" Spacing="0" Orientation="Horizontal">
-                        <BoxView WidthRequest="2" HorizontalOptions="StartAndExpand" VerticalOptions="FillAndExpand" Color="{StaticResource secondary}" Margin="0,5,0,0" />
-                        <FlexLayout Direction="Column" JustifyContent="SpaceAround">
-                            <Button
-                                Command="{Binding ToolsCommand}"
-                                CommandParameter="{x:Static local:PageEventType.ResetMunchkin}"
-                                Text="{x:Static fa:FontAwesomeIcons.Skull}"
-                                Style="{StaticResource actionIconButton}"/>
-                            <Button
-                                Command="{Binding MyPlayer.ToggleSex}"
-                                Text="{Binding MyPlayer.SexIcon}"
-                                Style="{StaticResource actionIconButton}"/>
-                            <Button
-                                Command="{Binding ToolsCommand}"
-                                CommandParameter="{x:Static local:PageEventType.ThrowDice}"
-                                Text="{x:Static fa:FontAwesomeIcons.Dice}"
-                                Style="{StaticResource actionIconButton}" />
-                        </FlexLayout>
-                    </StackLayout>
+
                 </Grid>
             </Grid>
+
+            <AbsoluteLayout IsVisible="{Binding Source={x:Reference ThisPage}, Path=Connecting}" BackgroundColor="{StaticResource modalBg}">
+                <Grid AbsoluteLayout.LayoutBounds="0, 0, 1, 1" AbsoluteLayout.LayoutFlags="All"> 
+                    <ActivityIndicator IsRunning="True" IsEnabled="True" Color="{StaticResource secondary}" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" Scale="1.5"></ActivityIndicator>
+                </Grid>
+            </AbsoluteLayout>
         </Grid>
+       
     </ContentPage.Content>
 </ContentPage>

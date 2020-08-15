@@ -1,7 +1,7 @@
 ﻿using Infrastracture.Definitions;
 using Infrastracture.Interfaces;
+using MunchkinCounterLan;
 using System;
-using TcpMobile.Views;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 
@@ -18,7 +18,7 @@ namespace TcpMobile
 
             VersionTracking.Track();
 
-            MainPage = new MainMDPage();
+            MainPage = new AppShell();
 
             AdjustBrightness();
         }

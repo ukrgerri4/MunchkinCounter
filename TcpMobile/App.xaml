@@ -15,6 +15,7 @@
             <!-- new from logo-->
             <Color x:Key="secondaryLight">#858859</Color>
             <Color x:Key="modalBg">#CC000000</Color>
+            <Color x:Key="black">#000000</Color>
 
             <OnPlatform x:TypeArguments="x:String" x:Key="DefaultFont">
                 <On Platform="Android" Value="Acme-Regular.ttf#Acme-Regular" />
@@ -32,13 +33,16 @@
             </OnPlatform>
 
             <Style x:Key="mainBgView" TargetType="ContentPage">
+                <Setter Property="Shell.BackgroundColor" Value="{StaticResource primaryDark}"/>
+                <Setter Property="Shell.TitleColor" Value="{StaticResource secondary}"/>
+                <Setter Property="Shell.ForegroundColor" Value="{StaticResource secondary}"/>
                 <Setter Property="ControlTemplate">
                     <Setter.Value>
                         <ControlTemplate>
-                            <Grid BackgroundColor="{StaticResource primaryDark}">
-                                <Frame BorderColor="Transparent" Padding="0" Margin="5,0,5,0">
+                            <Grid BackgroundColor="#33100E">
                                     <Image Source="bgImage.jpg" Aspect="AspectFill"/>
-                                </Frame>
+                                <!--<Frame BorderColor="Transparent" Padding="0" Margin="0">
+                                </Frame>-->
                                 <!--<AbsoluteLayout BackgroundColor="Transparent" VerticalOptions="Center">
                                     <Label Text="{x:Static fa:FontAwesomeIcons.CaretRight}"
                                            FontFamily="{StaticResource FontAwesomeSolid}"

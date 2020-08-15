@@ -1,7 +1,9 @@
-﻿using Infrastracture.Interfaces;
+﻿using Infrastracture.Definitions;
+using Infrastracture.Interfaces;
 using Infrastracture.Models;
 using System;
 using System.Collections.ObjectModel;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 
 namespace TcpMobile.Services
@@ -33,19 +35,18 @@ namespace TcpMobile.Services
 
         private void WriteToHistory(string message, LogType type)
         {
-            if (_deviceInfoService.IsIgorPhone)
-            {
-                if (IsDuplicateMessages(message))
-                {
-                    _lastLogUnit.DuplicateMessagesCounter++;
-                    _lastLogUnit.Date = DateTime.UtcNow;
-                    return;
-                }
+            if (!Preferences.Get(PreferencesKey.IsDebugModeEnabled, false)) { return; }
 
-                var logUnit = new LogUnit { Message = message, Type = type };
-                _lastLogUnit = logUnit;
-                _history.Add(logUnit);
+            if (IsDuplicateMessages(message))
+            {
+                _lastLogUnit.DuplicateMessagesCounter++;
+                _lastLogUnit.Date = DateTime.UtcNow;
+                return;
             }
+
+            var logUnit = new LogUnit { Message = message, Type = type };
+            _lastLogUnit = logUnit;
+            _history.Add(logUnit);
         }
 
         private bool IsDuplicateMessages(string message)

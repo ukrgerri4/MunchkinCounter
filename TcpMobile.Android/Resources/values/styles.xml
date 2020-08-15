@@ -6,26 +6,33 @@
   <!-- Base theme applied no matter what API -->
   <style name="MainTheme.Base" parent="Theme.AppCompat.Light.DarkActionBar">
     <!--If you are using revision 22.1 please use just windowNoTitle. Without android:-->
-    <item name="windowNoTitle">true</item>
+    <!--<item name="windowNoTitle">true</item>-->
     
     <item name="android:windowBackground">@color/colorPrimaryDark</item>
 
     <!--We will be using the toolbar so no need to show ActionBar-->
-    <item name="windowActionBar">false</item>
+    <!--<item name="windowActionBar">false</item>-->
+    
+    
     <!-- Set theme colors from https://aka.ms/material-colors -->
     <!-- colorPrimary is used for the default action bar background -->
     <item name="colorPrimary">@color/colorPrimaryDark</item>
-    <!-- colorPrimaryDark is used for the status bar -->
-    <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+    
+    <!-- там где время -->
+    <item name="colorPrimaryDark">@color/colorBlack</item>
+    <!-- там где время -->
+    
     <!-- colorAccent is used as the default value for colorControlActivated
          which is used to tint widgets -->
     <item name="colorAccent">@color/colorPrimaryDark</item>
     <!-- You can also set colorControlNormal, colorControlActivated
          colorControlHighlight and colorSwitchThumbNormal. -->
 
-    <item name="android:navigationBarColor">@color/colorPrimaryDark</item>
+    <!-- 3 кнопки внизу -->
+    <item name="android:navigationBarColor">@color/colorBlack</item>
     <item name="android:navigationBarDividerColor">@color/colorPrimaryDark</item>
-    <item name="android:windowLightNavigationBar">true</item>
+    <item name="android:windowLightNavigationBar">false</item>
+    <!-- 3 кнопки внизу -->
     
     <item name="windowActionModeOverlay">false</item>
 
@@ -50,7 +57,7 @@
     <!-- LIST VIEW -->
   </style>
 
-  <style name="AppCompatDialogStyle" parent="Theme.AppCompat.Light.Dialog">
+  <!--<style name="AppCompatDialogStyle" parent="Theme.AppCompat.Light.Dialog">
     <item name="colorAccent">#FF4081</item>
-  </style>
+  </style>-->
 </resources>

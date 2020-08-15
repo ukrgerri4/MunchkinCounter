@@ -20,6 +20,14 @@
                     <TableSection Title="Single game:" TextColor="{StaticResource primaryDark}">
                         <SwitchCell Text="Expand view while idle:" On="{Binding IsViewExpandable}"/>
                     </TableSection>
+                    <TableSection Title="Developer mode:" TextColor="{StaticResource primaryDark}">
+                        <SwitchCell Text="Log and show actions:" On="{Binding IsDebugModeEnabled}"/>
+                        <ViewCell IsEnabled="{Binding IsDebugModeEnabled}">
+                            <ViewCell.View>
+                                <Button IsVisible="{Binding IsDebugModeEnabled}" Command="{Binding DebugCommand}" Text="Debug" Style="{StaticResource textButton}"/>
+                            </ViewCell.View>
+                        </ViewCell>
+                    </TableSection>
                 </TableRoot>
             </TableView.Root>
         </TableView>

@@ -17,10 +17,7 @@ namespace MunchkinCounterLan.Views
         {
             InitializeComponent();
 
-            GoTo = new Command<MenuItemType>((type) =>
-            {
-                DependencyService.Get<MenuPage>().GoTo(type);
-            });
+            GoTo = new Command<string>(async (route) => await Shell.Current.GoToAsync($"{route}"));
 
             BindingContext = this;
         }
